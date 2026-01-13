@@ -62,11 +62,18 @@ header {
 .nav-right a { font-size: 1.2rem; }
 .nav-right a:hover { color: var(--btn-color); transform: translateY(-3px); }
 
-/* --- 5. HERO --- */
+/* --- 5. HERO (Mise à jour alignement) --- */
 .hero-content {
-    height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
-    text-align: center;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Reste centré verticalement */
+    align-items: flex-end;   /* Aligne tout le bloc à DROITE */
+    text-align: right;       /* Aligne le texte à DROITE */
+    padding-right: 10%;      /* Marge de sécurité à droite (ajustable) */
+    position: relative;      /* Important pour la flèche de scroll */
 }
+
 .hero-content h1 {
     font-size: 4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
     text-shadow: 0 5px 15px rgba(0,0,0,0.5);
@@ -75,6 +82,7 @@ header {
     background: var(--text-white); color: var(--bg-dark); padding: 10px 25px;
     border-radius: 50px; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;
     text-transform: uppercase;
+    display: inline-block; /* Important pour que le badge ne prenne pas toute la largeur */
 }
 
 /* --- 6. GALERIE (MODIFICATIONS HOVER ICI) --- */
@@ -281,3 +289,4 @@ footer {
 .contact-footer-icons a:hover {
     color: var(--text-accent);
 }
+
