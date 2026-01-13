@@ -1,78 +1,133 @@
-/* --- RESET ET BASE --- */
+/* --- 1. VARIABLES & COULEURS (Vos codes exacts) --- */
+:root {
+    --bg-dark: #222222;       /* Fond sombre */
+    --text-white: #FFFFFF;    /* Texte principal */
+    --text-accent: #ECEAC4;   /* Couleur secondaire (Jaune pâle) */
+    --btn-color: #2E7186;     /* Couleur boutons/éléments (Bleu) */
+}
+
+/* --- 2. BASE --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Montserrat', sans-serif; color: #333; line-height: 1.6; background-color: #fff; }
+
+body {
+    font-family: 'Montserrat', sans-serif; /* Similaire à Gopher */
+    background-color: var(--bg-dark);
+    color: var(--text-white);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
 a { text-decoration: none; color: inherit; transition: 0.3s; }
-img { max-width: 100%; display: block; }
 
-/* --- HEADER --- */
+/* --- 3. VIDÉO D'ARRIÈRE-PLAN (Fixe) --- */
+.video-background {
+    position: fixed;
+    top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -100; /* Derrière tout le reste */
+    width: 100%; height: 100%;
+    overflow: hidden;
+}
+
+.video-background video {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%; min-height: 100%;
+    width: auto; height: auto;
+    object-fit: cover;
+}
+
+/* Calque noir léger pour lisibilité */
+.video-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(34, 34, 34, 0.4);
+}
+
+/* --- 4. HEADER (Menu Gauche - Logo Centre - Droite Icônes) --- */
 header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 20px 50px; background: white; position: sticky; top: 0; z-index: 1000;
-    border-bottom: 1px solid #eee;
-}
-.logo a { font-weight: 700; font-size: 1.2rem; text-transform: uppercase; letter-spacing: 2px; }
-nav ul { display: flex; gap: 30px; }
-nav ul li a { font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; }
-nav ul li a:hover, nav ul li a.active { color: #888; text-decoration: underline; }
-
-/* --- PAGE PROJET STYLE (Headers) --- */
-.project-header {
-    text-align: center; padding: 60px 20px 30px; background: #fafafa;
-}
-.project-header h1 { font-size: 2.5rem; text-transform: uppercase; letter-spacing: 2px; }
-.project-header .subtitle { color: #777; font-style: italic; margin-top: 10px; }
-
-/* --- CONTENU PAGES --- */
-.page-content { max-width: 1000px; margin: 0 auto; padding: 50px 20px; }
-.project-intro { font-size: 1.1rem; text-align: center; max-width: 800px; margin: 0 auto 50px; }
-
-/* --- SECTION BIO --- */
-.bio-section { display: flex; gap: 50px; align-items: center; justify-content: center; }
-.bio-image img { width: 300px; height: 300px; object-fit: cover; border-radius: 50%; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-.bio-text { max-width: 500px; }
-.bio-text h1 { margin-bottom: 20px; font-size: 2rem; }
-
-/* --- STYLES PROJETS COMPLEXES (Kernae) --- */
-.separator { margin: 60px 0; border: 0; border-top: 1px solid #eee; }
-.project-subsection h2 { 
-    text-align: center; margin-bottom: 30px; font-size: 1.5rem; letter-spacing: 3px; 
-    border-bottom: 2px solid #333; display: inline-block; padding-bottom: 5px;
-    position: relative; left: 50%; transform: translateX(-50%);
-}
-.subsection-grid { 
-    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-bottom: 30px; 
-}
-.subsection-grid.single-col { grid-template-columns: 1fr; } /* Pour les images larges */
-
-.description-text { text-align: center; max-width: 800px; margin: 0 auto; color: #555; }
-
-/* Logiciels */
-.software-used { margin-top: 30px; text-align: center; }
-.software-used h4 { text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; color: #999; margin-bottom: 10px; }
-.software-icons span { 
-    display: inline-block; padding: 5px 15px; background: #eee; border-radius: 20px; 
-    font-size: 0.8rem; margin: 0 5px; font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 50px;
+    position: fixed; /* Le menu reste accroché en haut */
+    top: 0; left: 0; width: 100%;
+    z-index: 1000;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
 }
 
-/* --- BOUTONS --- */
-.btn {
-    display: inline-block; padding: 12px 30px; background: #000; color: white;
-    text-transform: uppercase; font-weight: bold; letter-spacing: 1px; margin-top: 10px;
+/* Gauche */
+.nav-left { flex: 1; }
+.nav-left ul { display: flex; gap: 25px; list-style: none; }
+.nav-left a {
+    font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
 }
-.btn:hover { background: #444; }
-.btn-youtube { color: #cc0000; font-weight: bold; border: 2px solid #cc0000; padding: 10px 20px; display: inline-block; }
-.btn-youtube:hover { background: #cc0000; color: white; }
+.nav-left a:hover { color: var(--text-accent); }
 
-/* --- NAVIGATION RETOUR --- */
-.project-nav { margin-top: 80px; text-align: center; }
-.back-link { font-weight: bold; text-transform: uppercase; font-size: 0.9rem; border-bottom: 2px solid #000; padding-bottom: 5px; }
+/* Centre (Logo) */
+.logo-center { flex: 1; text-align: center; }
+.logo-text {
+    font-weight: 900; font-size: 1.5rem; letter-spacing: 3px;
+    border: 2px solid white; padding: 5px 12px; border-radius: 50%;
+}
+.logo-center a:hover .logo-text { background: white; color: var(--bg-dark); }
+
+/* Droite (Icônes) */
+.nav-right { flex: 1; display: flex; justify-content: flex-end; gap: 20px; }
+.nav-right a { font-size: 1.2rem; }
+.nav-right a:hover { color: var(--btn-color); transform: translateY(-3px); }
+
+/* --- 5. HERO (Titre Accueil) --- */
+.hero-content {
+    height: 100vh; /* Prend tout l'écran */
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    text-align: center;
+}
+.hero-content h1 {
+    font-size: 4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.badge {
+    background: var(--text-white); color: var(--bg-dark); padding: 10px 25px;
+    border-radius: 50px; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* --- 6. GALERIE --- */
+.gallery {
+    /* Fond sombre opaque pour cacher la vidéo quand on descend */
+    background: var(--bg-dark); 
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 30px; padding: 100px 50px;
+}
+
+.project-card {
+    position: relative; height: 350px; overflow: hidden; display: block;
+    background: #000; border-radius: 8px;
+}
+.project-card img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s ease; opacity: 0.9;
+}
+.project-card:hover img { transform: scale(1.05); opacity: 0.5; }
+
+.overlay-text {
+    position: absolute; bottom: 20px; left: 20px; pointer-events: none;
+}
+.overlay-text h3 {
+    font-size: 1.5rem; margin-bottom: 5px; color: var(--text-accent); text-transform: uppercase;
+}
+.overlay-text p { font-style: italic; font-size: 0.9rem; }
 
 /* --- FOOTER --- */
-footer { text-align: center; padding: 40px; color: #999; font-size: 0.8rem; border-top: 1px solid #eee; margin-top: 50px; }
+footer {
+    background: var(--bg-dark); color: #666;
+    text-align: center; padding: 40px; position: relative; z-index: 1;
+}
 
-/* --- RESPONSIVE --- */
+/* --- MOBILE --- */
 @media (max-width: 768px) {
-    header { flex-direction: column; gap: 15px; padding: 15px; }
-    .bio-section { flex-direction: column; text-align: center; }
-    .project-header h1 { font-size: 1.8rem; }
+    header { flex-direction: column; gap: 15px; padding: 20px; background: rgba(0,0,0,0.9); }
+    .nav-left ul { gap: 15px; font-size: 0.75rem; justify-content: center; }
+    .hero-content h1 { font-size: 2.5rem; }
 }
