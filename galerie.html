@@ -10,8 +10,118 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
     <script src="https://unpkg.com/split-type"></script>
+
+    <style>
+        /* Force le style de la galerie pour écraser style.css si besoin */
+        body {
+            background-color: #101010; /* Fond sombre par défaut */
+            margin: 0;
+            overflow: hidden; /* Important pour le canvas infini */
+        }
+
+        .gallery-container {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+
+        .canvas {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            /* Pas de limite, c'est le JS qui gère le drag */
+        }
+
+        /* Le bloc de chaque projet */
+        .item {
+            position: absolute;
+            /* Suppression du border-radius ici */
+            border-radius: 0 !important; 
+            overflow: hidden;
+            cursor: grab;
+            background-color: #1a1a1a; /* Fond gris si l'image ne remplit pas tout */
+        }
+
+        .item:active {
+            cursor: grabbing;
+        }
+
+        .item-image-container {
+            width: 100%;
+            height: 100%;
+            border-radius: 0 !important;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* L'image elle-même */
+        .item-image-container img {
+            width: 100%;
+            height: 100%;
+            /* 'cover' remplit la case mais peut couper les bords. 
+               'contain' montre TOUTE l'image mais laisse des bandes vides.
+               Vu votre demande "on ne voit pas tout", je mets cover mais centré,
+               ou vous pouvez changer en 'contain' ci-dessous. */
+            object-fit: cover; 
+            object-position: center;
+            display: block;
+            border-radius: 0 !important;
+        }
+
+        /* Overlay et Titres (Votre style existant) */
+        .gallery-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            opacity: 0; pointer-events: none; z-index: 10;
+            transition: opacity 0.5s;
+        }
+        .gallery-overlay.active { opacity: 1; pointer-events: auto; }
+        
+        .expanded-item {
+            position: absolute;
+            z-index: 11;
+            overflow: hidden;
+            cursor: zoom-out;
+            border-radius: 0 !important; /* Pas d'arrondi au zoom non plus */
+        }
+        .expanded-item img {
+            width: 100%; height: 100%; object-fit: contain; /* Au zoom, on voit tout */
+        }
+
+        .project-title-overlay {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 12;
+            pointer-events: none;
+            mix-blend-mode: difference;
+            color: white;
+            font-family: sans-serif;
+            font-size: 8vw;
+            text-transform: uppercase;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .item-caption {
+            position: absolute;
+            bottom: 10px; left: 10px;
+            color: white; font-family: sans-serif; font-size: 0.8rem;
+            opacity: 0; transition: opacity 0.3s;
+            pointer-events: none;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+        }
+        .item:hover .item-caption { opacity: 1; }
+    </style>
 </head>
-<body style="overflow: hidden;"> <header>
+
+<body> 
+    <header>
         <nav class="nav-left">
             <ul>
                 <li><a href="index.html#realisations">Réalisations</a></li>
@@ -40,40 +150,38 @@
 
     <script>
         // 1. CONFIGURATION DE VOS IMAGES
-        // Vérifiez bien les extensions (.jpg ou .png) selon vos fichiers réels !
         const imageUrls = [
-            "assets/galerie/galerie1.png",
-            "assets/galerie/galerie2.jpg",
-            "assets/galerie/galerie3.jpg",
-            "assets/galerie/galerie4.png",
-            "assets/galerie/galerie5.png",
-            "assets/galerie/galerie6.png",
-            "assets/galerie/galerie7.jpg",
-            "assets/galerie/galerie8.png",
-            "assets/galerie/galerie9.jpg",
-            "assets/galerie/galerie10.jpg"
+            "assets/galerie/galerie1.png", // Perspective
+            "assets/galerie/galerie2.jpg", // Game Day
+            "assets/galerie/galerie3.jpg", // Shadow
+            "assets/galerie/galerie4.png", // Thanks
+            "assets/galerie/galerie5.png", // Abstract
+            "assets/galerie/galerie6.png", // Light
+            "assets/galerie/galerie7.jpg", // Shadow
+            "assets/galerie/galerie8.png", // Moment
+            "assets/galerie/galerie9.jpg", // Perspective
+            "assets/galerie/galerie10.jpg" // Detail
         ];
 
-        // Noms des photos (Optionnel, vous pouvez changer les textes)
         const itemsNames = [
             "Vision", "Nature", "Portrait", "Urban", "Abstract", 
             "Light", "Shadow", "Moment", "Perspective", "Detail"
         ];
 
-        // 2. REGLAGES FIGÉS (Plus de menu tweakpane)
+        // 2. REGLAGES 
         const settings = {
-            baseWidth: 350,      // Largeur de base des images
-            smallHeight: 300,    // Hauteur petite image
-            largeHeight: 450,    // Hauteur grande image
-            itemGap: 40,         // Espace entre images
+            baseWidth: 300,      // Un peu plus étroit pour faire format "Poster"
+            smallHeight: 400,    // Hauteur standard
+            largeHeight: 550,    // Hauteur "Grande Affiche"
+            itemGap: 30,         // Ecartement
             hoverScale: 1.05,
-            expandedScale: 0.8,  // Taille quand on clique (80% de l'écran)
-            dragEase: 0.08,      // Fluidité du drag
-            momentumFactor: 150, // Inertie quand on lâche
-            bufferZone: 2        // Zone de préchargement
+            expandedScale: 0.8,
+            dragEase: 0.08,
+            momentumFactor: 150,
+            bufferZone: 1.5      
         };
 
-        // --- MOTEUR DE LA GALERIE (NE PAS TOUCHER SOUS CETTE LIGNE) ---
+        // --- MOTEUR DE LA GALERIE ---
         gsap.registerPlugin(CustomEase);
         CustomEase.create("hop", "0.9, 0, 0.1, 1");
 
@@ -82,37 +190,48 @@
         const overlay = document.getElementById("overlay");
         const projectTitleElement = document.querySelector(".project-title-overlay p");
 
+        // J'ai ajouté une taille intermédiaire pour plus d'aléatoire
         let itemSizes = [
-            { width: settings.baseWidth, height: settings.smallHeight },
-            { width: settings.baseWidth, height: settings.largeHeight }
+            { width: settings.baseWidth, height: settings.smallHeight }, // Taille 1
+            { width: settings.baseWidth, height: settings.largeHeight }, // Taille 2 (Haut)
+            { width: settings.baseWidth, height: settings.smallHeight + 50 } // Taille 3 (Moyen)
         ];
         
         let cellWidth = settings.baseWidth + settings.itemGap;
-        let cellHeight = Math.max(settings.smallHeight, settings.largeHeight) + settings.itemGap;
-        let columns = 4;
+        // On prend la plus grande hauteur pour définir la grille (pour éviter les chevauchements)
+        let cellHeight = settings.largeHeight + settings.itemGap; 
+        
+        let columns = 5; // Plus de colonnes pour remplir l'écran
         const itemCount = imageUrls.length;
 
+        // Variables Drag
         let isDragging = false;
         let startX, startY;
         let targetX = 0, targetY = 0;
         let currentX = 0, currentY = 0;
         let dragVelocityX = 0, dragVelocityY = 0;
-        let lastDragTime = 0;
         let visibleItems = new Set();
-        let lastUpdateTime = 0;
-        let lastX = 0, lastY = 0;
         let isExpanded = false;
         let activeItemId = null;
         let expandedItem = null;
         let titleSplit = null;
 
-        // Fonction pour créer une carte image
         function createItem(col, row) {
             const itemNum = Math.abs((row * columns + col) % itemCount);
-            const sizeIndex = Math.abs((row * columns + col) % itemSizes.length);
+            
+            // MODIFICATION ICI : Formule pseudo-aléatoire pour casser la linéarité
+            // Au lieu de suivre l'ordre strict, on mélange un peu basé sur la position x/y
+            const pseudoRandom = Math.abs(Math.sin(col * 13 + row * 7) * 100);
+            const sizeIndex = Math.floor(pseudoRandom) % itemSizes.length;
+            
             const size = itemSizes[sizeIndex];
-            const xPos = col * cellWidth;
-            const yPos = row * cellHeight;
+            
+            // On centre un peu l'élément dans sa cellule si il est plus petit
+            const xOffset = (cellWidth - settings.itemGap - size.width) / 2;
+            const yOffset = (cellHeight - settings.itemGap - size.height) / 2;
+
+            const xPos = col * cellWidth + xOffset;
+            const yPos = row * cellHeight + yOffset;
             const itemId = `${col},${row}`;
 
             const item = document.createElement("div");
@@ -123,17 +242,17 @@
             item.style.left = `${xPos}px`;
             item.style.top = `${yPos}px`;
             
-            // Stockage des données pour l'animation
             item.dataset.imgSrc = imageUrls[itemNum];
             item.dataset.title = itemsNames[itemNum] || "Projet";
-            item.dataset.width = size.width;
-            item.dataset.height = size.height;
-
+            
             const imgContainer = document.createElement("div");
             imgContainer.className = "item-image-container";
             
             const img = document.createElement("img");
             img.src = imageUrls[itemNum];
+            // Empêcher le drag natif du navigateur sur l'image
+            img.ondragstart = () => false; 
+            
             imgContainer.appendChild(img);
             item.appendChild(imgContainer);
 
@@ -142,12 +261,11 @@
             caption.className = "item-caption";
             caption.innerHTML = `
                 <div class="item-name">${itemsNames[itemNum] || "Projet"}</div>
-                <div class="item-number">#${(itemNum + 1).toString().padStart(2, '0')}</div>
             `;
             item.appendChild(caption);
 
             item.addEventListener("click", () => {
-                if(Math.abs(dragVelocityX) < 0.5 && Math.abs(dragVelocityY) < 0.5) {
+                if(Math.abs(dragVelocityX) < 1 && Math.abs(dragVelocityY) < 1) {
                     expandItem(item);
                 }
             });
@@ -210,6 +328,7 @@
             startX = e.clientX;
             startY = e.clientY;
             dragVelocityX = 0; dragVelocityY = 0;
+            e.preventDefault(); // Evite la selection de texte
         });
 
         window.addEventListener("mousemove", e => {
@@ -229,30 +348,27 @@
         window.addEventListener("mouseup", () => {
             isDragging = false;
             container.classList.remove("active");
-            // Momentum (Inertie)
             targetX += dragVelocityX * (settings.momentumFactor / 10);
             targetY += dragVelocityY * (settings.momentumFactor / 10);
         });
 
-        // --- LOGIQUE D'EXPANSION (ZOOM) ---
+        // --- EXPANSION (ZOOM) ---
         function expandItem(item) {
             if(isExpanded) return;
             isExpanded = true;
             activeItemId = item.id;
             
-            // Titre animation
             if(titleSplit) titleSplit.revert();
             projectTitleElement.textContent = item.dataset.title;
             titleSplit = new SplitType(projectTitleElement, { types: "words, chars" });
             
-            // Clone pour agrandissement
             const rect = item.getBoundingClientRect();
             expandedItem = document.createElement("div");
             expandedItem.className = "expanded-item";
             expandedItem.style.width = rect.width + "px";
             expandedItem.style.height = rect.height + "px";
-            expandedItem.style.top = (rect.top + rect.height/2) + "px";
-            expandedItem.style.left = (rect.left + rect.width/2) + "px";
+            expandedItem.style.top = rect.top + "px"; // Correction position absolue
+            expandedItem.style.left = rect.left + "px";
             
             const img = document.createElement("img");
             img.src = item.dataset.imgSrc;
@@ -262,21 +378,17 @@
             document.body.appendChild(expandedItem);
             overlay.classList.add("active");
 
-            // Animation GSAP
-            const scaleW = (window.innerWidth * settings.expandedScale) / rect.width;
-            
-            // Fade out grid
             gsap.to(".item", { opacity: 0.1, duration: 0.5 });
             
-            // Zoom Image
+            // Animation vers le centre
             gsap.to(expandedItem, {
                 width: window.innerWidth * settings.expandedScale,
                 height: window.innerHeight * 0.8,
-                top: "50%", left: "50%",
+                top: (window.innerHeight - window.innerHeight * 0.8) / 2,
+                left: (window.innerWidth - window.innerWidth * settings.expandedScale) / 2,
                 duration: 0.8, ease: "hop"
             });
 
-            // Titre Apparition
             gsap.from(titleSplit.chars, {
                 y: 100, opacity: 0, stagger: 0.02, delay: 0.2, duration: 0.8, ease: "power3.out"
             });
@@ -284,23 +396,22 @@
 
         function closeExpanded() {
             if(!expandedItem) return;
-            
-            // Close animation
             overlay.classList.remove("active");
             gsap.to(".item", { opacity: 1, duration: 0.5 });
             
             const originalItem = document.getElementById(activeItemId);
+            // Fallback si l'item original est sorti de l'écran entre temps
             const rect = originalItem ? originalItem.getBoundingClientRect() : { top: window.innerHeight/2, left: window.innerWidth/2, width: 0, height: 0};
 
             gsap.to(titleSplit.chars, { y: -100, opacity: 0, duration: 0.4 });
 
             gsap.to(expandedItem, {
                 width: rect.width, height: rect.height,
-                top: rect.top + rect.height/2,
-                left: rect.left + rect.width/2,
+                top: rect.top,
+                left: rect.left,
                 duration: 0.6, ease: "power3.inOut",
                 onComplete: () => {
-                    expandedItem.remove();
+                    if(expandedItem) expandedItem.remove();
                     expandedItem = null;
                     isExpanded = false;
                     activeItemId = null;
