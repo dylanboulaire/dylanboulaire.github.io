@@ -33,67 +33,64 @@
         <h1>KERNAE</h1>
         <p class="subtitle">Stage Communication & Création de Contenu</p>
         
-        <div class="project-meta-grid">
-            <div class="meta-item">
-                <span class="meta-label">Rôle</span>
-                <span class="meta-value">Direction Artistique, Motion, Print</span>
+        <div class="project-meta-container">
+            <div class="project-meta-grid">
+                <div class="meta-item">
+                    <span class="meta-label">Rôle</span>
+                    <span class="meta-value">Direction Artistique, Motion, Print</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Durée</span>
+                    <span class="meta-value">4 Mois</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">Outils</span>
+                    <span class="meta-value">Illustrator, After Effects, Premiere</span>
+                </div>
             </div>
-            <div class="meta-item">
-                <span class="meta-label">Durée</span>
-                <span class="meta-value">4 Mois</span>
-            </div>
-            <div class="meta-item">
-                <span class="meta-label">Outils</span>
-                <span class="meta-value">Illustrator, After Effects, Premiere</span>
+            
+            <div class="project-intro-compact">
+                <p><strong>Le défi :</strong> Moderniser la communication interne et externe du fonds de dotation KERNAE en créant un flux constant de contenu engageant, tout en respectant une charte graphique stricte.</p>
             </div>
         </div>
     </section>
 
     <main class="page-padding project-body">
-        
-        <div class="project-intro-text">
-            <p><strong>Le défi :</strong> Moderniser la communication interne et externe du fonds de dotation KERNAE. L'objectif était de créer un flux constant de contenu engageant pour améliorer la visibilité et la notoriété sur les plateformes numériques, tout en respectant une charte graphique stricte.</p>
-        </div>
-
-        <hr class="separator">
 
         <section class="project-section">
             <div class="section-title">
                 <h2>Motion Design</h2>
-                <p>Modernisation des animations existantes et création de nouveaux formats dynamiques.</p>
             </div>
-            
-            <div class="grid-2-col">
+            <div class="grid-2-col compact-grid">
                 <div class="media-container">
-                    <img src="assets/miniatures/projet4.png" alt="Motion 1 Placeholder"> 
+                    <img src="assets/miniatures/projet4.png" alt="Motion 1"> 
                 </div>
                 <div class="media-container">
-                    <img src="assets/miniatures/projet4.png" alt="Motion 2 Placeholder">
+                    <img src="assets/miniatures/projet4.png" alt="Motion 2">
                 </div>
             </div>
         </section>
 
-        <section class="project-section alt-bg"> <div class="section-title">
+        <section class="project-section">
+            <div class="section-title">
                 <h2>Podcast & Vidéo</h2>
-                <p>Habillage graphique de la série "L'instant Mécénat" et montage des reportages.</p>
             </div>
-            
-            <div class="video-full">
+            <div class="video-compact-wrapper">
                  <div class="media-container">
                     <img src="assets/miniatures/projet2.png" alt="Podcast Cover">
                     <a href="https://www.youtube.com/watch?v=MMxo_pKYtOw" target="_blank" class="play-btn-overlay"><i class="fas fa-play"></i></a>
                  </div>
-                 <div class="caption">Cliquez pour voir la playlist sur YouTube</div>
+                 <div class="caption">Série "L'instant Mécénat" (YouTube)</div>
             </div>
         </section>
 
         <section class="project-section">
             <div class="section-title">
                 <h2>Newsletters & Print</h2>
-                <p>Conception de newsletters sur Digitaleo et mise en page de rapports d'activité. <br> <span style="font-size:0.8rem; opacity:0.7;">(Scroll horizontal)</span></p>
+                <p class="drag-hint"><i class="fas fa-hand-pointer"></i> Glissez pour défiler</p>
             </div>
 
-            <div class="horizontal-scroller">
+            <div class="horizontal-scroller draggable" id="slider">
                 <div class="scroll-item vertical-doc">
                     <img src="assets/miniatures/projet7.png" alt="Newsletter 1">
                 </div>
@@ -106,22 +103,23 @@
                 <div class="scroll-item vertical-doc">
                     <img src="assets/miniatures/projet7.png" alt="Flyer">
                 </div>
+                <div class="scroll-item vertical-doc">
+                    <img src="assets/miniatures/projet7.png" alt="Flyer 2">
+                </div>
             </div>
         </section>
 
         <section class="project-section">
             <div class="section-title">
                 <h2>Réseaux Sociaux</h2>
-                <p>Création de carrousels LinkedIn éducatifs et engageants.</p>
             </div>
-
-            <div class="grid-3-col">
-                <img src="assets/miniatures/projet6.png" alt="Post 1">
-                <img src="assets/miniatures/projet6.png" alt="Post 2">
-                <img src="assets/miniatures/projet6.png" alt="Post 3">
-                <img src="assets/miniatures/projet6.png" alt="Post 4">
-                <img src="assets/miniatures/projet6.png" alt="Post 5">
-                <img src="assets/miniatures/projet6.png" alt="Post 6">
+            <div class="grid-3-col compact-grid">
+                <img src="assets/miniatures/projet6.png" alt="Post">
+                <img src="assets/miniatures/projet6.png" alt="Post">
+                <img src="assets/miniatures/projet6.png" alt="Post">
+                <img src="assets/miniatures/projet6.png" alt="Post">
+                <img src="assets/miniatures/projet6.png" alt="Post">
+                <img src="assets/miniatures/projet6.png" alt="Post">
             </div>
         </section>
 
@@ -134,6 +132,35 @@
     <footer>
         <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
     </footer>
+
+    <script>
+        const slider = document.getElementById('slider');
+        let isDown = false;
+        let startX;
+        let scrollLeft;
+
+        slider.addEventListener('mousedown', (e) => {
+            isDown = true;
+            slider.classList.add('active'); // Change le curseur
+            startX = e.pageX - slider.offsetLeft;
+            scrollLeft = slider.scrollLeft;
+        });
+        slider.addEventListener('mouseleave', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        slider.addEventListener('mouseup', () => {
+            isDown = false;
+            slider.classList.remove('active');
+        });
+        slider.addEventListener('mousemove', (e) => {
+            if(!isDown) return;
+            e.preventDefault(); // Empêche de sélectionner le texte/image
+            const x = e.pageX - slider.offsetLeft;
+            const walk = (x - startX) * 2; // *2 pour scroller plus vite
+            slider.scrollLeft = scrollLeft - walk;
+        });
+    </script>
 
 </body>
 </html>
