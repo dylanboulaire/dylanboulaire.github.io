@@ -1,139 +1,43 @@
-/* --- 1. VARIABLES & COULEURS --- */
-:root {
-    --bg-dark: #222222;
-    --text-white: #FFFFFF;
-    --text-accent: #ECEAC4;
-    --btn-color: #2E7186;
+/* --- AJOUT POUR LES PAGES INTERNES (Bio, Contact, Galerie) --- */
+.page-padding {
+    padding-top: 150px; /* Espace pour ne pas être caché par le header */
+    padding-bottom: 50px;
+    max-width: 1200px;
+    margin: 0 auto;
+    min-height: 80vh; /* Pour que le footer reste en bas */
 }
 
-/* --- 2. BASE --- */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-
-body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: var(--bg-dark);
-    color: var(--text-white);
-    line-height: 1.6;
-    overflow-x: hidden;
-}
-
-a { text-decoration: none; color: inherit; transition: 0.3s; }
-
-/* --- 3. VIDÉO D'ARRIÈRE-PLAN --- */
-.video-background {
-    position: fixed;
-    top: 0; right: 0; bottom: 0; left: 0;
-    z-index: -100;
-    width: 100%; height: 100%;
-    overflow: hidden;
-}
-
-.video-background video {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 100%; min-height: 100%;
-    width: auto; height: auto;
-    object-fit: cover;
-}
-
-.video-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(34, 34, 34, 0.4);
-}
-
-/* --- 4. HEADER --- */
-header {
-    display: flex; justify-content: space-between; align-items: center;
-    padding: 20px 50px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-}
-
-.nav-left { flex: 1; }
-.nav-left ul { display: flex; gap: 25px; list-style: none; }
-.nav-left a { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
-.nav-left a:hover { color: var(--text-accent); }
-
-.logo-center { flex: 1; text-align: center; display: flex; justify-content: center; }
-.logo-img { height: 50px; width: auto; display: block; transition: transform 0.3s ease; }
-.logo-center a:hover .logo-img { transform: scale(1.05); }
-
-.nav-right { flex: 1; display: flex; justify-content: flex-end; gap: 20px; }
-.nav-right a { font-size: 1.2rem; }
-.nav-right a:hover { color: var(--btn-color); transform: translateY(-3px); }
-
-/* --- 5. HERO --- */
-.hero-content {
-    height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
+/* Style spécifique pour la page Contact */
+.contact-container {
     text-align: center;
+    max-width: 600px;
+    margin: 0 auto;
 }
-.hero-content h1 {
-    font-size: 4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
-    text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+.contact-form input, .contact-form textarea {
+    width: 100%; padding: 15px; margin-bottom: 20px;
+    background: #333; border: 1px solid #444; color: white;
+    font-family: 'Montserrat', sans-serif;
 }
-.badge {
-    background: var(--text-white); color: var(--bg-dark); padding: 10px 25px;
-    border-radius: 50px; font-weight: bold; font-size: 0.9rem; letter-spacing: 1px;
-    text-transform: uppercase;
+.contact-form button {
+    background-color: var(--btn-color); color: white;
+    padding: 15px 30px; border: none; font-weight: bold; cursor: pointer;
+    text-transform: uppercase; letter-spacing: 1px;
 }
+.contact-form button:hover { background-color: white; color: black; }
 
-/* --- 6. GALERIE (MODIFICATIONS HOVER ICI) --- */
-.gallery {
-    background: var(--bg-dark); 
-    position: relative; z-index: 1;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 30px; padding: 100px 50px;
+/* Style spécifique pour la page Bio */
+.bio-container {
+    display: flex; gap: 50px; align-items: center; padding: 0 20px;
 }
-
-.project-card {
-    position: relative; height: 350px; overflow: hidden; display: block;
-    background: #000; border-radius: 8px;
+.bio-img-box img {
+    width: 350px; height: 350px; object-fit: cover; border-radius: 50%;
+    border: 4px solid var(--btn-color);
 }
+.bio-text h1 { color: var(--text-accent); margin-bottom: 20px; font-size: 2.5rem; text-transform: uppercase;}
+.bio-text p { margin-bottom: 15px; font-size: 1.1rem; }
 
-.project-card img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.6s ease, opacity 0.3s ease; /* Ajout transition opacité */
-    opacity: 0.9;
-}
-
-/* L'image s'assombrit au survol (opacité baisse, laissant voir le fond noir) */
-.project-card:hover img {
-    transform: scale(1.05);
-    opacity: 0.4;
-}
-
-/* Le texte est invisible par défaut */
-.overlay-text {
-    position: absolute; bottom: 20px; left: 20px; pointer-events: none;
-    padding-right: 20px;
-    opacity: 0; /* Invisible */
-    transition: opacity 0.3s ease, transform 0.3s ease; /* Transition douce */
-    transform: translateY(20px); /* Légèrement décalé vers le bas */
-}
-
-/* Le texte apparaît et remonte légèrement au survol */
-.project-card:hover .overlay-text {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.overlay-text h3 {
-    font-size: 1.5rem; margin-bottom: 5px; color: var(--text-accent); text-transform: uppercase;
-    line-height: 1.2;
-}
-.overlay-text p { font-style: italic; font-size: 0.9rem; }
-
-/* --- FOOTER --- */
-footer {
-    background: var(--bg-dark); color: #666;
-    text-align: center; padding: 40px; position: relative; z-index: 1;
-}
-
-/* --- MOBILE --- */
+/* Responsive Bio */
 @media (max-width: 768px) {
-    header { flex-direction: column; gap: 15px; padding: 20px; background: rgba(0,0,0,0.9); }
-    .nav-left ul { gap: 15px; font-size: 0.75rem; justify-content: center; }
-    .logo-img { height: 40px; }
-    .hero-content h1 { font-size: 2.5rem; }
-    .gallery { padding: 50px 20px; grid-template-columns: 1fr; }
+    .bio-container { flex-direction: column; text-align: center; }
+    .bio-img-box img { width: 250px; height: 250px; }
 }
