@@ -3,91 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Stage Kernae - Dylan Boulaire</title>
+    <title>Projet Kernae - Dylan Boulaire</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
     <header>
-        <div class="logo"><a href="index.html">BOULAIRE Dylan</a></div>
-        <nav>
+        <nav class="nav-left">
             <ul>
-                <li><a href="index.html">Réalisations</a></li>
+                <li><a href="index.html#realisations" class="active-link">Réalisations</a></li>
                 <li><a href="bio.html">Bio</a></li>
                 <li><a href="contact.html">Contact</a></li>
+                <li><a href="galerie.html">Galerie</a></li>
             </ul>
         </nav>
+        <div class="logo-center">
+            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
+        </div>
+        <div class="nav-right">
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://www.behance.net" target="_blank"><i class="fab fa-behance"></i></a>
+            <a href="mailto:votre-email@gmail.com"><i class="fas fa-envelope"></i></a>
+            <a href="assets/mon-cv.pdf" target="_blank"><i class="fas fa-file-user"></i></a>
+        </div>
     </header>
 
-    <section class="project-header">
+    <section class="project-hero-header">
         <h1>KERNAE</h1>
-        <p class="subtitle">Stage communication 4 mois</p>
+        <p class="subtitle">Stage Communication & Création de Contenu</p>
+        
+        <div class="project-meta-grid">
+            <div class="meta-item">
+                <span class="meta-label">Rôle</span>
+                <span class="meta-value">Direction Artistique, Motion, Print</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Durée</span>
+                <span class="meta-value">4 Mois</span>
+            </div>
+            <div class="meta-item">
+                <span class="meta-label">Outils</span>
+                <span class="meta-value">Illustrator, After Effects, Premiere</span>
+            </div>
+        </div>
     </section>
 
-    <section class="page-content project-content">
+    <main class="page-padding project-body">
         
-        <div class="project-intro">
-            <p>Lors de mon stage de 4 mois chez <strong>KERNAE</strong>, j'avais pour mission de moderniser la communication interne et externe du fonds via des outils numériques variés.</p>
-            <p>L'objectif était de créer un flux constant de contenu engageant pour améliorer la visibilité et la notoriété de KERNAE sur ses plateformes, tout en respectant leur charte graphique.</p>
+        <div class="project-intro-text">
+            <p><strong>Le défi :</strong> Moderniser la communication interne et externe du fonds de dotation KERNAE. L'objectif était de créer un flux constant de contenu engageant pour améliorer la visibilité et la notoriété sur les plateformes numériques, tout en respectant une charte graphique stricte.</p>
         </div>
 
         <hr class="separator">
 
-        <div class="project-subsection">
-            <h2>MOTION DESIGN</h2>
-            <div class="subsection-grid">
-                <img src="assets/kernae-motion1.jpg" alt="Motion Design Kernae">
-                <img src="assets/kernae-motion2.jpg" alt="Motion Design Kernae">
+        <section class="project-section">
+            <div class="section-title">
+                <h2>Motion Design</h2>
+                <p>Modernisation des animations existantes et création de nouveaux formats dynamiques.</p>
             </div>
-            <p class="description-text">
-                Concevoir un motion design, comprendre les objectifs à mettre en valeur, améliorer l'existant.
-                Moderniser l'ancien motion design du fonds de dotation et le mettre à jour avec l'actualité.
-            </p>
             
-            <div class="software-used">
-                <h4>Logiciels utilisés :</h4>
-                <div class="software-icons">
-                    <span>After Effects</span> <span>Illustrator</span>
+            <div class="grid-2-col">
+                <div class="media-container">
+                    <img src="assets/miniatures/projet4.png" alt="Motion 1 Placeholder"> 
+                </div>
+                <div class="media-container">
+                    <img src="assets/miniatures/projet4.png" alt="Motion 2 Placeholder">
                 </div>
             </div>
-        </div>
+        </section>
 
-        <hr class="separator">
-
-        <div class="project-subsection">
-            <h2>PODCAST</h2>
-            <div class="subsection-grid">
-                <img src="assets/kernae-podcast.jpg" alt="Podcast Kernae">
+        <section class="project-section alt-bg"> <div class="section-title">
+                <h2>Podcast & Vidéo</h2>
+                <p>Habillage graphique de la série "L'instant Mécénat" et montage des reportages.</p>
             </div>
-            <div class="video-embed">
-                <a href="https://www.youtube.com/watch?v=MMxo_pKYtOw&list=PL-2NS4m_5mMTAOAUdaXEAREvxhkSBR-fQ" target="_blank" class="btn-youtube">▶ Voir la Playlist YouTube</a>
+            
+            <div class="video-full">
+                 <div class="media-container">
+                    <img src="assets/miniatures/projet2.png" alt="Podcast Cover">
+                    <a href="https://www.youtube.com/watch?v=MMxo_pKYtOw" target="_blank" class="play-btn-overlay"><i class="fas fa-play"></i></a>
+                 </div>
+                 <div class="caption">Cliquez pour voir la playlist sur YouTube</div>
             </div>
-            <p class="description-text">
-                Concevoir un motion design innovant pour les podcasts de KERNAE. Création d'une série "L'instant Mécénat" visuellement attractive.
-            </p>
-        </div>
+        </section>
 
-        <hr class="separator">
-
-        <div class="project-subsection">
-            <h2>NEWSLETTER</h2>
-            <div class="subsection-grid single-col">
-                <img src="assets/kernae-newsletter.jpg" alt="Newsletter Design">
+        <section class="project-section">
+            <div class="section-title">
+                <h2>Newsletters & Print</h2>
+                <p>Conception de newsletters sur Digitaleo et mise en page de rapports d'activité. <br> <span style="font-size:0.8rem; opacity:0.7;">(Scroll horizontal)</span></p>
             </div>
-            <p class="description-text">
-                Concevoir et rédiger une newsletter efficace sur Digitaleo, avec création graphique du header et footer sur Adobe Illustrator.
-            </p>
+
+            <div class="horizontal-scroller">
+                <div class="scroll-item vertical-doc">
+                    <img src="assets/miniatures/projet7.png" alt="Newsletter 1">
+                </div>
+                <div class="scroll-item vertical-doc">
+                    <img src="assets/miniatures/projet7.png" alt="Newsletter 2">
+                </div>
+                <div class="scroll-item vertical-doc">
+                    <img src="assets/miniatures/projet7.png" alt="Rapport Activité">
+                </div>
+                <div class="scroll-item vertical-doc">
+                    <img src="assets/miniatures/projet7.png" alt="Flyer">
+                </div>
+            </div>
+        </section>
+
+        <section class="project-section">
+            <div class="section-title">
+                <h2>Réseaux Sociaux</h2>
+                <p>Création de carrousels LinkedIn éducatifs et engageants.</p>
+            </div>
+
+            <div class="grid-3-col">
+                <img src="assets/miniatures/projet6.png" alt="Post 1">
+                <img src="assets/miniatures/projet6.png" alt="Post 2">
+                <img src="assets/miniatures/projet6.png" alt="Post 3">
+                <img src="assets/miniatures/projet6.png" alt="Post 4">
+                <img src="assets/miniatures/projet6.png" alt="Post 5">
+                <img src="assets/miniatures/projet6.png" alt="Post 6">
+            </div>
+        </section>
+
+        <div class="project-nav-footer">
+            <a href="index.html#realisations" class="btn-back">Voir les autres projets</a>
         </div>
 
-        <div class="project-nav">
-            <a href="index.html" class="back-link">← Retour aux réalisations</a>
-        </div>
-
-    </section>
+    </main>
 
     <footer>
-        <p>&copy; 2025 Dylan Boulaire.</p>
+        <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
     </footer>
+
 </body>
 </html>
