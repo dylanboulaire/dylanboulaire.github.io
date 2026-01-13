@@ -181,3 +181,88 @@ footer {
     .bio-container { flex-direction: column; text-align: center; }
     .bio-img-box img { width: 250px; height: 250px; }
 }
+
+/* --- NOUVEAU STYLE CONTACT (Blanc & Arrondi) --- */
+
+/* Mise à jour du conteneur pour aligner à gauche */
+.contact-container {
+    text-align: left; 
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Espacement des blocs */
+.contact-form .form-group {
+    margin-bottom: 20px;
+}
+
+/* Titres des champs (Nom, Prénom...) en jaune */
+.contact-form label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 700;
+    color: var(--text-accent);
+    font-size: 0.9rem;
+}
+
+/* Champs de saisie en BLANC */
+.contact-form input, .contact-form textarea {
+    width: 100%;
+    padding: 15px;
+    background-color: #f9f9f9; /* Fond blanc */
+    border: none;
+    color: #333; /* Texte noir */
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    margin-bottom: 0; /* On gère la marge via .form-group */
+}
+
+/* Texte "placeholder" (ex: Votre nom) en gris clair */
+.contact-form input::placeholder, .contact-form textarea::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Effet quand on clique dans le champ */
+.contact-form input:focus, .contact-form textarea:focus {
+    outline: 2px solid var(--btn-color);
+    background-color: #fff;
+}
+
+/* Bouton Envoyer arrondi */
+.contact-form button {
+    background-color: var(--btn-color);
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 50px; /* Bords très arrondis */
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 10px;
+    transition: background 0.3s;
+    text-transform: none; /* Pas de majuscules forcées */
+}
+
+.contact-form button:hover {
+    background-color: white;
+    color: var(--bg-dark);
+}
+
+/* Icônes en bas de page contact */
+.contact-footer-icons {
+    margin-top: 60px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+}
+.contact-footer-icons a {
+    font-size: 1.2rem;
+    font-weight: bold;
+    color: white;
+}
+.contact-footer-icons a:hover {
+    color: var(--text-accent);
+}
