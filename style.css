@@ -239,3 +239,107 @@ footer {
     .bio-img-box img { width: 250px; height: 250px; }
     .gallery { padding: 50px 20px; grid-template-columns: 1fr; }
 }
+
+/* --- STYLE PAGE PROJET (KERNIAE & CO) --- */
+
+/* En-tête de projet */
+.project-hero-header {
+    text-align: center;
+    padding: 160px 20px 60px; /* Marge haute pour le menu */
+    background: var(--bg-dark);
+}
+.project-hero-header h1 {
+    font-size: 4rem; margin-bottom: 10px; color: var(--text-white);
+    letter-spacing: 2px;
+}
+.project-hero-header .subtitle {
+    font-size: 1.2rem; color: #888; margin-bottom: 40px; font-weight: 300;
+}
+
+/* Grille d'infos techniques (Rôle, Outils...) */
+.project-meta-grid {
+    display: flex; justify-content: center; gap: 50px; flex-wrap: wrap;
+    border-top: 1px solid #333; border-bottom: 1px solid #333;
+    padding: 30px 0; max-width: 900px; margin: 0 auto;
+}
+.meta-item { display: flex; flex-direction: column; align-items: center; }
+.meta-label { font-size: 0.8rem; text-transform: uppercase; color: #666; margin-bottom: 5px; letter-spacing: 1px; }
+.meta-value { font-weight: 700; color: var(--text-accent); font-size: 1rem; }
+
+/* Corps du projet */
+.project-body { padding-top: 50px; max-width: 1200px; margin: 0 auto; }
+.project-intro-text {
+    font-size: 1.3rem; line-height: 1.8; text-align: center; max-width: 800px; margin: 0 auto 60px;
+}
+
+.separator { border: 0; height: 1px; background: #333; margin: 60px 0; }
+
+/* Sections */
+.project-section { margin-bottom: 100px; }
+.section-title { margin-bottom: 40px; text-align: left; }
+.section-title h2 { font-size: 2rem; color: var(--text-white); margin-bottom: 10px; }
+.section-title p { color: #999; max-width: 600px; }
+
+/* Grilles & Médias */
+.media-container {
+    width: 100%; border-radius: 8px; overflow: hidden; position: relative;
+    background: #111;
+}
+.media-container img { width: 100%; height: auto; display: block; }
+
+.grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+.grid-3-col { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+
+/* Bouton Play sur image */
+.play-btn-overlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 80px; height: 80px; background: rgba(236, 234, 196, 0.9);
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    color: var(--bg-dark); font-size: 2rem; transition: 0.3s;
+}
+.play-btn-overlay:hover { transform: translate(-50%, -50%) scale(1.1); background: #fff; }
+.caption { text-align: center; font-size: 0.9rem; color: #666; margin-top: 10px; font-style: italic; }
+
+/* --- LE CARROUSEL HORIZONTAL (Magic Scroll) --- */
+.horizontal-scroller {
+    display: flex;
+    gap: 30px;
+    overflow-x: auto; /* Permet le scroll horizontal */
+    scroll-snap-type: x mandatory; /* Force l'image à se caler */
+    padding-bottom: 20px; /* Espace pour la barre de scroll */
+    -webkit-overflow-scrolling: touch; /* Fluidité sur mobile */
+}
+
+/* Barre de scroll stylisée */
+.horizontal-scroller::-webkit-scrollbar { height: 8px; }
+.horizontal-scroller::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
+.horizontal-scroller::-webkit-scrollbar-thumb { background: var(--btn-color); border-radius: 4px; }
+
+.scroll-item {
+    flex: 0 0 auto; /* Ne pas réduire la taille des images */
+    scroll-snap-align: center; /* L'image se centre à l'arrêt */
+    border-radius: 8px; overflow: hidden;
+    transition: transform 0.3s;
+}
+
+/* Gestion des images longues (Newsletters) */
+.vertical-doc { width: 350px; /* Largeur fixe pour une newsletter */ }
+.vertical-doc img { width: 100%; height: auto; }
+
+/* Bouton Retour en bas */
+.project-nav-footer { text-align: center; margin: 80px 0; }
+.btn-back {
+    display: inline-block; border: 1px solid #555; padding: 15px 40px;
+    border-radius: 50px; text-transform: uppercase; font-weight: 700;
+    font-size: 0.9rem; transition: 0.3s;
+}
+.btn-back:hover { background: var(--text-white); color: var(--bg-dark); border-color: white; }
+
+/* RESPONSIVE PROJET */
+@media (max-width: 768px) {
+    .project-hero-header h1 { font-size: 2.5rem; }
+    .project-meta-grid { gap: 20px; flex-direction: column; }
+    .grid-2-col, .grid-3-col { grid-template-columns: 1fr; }
+    .horizontal-scroller { gap: 15px; }
+    .vertical-doc { width: 280px; } /* Plus petit sur mobile */
+}
