@@ -9,9 +9,10 @@
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
-    <script src="https://unpkg.com/split-type"></script>
-</head>
-<body style="overflow: hidden;"> <header>
+    </head>
+<body style="overflow: hidden; background-color: var(--bg-dark);"> 
+
+    <header>
         <nav class="nav-left">
             <ul>
                 <li><a href="index.html#realisations">Réalisations</a></li>
@@ -29,18 +30,17 @@
         </div>
     </header>
 
+    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-size: 0.8rem; pointer-events: none; z-index: 50;">
+        DRAG & EXPLORE
+    </div>
+
     <div class="gallery-container">
         <div class="canvas" id="canvas"></div>
         <div class="gallery-overlay" id="overlay"></div>
     </div>
 
-    <div class="project-title-overlay">
-        <p></p>
-    </div>
-
     <script>
         // 1. CONFIGURATION DE VOS IMAGES
-        // Vérifiez bien les extensions (.jpg ou .png) selon vos fichiers réels !
         const imageUrls = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
@@ -54,100 +54,114 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // Noms des photos (Optionnel, vous pouvez changer les textes)
-        const itemsNames = [
-            "Vision", "Nature", "Portrait", "Urban", "Abstract", 
-            "Light", "Shadow", "Moment", "Perspective", "Detail"
-        ];
-
-        // 2. REGLAGES FIGÉS (Plus de menu tweakpane)
+        // 2. RÉGLAGES "ORGANIQUES"
         const settings = {
-            baseWidth: 350,      // Largeur de base des images
-            smallHeight: 300,    // Hauteur petite image
-            largeHeight: 450,    // Hauteur grande image
-            itemGap: 40,         // Espace entre images
-            hoverScale: 1.05,
-            expandedScale: 0.8,  // Taille quand on clique (80% de l'écran)
-            dragEase: 0.08,      // Fluidité du drag
-            momentumFactor: 150, // Inertie quand on lâche
-            bufferZone: 2        // Zone de préchargement
+            gridSize: 450,       // Taille de la cellule de grille (plus grand pour aérer)
+            itemGap: 100,        // Espace minimum
+            dragEase: 0.08,
+            momentumFactor: 150,
+            hoverScale: 1.03,    // Zoom léger au survol
+            expandedScale: 0.85, // Taille image ouverte
+            bufferZone: 1        // Zone de chargement
         };
 
-        // --- MOTEUR DE LA GALERIE (NE PAS TOUCHER SOUS CETTE LIGNE) ---
+        // Définition des formats possibles pour casser la monotonie
+        // Width et Height sont relatifs à une base.
+        const formats = [
+            { w: 300, h: 200 }, // Paysage
+            { w: 250, h: 350 }, // Portrait
+            { w: 300, h: 300 }, // Carré moyen
+            { w: 400, h: 250 }, // Grand Paysage
+            { w: 220, h: 220 }  // Petit Carré
+        ];
+
+        // --- MOTEUR DE LA GALERIE ---
         gsap.registerPlugin(CustomEase);
         CustomEase.create("hop", "0.9, 0, 0.1, 1");
 
         const container = document.querySelector(".gallery-container");
         const canvas = document.getElementById("canvas");
         const overlay = document.getElementById("overlay");
-        const projectTitleElement = document.querySelector(".project-title-overlay p");
-
-        let itemSizes = [
-            { width: settings.baseWidth, height: settings.smallHeight },
-            { width: settings.baseWidth, height: settings.largeHeight }
-        ];
-        
-        let cellWidth = settings.baseWidth + settings.itemGap;
-        let cellHeight = Math.max(settings.smallHeight, settings.largeHeight) + settings.itemGap;
-        let columns = 4;
-        const itemCount = imageUrls.length;
 
         let isDragging = false;
         let startX, startY;
         let targetX = 0, targetY = 0;
         let currentX = 0, currentY = 0;
         let dragVelocityX = 0, dragVelocityY = 0;
-        let lastDragTime = 0;
         let visibleItems = new Set();
-        let lastUpdateTime = 0;
-        let lastX = 0, lastY = 0;
         let isExpanded = false;
         let activeItemId = null;
         let expandedItem = null;
-        let titleSplit = null;
 
-        // Fonction pour créer une carte image
+        const itemCount = imageUrls.length;
+
+        // Fonction pseudo-aléatoire déterministe
+        // Permet d'avoir toujours le même "aléatoire" pour une coordonnée donnée (x,y)
+        // C'est CRUCIAL pour que les images ne sautent pas quand on revient en arrière.
+        function seededRandom(x, y) {
+            let n = x * 3711.61 + y * 5344.72;
+            return Math.abs(Math.sin(n) * 10000 % 1);
+        }
+
+        // Création d'une image
         function createItem(col, row) {
-            const itemNum = Math.abs((row * columns + col) % itemCount);
-            const sizeIndex = Math.abs((row * columns + col) % itemSizes.length);
-            const size = itemSizes[sizeIndex];
-            const xPos = col * cellWidth;
-            const yPos = row * cellHeight;
+            const itemNum = Math.abs((row * 7 + col * 3) % itemCount); // Mélange l'ordre des images
+            
+            // 1. Choix déterministe du format
+            const randSeed = seededRandom(col, row);
+            const formatIndex = Math.floor(randSeed * formats.length);
+            const size = formats[formatIndex];
+
+            // 2. Calcul de la position avec "Jitter" (Décalage aléatoire)
+            // On décale l'image à l'intérieur de sa cellule de grille
+            const jitterRange = settings.gridSize - Math.max(size.w, size.h) - 20; 
+            const offsetX = (seededRandom(col + 100, row) - 0.5) * jitterRange;
+            const offsetY = (seededRandom(col, row + 100) - 0.5) * jitterRange;
+
+            const xPos = col * settings.gridSize + settings.gridSize / 2 - size.w / 2 + offsetX;
+            const yPos = row * settings.gridSize + settings.gridSize / 2 - size.h / 2 + offsetY;
+
             const itemId = `${col},${row}`;
 
             const item = document.createElement("div");
             item.className = "item";
             item.id = itemId;
-            item.style.width = `${size.width}px`;
-            item.style.height = `${size.height}px`;
+            
+            // Style de base
+            item.style.position = "absolute";
+            item.style.width = `${size.w}px`;
+            item.style.height = `${size.h}px`;
             item.style.left = `${xPos}px`;
             item.style.top = `${yPos}px`;
+            item.style.overflow = "hidden";
+            item.style.cursor = "pointer";
+            item.style.borderRadius = "4px";
+            item.style.boxShadow = "0 10px 30px rgba(0,0,0,0.3)";
             
-            // Stockage des données pour l'animation
+            // Stockage Data
             item.dataset.imgSrc = imageUrls[itemNum];
-            item.dataset.title = itemsNames[itemNum] || "Projet";
-            item.dataset.width = size.width;
-            item.dataset.height = size.height;
+            item.dataset.width = size.w;
+            item.dataset.height = size.h;
 
-            const imgContainer = document.createElement("div");
-            imgContainer.className = "item-image-container";
-            
+            // Image
             const img = document.createElement("img");
             img.src = imageUrls[itemNum];
-            imgContainer.appendChild(img);
-            item.appendChild(imgContainer);
+            img.style.width = "100%";
+            img.style.height = "100%";
+            img.style.objectFit = "cover"; // Remplit le cadre sans déformer
+            img.style.display = "block";
+            img.style.transition = "transform 0.4s ease, opacity 0.3s ease";
+            img.style.pointerEvents = "none"; // Important pour le drag
 
-            // Légende
-            const caption = document.createElement("div");
-            caption.className = "item-caption";
-            caption.innerHTML = `
-                <div class="item-name">${itemsNames[itemNum] || "Projet"}</div>
-                <div class="item-number">#${(itemNum + 1).toString().padStart(2, '0')}</div>
-            `;
-            item.appendChild(caption);
+            item.appendChild(img);
 
+            // Effet hover simple via JS/CSS
+            item.onmouseenter = () => gsap.to(img, { scale: settings.hoverScale, duration: 0.3 });
+            item.onmouseleave = () => gsap.to(img, { scale: 1, duration: 0.3 });
+
+            // Clic pour ouvrir
             item.addEventListener("click", () => {
-                if(Math.abs(dragVelocityX) < 0.5 && Math.abs(dragVelocityY) < 0.5) {
+                if(Math.abs(dragVelocityX) < 2 && Math.abs(dragVelocityY) < 2) {
                     expandItem(item);
                 }
             });
@@ -157,18 +171,19 @@
 
         function updateVisibleItems() {
             const buffer = settings.bufferZone;
-            const viewW = window.innerWidth * (1 + buffer);
-            const viewH = window.innerHeight * (1 + buffer);
+            const viewW = window.innerWidth;
+            const viewH = window.innerHeight;
             
-            const startCol = Math.floor((-currentX - viewW/2) / cellWidth);
-            const endCol = Math.ceil((-currentX + viewW*1.5) / cellWidth);
-            const startRow = Math.floor((-currentY - viewH/2) / cellHeight);
-            const endRow = Math.ceil((-currentY + viewH*1.5) / cellHeight);
+            // Calcul des colonnes/lignes visibles basé sur la taille de grille
+            const startCol = Math.floor((-currentX - viewW * 0.5) / settings.gridSize) - buffer;
+            const endCol = Math.ceil((-currentX + viewW * 1.5) / settings.gridSize) + buffer;
+            const startRow = Math.floor((-currentY - viewH * 0.5) / settings.gridSize) - buffer;
+            const endRow = Math.ceil((-currentY + viewH * 1.5) / settings.gridSize) + buffer;
 
             const currentIds = new Set();
 
-            for(let r = startRow; r <= endRow; r++) {
-                for(let c = startCol; c <= endCol; c++) {
+            for(let c = startCol; c <= endCol; c++) {
+                for(let r = startRow; r <= endRow; r++) {
                     const id = `${c},${r}`;
                     currentIds.add(id);
                     
@@ -176,11 +191,13 @@
                         const item = createItem(c, r);
                         canvas.appendChild(item);
                         visibleItems.add(id);
+                        // Animation d'entrée douce
+                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.5 });
                     }
                 }
             }
 
-            // Nettoyage
+            // Nettoyage des items hors écran
             visibleItems.forEach(id => {
                 if(!currentIds.has(id) && id !== activeItemId) {
                     const el = document.getElementById(id);
@@ -190,115 +207,124 @@
             });
         }
 
-        // Animation Loop
         function animate() {
             if(!isExpanded) {
+                // Lissage du mouvement
                 currentX += (targetX - currentX) * settings.dragEase;
                 currentY += (targetY - currentY) * settings.dragEase;
                 canvas.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                
                 updateVisibleItems();
             }
             requestAnimationFrame(animate);
         }
 
-        // Gestion du Drag
-        container.addEventListener("mousedown", e => {
+        // --- GESTION DU DRAG (Support Tactile + Souris) ---
+        function handleDragStart(x, y) {
             if(isExpanded) return;
             isDragging = true;
             container.classList.add("active");
-            startX = e.clientX;
-            startY = e.clientY;
+            startX = x;
+            startY = y;
             dragVelocityX = 0; dragVelocityY = 0;
-        });
+        }
 
-        window.addEventListener("mousemove", e => {
+        function handleDragMove(x, y) {
             if(!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
+            const dx = x - startX;
+            const dy = y - startY;
             targetX += dx;
             targetY += dy;
-            
             dragVelocityX = dx;
             dragVelocityY = dy;
-            
-            startX = e.clientX;
-            startY = e.clientY;
-        });
+            startX = x;
+            startY = y;
+        }
 
-        window.addEventListener("mouseup", () => {
+        function handleDragEnd() {
             isDragging = false;
             container.classList.remove("active");
-            // Momentum (Inertie)
+            // Inertie
             targetX += dragVelocityX * (settings.momentumFactor / 10);
             targetY += dragVelocityY * (settings.momentumFactor / 10);
-        });
+        }
 
-        // --- LOGIQUE D'EXPANSION (ZOOM) ---
+        // Événements Souris
+        container.addEventListener("mousedown", e => handleDragStart(e.clientX, e.clientY));
+        window.addEventListener("mousemove", e => handleDragMove(e.clientX, e.clientY));
+        window.addEventListener("mouseup", handleDragEnd);
+
+        // Événements Tactiles (Mobile)
+        container.addEventListener("touchstart", e => handleDragStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
+        window.addEventListener("touchmove", e => {
+            e.preventDefault(); // Bloque le scroll natif
+            handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
+        }, {passive: false});
+        window.addEventListener("touchend", handleDragEnd);
+
+
+        // --- LOGIQUE D'AGRANDISSEMENT (ZOOM) ---
         function expandItem(item) {
             if(isExpanded) return;
             isExpanded = true;
             activeItemId = item.id;
             
-            // Titre animation
-            if(titleSplit) titleSplit.revert();
-            projectTitleElement.textContent = item.dataset.title;
-            titleSplit = new SplitType(projectTitleElement, { types: "words, chars" });
-            
-            // Clone pour agrandissement
             const rect = item.getBoundingClientRect();
+            
+            // Création de l'élément clone pour le zoom
             expandedItem = document.createElement("div");
-            expandedItem.className = "expanded-item";
+            expandedItem.style.position = "fixed";
+            expandedItem.style.zIndex = "10000";
+            expandedItem.style.top = rect.top + "px";
+            expandedItem.style.left = rect.left + "px";
             expandedItem.style.width = rect.width + "px";
             expandedItem.style.height = rect.height + "px";
-            expandedItem.style.top = (rect.top + rect.height/2) + "px";
-            expandedItem.style.left = (rect.left + rect.width/2) + "px";
+            expandedItem.style.cursor = "zoom-out";
+            expandedItem.style.transformOrigin = "center center";
             
             const img = document.createElement("img");
             img.src = item.dataset.imgSrc;
+            img.style.width = "100%";
+            img.style.height = "100%";
+            img.style.objectFit = "contain"; // Ici on veut voir TOUTE l'image
             expandedItem.appendChild(img);
             
             expandedItem.addEventListener("click", closeExpanded);
             document.body.appendChild(expandedItem);
             overlay.classList.add("active");
 
-            // Animation GSAP
-            const scaleW = (window.innerWidth * settings.expandedScale) / rect.width;
+            // Animation GSAP vers le centre
+            gsap.to(".item", { opacity: 0.1, duration: 0.3 }); // Fade out du fond
             
-            // Fade out grid
-            gsap.to(".item", { opacity: 0.1, duration: 0.5 });
-            
-            // Zoom Image
-            gsap.to(expandedItem, {
-                width: window.innerWidth * settings.expandedScale,
-                height: window.innerHeight * 0.8,
-                top: "50%", left: "50%",
-                duration: 0.8, ease: "hop"
-            });
+            // Calcul ratio pour garder l'aspect de l'image
+            const targetWidth = window.innerWidth * settings.expandedScale;
+            const targetHeight = window.innerHeight * settings.expandedScale;
 
-            // Titre Apparition
-            gsap.from(titleSplit.chars, {
-                y: 100, opacity: 0, stagger: 0.02, delay: 0.2, duration: 0.8, ease: "power3.out"
+            gsap.to(expandedItem, {
+                top: (window.innerHeight - targetHeight) / 2,
+                left: (window.innerWidth - targetWidth) / 2,
+                width: targetWidth,
+                height: targetHeight,
+                duration: 0.6,
+                ease: "hop"
             });
         }
 
         function closeExpanded() {
             if(!expandedItem) return;
-            
-            // Close animation
+
             overlay.classList.remove("active");
             gsap.to(".item", { opacity: 1, duration: 0.5 });
             
             const originalItem = document.getElementById(activeItemId);
             const rect = originalItem ? originalItem.getBoundingClientRect() : { top: window.innerHeight/2, left: window.innerWidth/2, width: 0, height: 0};
 
-            gsap.to(titleSplit.chars, { y: -100, opacity: 0, duration: 0.4 });
-
             gsap.to(expandedItem, {
-                width: rect.width, height: rect.height,
-                top: rect.top + rect.height/2,
-                left: rect.left + rect.width/2,
-                duration: 0.6, ease: "power3.inOut",
+                top: rect.top,
+                left: rect.left,
+                width: rect.width,
+                height: rect.height,
+                duration: 0.5,
+                ease: "power3.inOut",
                 onComplete: () => {
                     expandedItem.remove();
                     expandedItem = null;
@@ -309,7 +335,6 @@
         }
 
         // Lancement
-        updateVisibleItems();
         animate();
 
     </script>
