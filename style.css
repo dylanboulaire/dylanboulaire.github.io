@@ -1,16 +1,16 @@
-/* --- 1. VARIABLES & COULEURS (Vos codes exacts) --- */
+/* --- 1. VARIABLES & COULEURS --- */
 :root {
-    --bg-dark: #222222;       /* Fond sombre */
-    --text-white: #FFFFFF;    /* Texte principal */
-    --text-accent: #ECEAC4;   /* Couleur secondaire (Jaune pâle) */
-    --btn-color: #2E7186;     /* Couleur boutons/éléments (Bleu) */
+    --bg-dark: #222222;
+    --text-white: #FFFFFF;
+    --text-accent: #ECEAC4;
+    --btn-color: #2E7186;
 }
 
 /* --- 2. BASE --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Montserrat', sans-serif; /* Similaire à Gopher */
+    font-family: 'Montserrat', sans-serif;
     background-color: var(--bg-dark);
     color: var(--text-white);
     line-height: 1.6;
@@ -19,11 +19,11 @@ body {
 
 a { text-decoration: none; color: inherit; transition: 0.3s; }
 
-/* --- 3. VIDÉO D'ARRIÈRE-PLAN (Fixe) --- */
+/* --- 3. VIDÉO D'ARRIÈRE-PLAN --- */
 .video-background {
     position: fixed;
     top: 0; right: 0; bottom: 0; left: 0;
-    z-index: -100; /* Derrière tout le reste */
+    z-index: -100;
     width: 100%; height: 100%;
     overflow: hidden;
 }
@@ -37,19 +37,18 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
     object-fit: cover;
 }
 
-/* Calque noir léger pour lisibilité */
 .video-overlay {
     position: absolute; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(34, 34, 34, 0.4);
 }
 
-/* --- 4. HEADER (Menu Gauche - Logo Centre - Droite Icônes) --- */
+/* --- 4. HEADER --- */
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     padding: 20px 50px;
-    position: fixed; /* Le menu reste accroché en haut */
+    position: fixed;
     top: 0; left: 0; width: 100%;
     z-index: 1000;
     background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
@@ -63,22 +62,24 @@ header {
 }
 .nav-left a:hover { color: var(--text-accent); }
 
-/* Centre (Logo) */
-.logo-center { flex: 1; text-align: center; }
-.logo-text {
-    font-weight: 900; font-size: 1.5rem; letter-spacing: 3px;
-    border: 2px solid white; padding: 5px 12px; border-radius: 50%;
+/* Centre (Logo IMAGE) */
+.logo-center { flex: 1; text-align: center; display: flex; justify-content: center; }
+.logo-img {
+    height: 50px; /* Ajustez cette valeur si votre logo est trop grand/petit */
+    width: auto;
+    display: block;
+    transition: transform 0.3s ease;
 }
-.logo-center a:hover .logo-text { background: white; color: var(--bg-dark); }
+.logo-center a:hover .logo-img { transform: scale(1.05); }
 
 /* Droite (Icônes) */
 .nav-right { flex: 1; display: flex; justify-content: flex-end; gap: 20px; }
 .nav-right a { font-size: 1.2rem; }
 .nav-right a:hover { color: var(--btn-color); transform: translateY(-3px); }
 
-/* --- 5. HERO (Titre Accueil) --- */
+/* --- 5. HERO --- */
 .hero-content {
-    height: 100vh; /* Prend tout l'écran */
+    height: 100vh;
     display: flex; flex-direction: column; justify-content: center; align-items: center;
     text-align: center;
 }
@@ -94,7 +95,6 @@ header {
 
 /* --- 6. GALERIE --- */
 .gallery {
-    /* Fond sombre opaque pour cacher la vidéo quand on descend */
     background: var(--bg-dark); 
     position: relative; z-index: 1;
     display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -113,9 +113,11 @@ header {
 
 .overlay-text {
     position: absolute; bottom: 20px; left: 20px; pointer-events: none;
+    padding-right: 20px;
 }
 .overlay-text h3 {
     font-size: 1.5rem; margin-bottom: 5px; color: var(--text-accent); text-transform: uppercase;
+    line-height: 1.2;
 }
 .overlay-text p { font-style: italic; font-size: 0.9rem; }
 
@@ -129,5 +131,7 @@ footer {
 @media (max-width: 768px) {
     header { flex-direction: column; gap: 15px; padding: 20px; background: rgba(0,0,0,0.9); }
     .nav-left ul { gap: 15px; font-size: 0.75rem; justify-content: center; }
+    .logo-img { height: 40px; } /* Logo plus petit sur mobile */
     .hero-content h1 { font-size: 2.5rem; }
+    .gallery { padding: 50px 20px; grid-template-columns: 1fr; } /* 1 colonne sur mobile */
 }
