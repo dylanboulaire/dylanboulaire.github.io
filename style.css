@@ -182,21 +182,38 @@ footer {
     .bio-img-box img { width: 250px; height: 250px; }
 }
 
-/* --- NOUVEAU STYLE CONTACT (Blanc & Arrondi) --- */
+/* --- STYLE PAGE CONTACT (Complet et propre) --- */
 
-/* Mise à jour du conteneur pour aligner à gauche */
+/* Titre et Sous-titre de la page contact */
+.contact-title {
+    color: var(--text-accent);
+    margin-bottom: 30px;
+    text-transform: uppercase;
+    font-size: 1.5rem;
+}
+
+.contact-subtitle {
+    margin-bottom: 40px;
+    font-style: italic;
+    color: #ccc;
+}
+
+/* Lien actif dans le menu (couleur jaune) */
+.active-link {
+    color: var(--text-accent) !important;
+}
+
+/* Conteneur principal */
 .contact-container {
     text-align: left; 
     max-width: 600px;
     margin: 0 auto;
 }
 
-/* Espacement des blocs */
 .contact-form .form-group {
     margin-bottom: 20px;
 }
 
-/* Titres des champs (Nom, Prénom...) en jaune */
 .contact-form label {
     display: block;
     margin-bottom: 8px;
@@ -205,44 +222,42 @@ footer {
     font-size: 0.9rem;
 }
 
-/* Champs de saisie en BLANC */
+/* Champs Blancs */
 .contact-form input, .contact-form textarea {
     width: 100%;
     padding: 15px;
-    background-color: #f9f9f9; /* Fond blanc */
+    background-color: #f9f9f9;
     border: none;
-    color: #333; /* Texte noir */
+    color: #333;
     font-family: 'Montserrat', sans-serif;
     font-size: 0.9rem;
     border-radius: 4px;
-    margin-bottom: 0; /* On gère la marge via .form-group */
+    margin-bottom: 0;
 }
 
-/* Texte "placeholder" (ex: Votre nom) en gris clair */
 .contact-form input::placeholder, .contact-form textarea::placeholder {
     color: #999;
     font-style: italic;
 }
 
-/* Effet quand on clique dans le champ */
 .contact-form input:focus, .contact-form textarea:focus {
     outline: 2px solid var(--btn-color);
     background-color: #fff;
 }
 
-/* Bouton Envoyer arrondi */
+/* Bouton Arrondi */
 .contact-form button {
     background-color: var(--btn-color);
     color: white;
     padding: 12px 30px;
     border: none;
-    border-radius: 50px; /* Bords très arrondis */
+    border-radius: 50px;
     font-weight: bold;
     cursor: pointer;
     font-size: 1rem;
     margin-top: 10px;
     transition: background 0.3s;
-    text-transform: none; /* Pas de majuscules forcées */
+    text-transform: none;
 }
 
 .contact-form button:hover {
@@ -250,7 +265,7 @@ footer {
     color: var(--bg-dark);
 }
 
-/* Icônes en bas de page contact */
+/* Icônes du bas */
 .contact-footer-icons {
     margin-top: 60px;
     text-align: center;
