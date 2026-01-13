@@ -411,3 +411,43 @@ footer {
 /* Titres de section plus discrets */
 .section-title h2 { font-size: 1.5rem; margin-bottom: 5px; }
 .project-section { margin-bottom: 60px; } /* Moins d'espace entre les sections */
+
+/* --- CORRECTIFS V3 (Espacements & Bugs) --- */
+
+/* 1. Espacement du texte "Défi" */
+.project-intro-compact {
+    margin-top: 40px; /* Plus d'espace avec la ligne du dessus */
+    padding-top: 20px; /* Un peu d'air interne */
+}
+
+/* 2. Réparation du Carrousel (Drag & Drop) */
+.horizontal-scroller img {
+    /* INDISPENSABLE : Empêche le navigateur de croire qu'on veut "enregistrer" l'image */
+    pointer-events: none; 
+    user-select: none;
+}
+.horizontal-scroller {
+    cursor: grab;
+    overflow-x: auto; /* Scrollbar cachée mais fonctionnelle */
+    scrollbar-width: none; /* Firefox */
+}
+.horizontal-scroller::-webkit-scrollbar {
+    display: none; /* Chrome/Safari : On cache la barre moche */
+}
+
+/* 3. Sécurité Images Géantes (Réseaux Sociaux) */
+.project-section img, .media-container img {
+    max-width: 100%; /* Force l'image à ne jamais dépasser son conteneur */
+    height: auto;
+    display: block;
+}
+
+/* Grille flexible (Smart Grid) pour les réseaux sociaux */
+/* Elle remplace les grid-2-col ou 3-col fixes */
+.smart-grid {
+    display: grid;
+    /* Crée autant de colonnes que possible (min 300px de large) */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+    gap: 20px;
+    width: 100%;
+}
