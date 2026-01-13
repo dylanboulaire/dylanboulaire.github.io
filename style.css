@@ -451,3 +451,100 @@ footer {
     gap: 20px;
     width: 100%;
 }
+
+/* --- STYLE GALERIE INFINIE (CodePen Adapté) --- */
+
+/* Conteneur principal qui prend tout l'écran */
+.gallery-container {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    cursor: grab;
+    background-color: var(--bg-dark);
+}
+
+.gallery-container.active {
+    cursor: grabbing;
+}
+
+/* Le Canvas où les images bougent */
+.canvas {
+    position: absolute;
+    will-change: transform;
+}
+
+/* Style d'une image individuelle */
+.item {
+    position: absolute;
+    overflow: hidden;
+    background-color: #000;
+    cursor: pointer;
+    border-radius: 4px; /* Un peu d'arrondi */
+}
+
+.item-image-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.item img {
+    width: 100%; height: 100%; object-fit: cover;
+    pointer-events: none; /* Important pour le drag */
+    transition: transform 0.3s ease;
+}
+
+.item:hover img { transform: scale(1.05); }
+
+/* Légendes sur les images */
+.item-caption {
+    position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; z-index: 2;
+    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+}
+
+.item-name {
+    font-family: 'Gopher', sans-serif; font-weight: 700; color: #fff;
+    font-size: 14px; text-transform: uppercase;
+}
+
+.item-number {
+    font-family: 'Montserrat', sans-serif; color: var(--text-accent); font-size: 10px;
+}
+
+/* EFFET D'EXPANSION (Quand on clique) */
+.expanded-item {
+    position: fixed; z-index: 10001; /* Au dessus de tout */
+    top: 50%; left: 50%; transform: translate(-50%, -50%);
+    background-color: #000; overflow: hidden; cursor: zoom-out;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.expanded-item img {
+    width: 100%; height: 100%; object-fit: contain; pointer-events: none;
+}
+
+/* Overlay noir arrière-plan */
+.gallery-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0,0,0,0.95);
+    pointer-events: none; opacity: 0; z-index: 9999;
+    transition: opacity 0.5s;
+}
+
+.gallery-overlay.active { pointer-events: auto; opacity: 1; }
+
+/* Titre du projet au centre (Animation) */
+.project-title-overlay {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 100%; text-align: center; pointer-events: none; z-index: 10002;
+}
+.project-title-overlay p {
+    font-family: 'Gopher', sans-serif; font-size: 3rem; color: var(--text-accent);
+    text-transform: uppercase; overflow: hidden; font-weight: 700;
+}
+
+/* Clone pour l'animation fluide du texte */
+.caption-clone { position: fixed; z-index: 10002; color: white; pointer-events: none;}
+
