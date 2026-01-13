@@ -5,56 +5,72 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dylan Boulaire - Portfolio</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+    <div class="video-background">
+        <video autoplay muted loop playsinline>
+            <source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4">
+        </video>
+        <div class="video-overlay"></div>
+    </div>
+
     <header>
-        <div class="logo"><a href="index.html">BOULAIRE Dylan</a></div>
-        <nav>
+        <nav class="nav-left">
             <ul>
-                <li><a href="index.html" class="active">Réalisations</a></li>
+                <li><a href="#realisations">Réalisations</a></li>
                 <li><a href="bio.html">Bio</a></li>
                 <li><a href="contact.html">Contact</a></li>
+                <li><a href="#galerie">Galerie</a></li>
             </ul>
         </nav>
+
+        <div class="logo-center">
+            <a href="index.html">
+                <span class="logo-text">DB</span> 
+            </a>
+        </div>
+
+        <div class="nav-right">
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://www.behance.net" target="_blank" title="Behance"><i class="fab fa-behance"></i></a>
+            <a href="mailto:votre-email@gmail.com" title="Contact"><i class="fas fa-envelope"></i></a>
+            <a href="assets/mon-cv.pdf" target="_blank" title="Mon CV"><i class="fas fa-file-user"></i></a>
+        </div>
     </header>
 
-    <section class="hero-video-container">
-        <video autoplay muted loop playsinline class="hero-video">
-            <source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4">
-            Votre navigateur ne supporte pas la vidéo.
-        </video>
-        <div class="hero-content">
+    <main>
+        <section class="hero-content">
             <h1>DYLAN BOULAIRE</h1>
-            <h2>ETUDIANT IUT LANNION</h2>
-        </div>
-    </section>
-
-    <section class="gallery">
-        <a href="projet-detail.html" class="project-card">
-            <img src="assets/projet1.jpg" alt="La Photonique">
-            <div class="overlay">
-                <h3>La Photonique à Lannion</h3>
-                <p>Documentaire/Reportage</p>
-            </div>
-        </a>
-
-        <a href="projet-detail.html" class="project-card">
-            <img src="assets/projet2.jpg" alt="Animations">
-            <div class="overlay">
-                <h3>Animations</h3>
-                <p>Projets personnels</p>
-            </div>
-        </a>
-        
+            <div class="badge">ETUDIANT IUT LANNION</div>
         </section>
+
+        <section id="realisations" class="gallery">
+            
+            <a href="projet-photonique.html" class="project-card">
+                <img src="assets/projet1.jpg" alt="La Photonique">
+                <div class="overlay-text">
+                    <h3>La Photonique</h3>
+                    <p>Reportage / Documentaire</p>
+                </div>
+            </a>
+
+            <a href="projet-kernae.html" class="project-card">
+                <img src="assets/projet2.jpg" alt="Kernae">
+                <div class="overlay-text">
+                    <h3>Kernae</h3>
+                    <p>Stage / Communication</p>
+                </div>
+            </a>
+
+            </section>
+    </main>
 
     <footer>
         <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
     </footer>
 
 </body>
-
 </html>
-
