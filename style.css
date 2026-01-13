@@ -139,11 +139,12 @@ footer {
 
 /* --- MOBILE --- */
 @media (max-width: 768px) {
-    header { flex-direction: column; gap: 15px; padding: 20px; background: rgba(0,0,0,0.9); }
-    .nav-left ul { gap: 15px; font-size: 0.75rem; justify-content: center; }
-    .logo-img { height: 40px; }
+    /* ... vos autres règles header, nav-left ... */
+
+    /* On remet le héro au centre sur mobile */
+    .hero-content { align-items: center; text-align: center; padding-right: 0; }
     .hero-content h1 { font-size: 2.5rem; }
-    .gallery { padding: 50px 20px; grid-template-columns: 1fr; }
+    /* ... */
 }
 
 /* --- AJOUT POUR LES PAGES INTERNES (Bio, Contact, Galerie) --- */
@@ -289,4 +290,5 @@ footer {
 .contact-footer-icons a:hover {
     color: var(--text-accent);
 }
+
 
