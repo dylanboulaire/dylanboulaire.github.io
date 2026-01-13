@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact - Dylan Boulaire</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <nav class="nav-left">
+            <ul>
+                <li><a href="index.html#realisations">Réalisations</a></li>
+                <li><a href="bio.html">Bio</a></li>
+                <li><a href="contact.html" style="color: var(--text-accent);">Contact</a></li>
+                <li><a href="galerie.html">Galerie</a></li>
+            </ul>
+        </nav>
+        <div class="logo-center">
+            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
+        </div>
+        <div class="nav-right">
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="https://www.behance.net" target="_blank"><i class="fab fa-behance"></i></a>
+            <a href="mailto:votre-email@gmail.com"><i class="fas fa-envelope"></i></a>
+            <a href="assets/mon-cv.pdf" target="_blank"><i class="fas fa-file-user"></i></a>
+        </div>
+    </header>
+
+    <main class="page-padding">
+        <div class="contact-container">
+            <h1 style="color: var(--text-accent); margin-bottom: 30px; text-transform: uppercase;">Me contacter</h1>
+            <p style="margin-bottom: 40px;">Un projet ? Une collaboration ? N'hésitez pas à m'envoyer un message.</p>
+            
+            <form action="mailto:votre-email@gmail.com" method="post" enctype="text/plain" class="contact-form">
+                <input type="text" name="nom" placeholder="Votre Nom" required>
+                <input type="email" name="email" placeholder="Votre Email" required>
+                <textarea name="message" rows="6" placeholder="Votre Message" required></textarea>
+                <button type="submit">Envoyer le message</button>
+            </form>
+            
+            <div style="margin-top: 50px;">
+                <p>Ou retrouvez-moi sur :</p>
+                <div style="font-size: 2rem; margin-top: 20px;">
+                    <a href="https://www.linkedin.com/in/dylan-boulaire/" style="margin: 0 10px;"><i class="fab fa-linkedin"></i></a>
+                    <a href="mailto:votre-email@gmail.com" style="margin: 0 10px;"><i class="fas fa-envelope"></i></a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
+    </footer>
+
+</body>
+</html>
