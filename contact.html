@@ -32,22 +32,38 @@
 
     <main class="page-padding">
         <div class="contact-container">
-            <h1 style="color: var(--text-accent); margin-bottom: 30px; text-transform: uppercase;">Me contacter</h1>
-            <p style="margin-bottom: 40px;">Un projet ? Une collaboration ? N'hésitez pas à m'envoyer un message.</p>
+            <h1 style="color: var(--text-accent); margin-bottom: 30px; text-transform: uppercase; font-size: 1.5rem;">Me contacter</h1>
+            <p style="margin-bottom: 40px; font-style: italic;">Un projet ? Une collaboration ? N'hésitez pas à m'envoyer un message.</p>
             
             <form action="mailto:votre-email@gmail.com" method="post" enctype="text/plain" class="contact-form">
-                <input type="text" name="nom" placeholder="Votre Nom" required>
-                <input type="email" name="email" placeholder="Votre Email" required>
-                <textarea name="message" rows="6" placeholder="Votre Message" required></textarea>
-                <button type="submit">Envoyer le message</button>
-            </form>
-            
-            <div style="margin-top: 50px;">
-                <p>Ou retrouvez-moi sur :</p>
-                <div style="font-size: 2rem; margin-top: 20px;">
-                    <a href="https://www.linkedin.com/in/dylan-boulaire/" style="margin: 0 10px;"><i class="fab fa-linkedin"></i></a>
-                    <a href="mailto:votre-email@gmail.com" style="margin: 0 10px;"><i class="fas fa-envelope"></i></a>
+                
+                <div class="form-group">
+                    <label>Nom</label>
+                    <input type="text" name="nom" placeholder="Votre nom" required>
                 </div>
+
+                <div class="form-group">
+                    <label>Prénom</label>
+                    <input type="text" name="prenom" placeholder="Votre prénom">
+                </div>
+                
+                <div class="form-group">
+                    <label>Adresse Email *</label>
+                    <input type="email" name="email" placeholder="Votre adresse mail" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Message *</label>
+                    <textarea name="message" rows="6" placeholder="Votre message" required></textarea>
+                </div>
+                
+                <button type="submit">Envoyer</button>
+            </form>
+
+            <div class="contact-footer-icons">
+                <a href="https://www.behance.net" target="_blank">Bē</a>
+                <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank">in</a>
+                <a href="mailto:votre-email@gmail.com"><i class="fas fa-envelope"></i></a>
             </div>
         </div>
     </main>
