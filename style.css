@@ -44,43 +44,27 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
 
 /* --- 4. HEADER --- */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 50px;
-    position: fixed;
-    top: 0; left: 0; width: 100%;
-    z-index: 1000;
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 20px 50px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
     background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
 }
 
-/* Gauche */
 .nav-left { flex: 1; }
 .nav-left ul { display: flex; gap: 25px; list-style: none; }
-.nav-left a {
-    font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
-}
+.nav-left a { font-size: 0.85rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
 .nav-left a:hover { color: var(--text-accent); }
 
-/* Centre (Logo IMAGE) */
 .logo-center { flex: 1; text-align: center; display: flex; justify-content: center; }
-.logo-img {
-    height: 50px; /* Ajustez cette valeur si votre logo est trop grand/petit */
-    width: auto;
-    display: block;
-    transition: transform 0.3s ease;
-}
+.logo-img { height: 50px; width: auto; display: block; transition: transform 0.3s ease; }
 .logo-center a:hover .logo-img { transform: scale(1.05); }
 
-/* Droite (Icônes) */
 .nav-right { flex: 1; display: flex; justify-content: flex-end; gap: 20px; }
 .nav-right a { font-size: 1.2rem; }
 .nav-right a:hover { color: var(--btn-color); transform: translateY(-3px); }
 
 /* --- 5. HERO --- */
 .hero-content {
-    height: 100vh;
-    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center;
     text-align: center;
 }
 .hero-content h1 {
@@ -93,7 +77,7 @@ header {
     text-transform: uppercase;
 }
 
-/* --- 6. GALERIE --- */
+/* --- 6. GALERIE (MODIFICATIONS HOVER ICI) --- */
 .gallery {
     background: var(--bg-dark); 
     position: relative; z-index: 1;
@@ -105,16 +89,34 @@ header {
     position: relative; height: 350px; overflow: hidden; display: block;
     background: #000; border-radius: 8px;
 }
+
 .project-card img {
     width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.6s ease; opacity: 0.9;
+    transition: transform 0.6s ease, opacity 0.3s ease; /* Ajout transition opacité */
+    opacity: 0.9;
 }
-.project-card:hover img { transform: scale(1.05); opacity: 0.5; }
 
+/* L'image s'assombrit au survol (opacité baisse, laissant voir le fond noir) */
+.project-card:hover img {
+    transform: scale(1.05);
+    opacity: 0.4;
+}
+
+/* Le texte est invisible par défaut */
 .overlay-text {
     position: absolute; bottom: 20px; left: 20px; pointer-events: none;
     padding-right: 20px;
+    opacity: 0; /* Invisible */
+    transition: opacity 0.3s ease, transform 0.3s ease; /* Transition douce */
+    transform: translateY(20px); /* Légèrement décalé vers le bas */
 }
+
+/* Le texte apparaît et remonte légèrement au survol */
+.project-card:hover .overlay-text {
+    opacity: 1;
+    transform: translateY(0);
+}
+
 .overlay-text h3 {
     font-size: 1.5rem; margin-bottom: 5px; color: var(--text-accent); text-transform: uppercase;
     line-height: 1.2;
@@ -131,7 +133,7 @@ footer {
 @media (max-width: 768px) {
     header { flex-direction: column; gap: 15px; padding: 20px; background: rgba(0,0,0,0.9); }
     .nav-left ul { gap: 15px; font-size: 0.75rem; justify-content: center; }
-    .logo-img { height: 40px; } /* Logo plus petit sur mobile */
+    .logo-img { height: 40px; }
     .hero-content h1 { font-size: 2.5rem; }
-    .gallery { padding: 50px 20px; grid-template-columns: 1fr; } /* 1 colonne sur mobile */
+    .gallery { padding: 50px 20px; grid-template-columns: 1fr; }
 }
