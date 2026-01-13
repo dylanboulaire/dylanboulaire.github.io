@@ -8,94 +8,10 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
     <script src="https://unpkg.com/split-type"></script>
-
-    <style>
-        body {
-            background-color: #101010;
-            margin: 0;
-            overflow: hidden; /* Important pour le drag */
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-        }
-
-        /* NAVIGATION (Gardée identique) */
-        header {
-            position: fixed; width: 100%; top: 0; left: 0; z-index: 100;
-            padding: 20px 40px; box-sizing: border-box;
-            display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
-            pointer-events: none; /* Laisse passer le clic en dessous sauf sur les liens */
-        }
-        header a, header i { pointer-events: auto; color: white; text-decoration: none; }
-        .nav-left ul { list-style: none; display: flex; gap: 30px; padding: 0; margin: 0; }
-        .active-link { font-weight: bold; border-bottom: 2px solid white; }
-        .logo-img { height: 40px; }
-        .nav-right { display: flex; gap: 20px; font-size: 1.2rem; }
-
-        /* CONTENEUR PRINCIPAL */
-        .gallery-wrapper {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            cursor: grab;
-        }
-        .gallery-wrapper:active { cursor: grabbing; }
-
-        /* LE CANEVAS D'IMAGES */
-        .gallery-canvas {
-            position: absolute;
-            top: 0; left: 0;
-            /* La taille sera définie par le JS */
-        }
-
-        /* L'ITEM INDIVIDUEL */
-        .gallery-item {
-            position: absolute;
-            background-color: transparent; /* Pas de fond gris moche */
-            overflow: visible; /* Laisse l'image respirer */
-            transition: transform 0.3s ease, opacity 0.3s ease;
-        }
-
-        /* L'IMAGE */
-        .gallery-item img {
-            width: 100%;
-            height: 100%;
-            display: block;
-            object-fit: contain; /* CRUCIAL: Affiche TOUTE l'image sans couper */
-            object-position: center;
-            /* Ombre légère pour détacher du fond */
-            filter: drop-shadow(0 10px 20px rgba(0,0,0,0.5));
-            pointer-events: none; /* Evite le drag natif de l'image */
-        }
-
-        /* HOVER EFFECT - SIMPLE ET PROPRE */
-        .gallery-item:hover {
-            transform: scale(1.03); /* Zoom léger global */
-            z-index: 10;
-        }
-
-        /* TITRE FLOTTANT AU CENTRE (Style moderne) */
-        .floating-title {
-            position: fixed;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-size: 5vw;
-            font-weight: 800;
-            text-transform: uppercase;
-            pointer-events: none;
-            mix-blend-mode: exclusion; /* Effet de style sur les images */
-            opacity: 0;
-            transition: opacity 0.2s;
-            z-index: 50;
-            white-space: nowrap;
-        }
-
-    </style>
 </head>
-<body>
-
-    <header>
+<body style="overflow: hidden;"> <header>
         <nav class="nav-left">
             <ul>
                 <li><a href="index.html#realisations">Réalisations</a></li>
@@ -105,172 +21,295 @@
             </ul>
         </nav>
         <div class="logo-center">
-            <a href="index.html"><img src="assets/logo.png" alt="DB" class="logo-img"></a>
+            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
         </div>
         <div class="nav-right">
-            <a href="#">in</a>
-            <a href="#">@</a>
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="mailto:votre-email@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
     </header>
 
-    <div class="floating-title" id="floatingTitle"></div>
+    <div class="gallery-container">
+        <div class="canvas" id="canvas"></div>
+        <div class="gallery-overlay" id="overlay"></div>
+    </div>
 
-    <div class="gallery-wrapper" id="wrapper">
-        <div class="gallery-canvas" id="canvas"></div>
+    <div class="project-title-overlay">
+        <p></p>
     </div>
 
     <script>
-        // --- 1. CONFIGURATION ---
-        const images = [
-            { src: "assets/galerie/galerie1.png", title: "Vision" },
-            { src: "assets/galerie/galerie2.jpg", title: "Game Day" },
-            { src: "assets/galerie/galerie3.jpg", title: "Shadow" },
-            { src: "assets/galerie/galerie4.png", title: "Thanks" },
-            { src: "assets/galerie/galerie5.png", title: "Abysse" },
-            { src: "assets/galerie/galerie6.png", title: "Mécénat" },
-            { src: "assets/galerie/galerie7.jpg", title: "Portrait" },
-            { src: "assets/galerie/galerie8.png", title: "Infographie" },
-            { src: "assets/galerie/galerie9.jpg", title: "Medical" },
-            { src: "assets/galerie/galerie10.jpg", title: "Perspective" }
+        // 1. CONFIGURATION DE VOS IMAGES
+        // Vérifiez bien les extensions (.jpg ou .png) selon vos fichiers réels !
+        const imageUrls = [
+            "assets/galerie/galerie1.png",
+            "assets/galerie/galerie2.jpg",
+            "assets/galerie/galerie3.jpg",
+            "assets/galerie/galerie4.png",
+            "assets/galerie/galerie5.png",
+            "assets/galerie/galerie6.png",
+            "assets/galerie/galerie7.jpg",
+            "assets/galerie/galerie8.png",
+            "assets/galerie/galerie9.jpg",
+            "assets/galerie/galerie10.jpg"
         ];
 
-        // Paramètres de la grille "aléatoire"
-        const config = {
-            colCount: 4,        // Nombre de colonnes
-            colWidth: 350,      // Largeur d'une colonne
-            gap: 40,            // Espace entre les images
-            duplicateCount: 3   // Répéter les images pour avoir de la matière à scroll
+        // Noms des photos (Optionnel, vous pouvez changer les textes)
+        const itemsNames = [
+            "Vision", "Nature", "Portrait", "Urban", "Abstract", 
+            "Light", "Shadow", "Moment", "Perspective", "Detail"
+        ];
+
+        // 2. REGLAGES FIGÉS (Plus de menu tweakpane)
+        const settings = {
+            baseWidth: 350,      // Largeur de base des images
+            smallHeight: 300,    // Hauteur petite image
+            largeHeight: 450,    // Hauteur grande image
+            itemGap: 40,         // Espace entre images
+            hoverScale: 1.05,
+            expandedScale: 0.8,  // Taille quand on clique (80% de l'écran)
+            dragEase: 0.08,      // Fluidité du drag
+            momentumFactor: 150, // Inertie quand on lâche
+            bufferZone: 2        // Zone de préchargement
         };
 
-        // --- 2. GENERATION MASONRY (Le coeur du changement) ---
-        const canvas = document.getElementById('canvas');
-        const wrapper = document.getElementById('wrapper');
-        const titleEl = document.getElementById('floatingTitle');
+        // --- MOTEUR DE LA GALERIE (NE PAS TOUCHER SOUS CETTE LIGNE) ---
+        gsap.registerPlugin(CustomEase);
+        CustomEase.create("hop", "0.9, 0, 0.1, 1");
+
+        const container = document.querySelector(".gallery-container");
+        const canvas = document.getElementById("canvas");
+        const overlay = document.getElementById("overlay");
+        const projectTitleElement = document.querySelector(".project-title-overlay p");
+
+        let itemSizes = [
+            { width: settings.baseWidth, height: settings.smallHeight },
+            { width: settings.baseWidth, height: settings.largeHeight }
+        ];
         
-        let allItems = [];
-        
-        // On crée une liste étendue d'images (pour simuler beaucoup de contenu)
-        let dataset = [];
-        for(let i=0; i<config.duplicateCount; i++) {
-            dataset = dataset.concat(images);
-        }
+        let cellWidth = settings.baseWidth + settings.itemGap;
+        let cellHeight = Math.max(settings.smallHeight, settings.largeHeight) + settings.itemGap;
+        let columns = 4;
+        const itemCount = imageUrls.length;
 
-        // Tableau pour suivre la hauteur actuelle de chaque colonne (C'est ça qui crée le décalage)
-        let colHeights = new Array(config.colCount).fill(0);
-
-        dataset.forEach((data, index) => {
-            // 1. Trouver la colonne la plus courte (pour combler les trous)
-            const minH = Math.min(...colHeights);
-            const colIndex = colHeights.indexOf(minH);
-
-            // 2. Définir une hauteur aléatoire pour cet item
-            // Cela force l'aspect "Briques inégales"
-            // On alterne entre format Carré, Portrait et Paysage simulé par le conteneur
-            const randomHeight = Math.floor(Math.random() * (550 - 250 + 1) + 250);
-
-            // 3. Calculer position X et Y
-            const x = colIndex * (config.colWidth + config.gap);
-            const y = minH;
-
-            // 4. Créer le DOM
-            const el = document.createElement('div');
-            el.className = 'gallery-item';
-            el.style.width = `${config.colWidth}px`;
-            el.style.height = `${randomHeight}px`; // Hauteur variable !
-            el.style.transform = `translate(${x}px, ${y}px)`;
-            
-            // Stockage des positions pour l'animation
-            el.dataset.x = x;
-            el.dataset.y = y;
-
-            const img = document.createElement('img');
-            img.src = data.src;
-            // IMPORTANT: L'image s'adapte sans être coupée grace au CSS object-fit: contain
-            
-            // Event Listeners Hover
-            el.addEventListener('mouseenter', () => {
-                titleEl.textContent = data.title;
-                titleEl.style.opacity = 1;
-                gsap.to(el, { scale: 1.05, duration: 0.3 });
-                // On baisse l'opacité des autres
-                gsap.to('.gallery-item', { opacity: 0.3, duration: 0.3, overwrite: true });
-                gsap.to(el, { opacity: 1, duration: 0.3, overwrite: true });
-            });
-
-            el.addEventListener('mouseleave', () => {
-                titleEl.style.opacity = 0;
-                gsap.to(el, { scale: 1, duration: 0.3 });
-                gsap.to('.gallery-item', { opacity: 1, duration: 0.3 });
-            });
-
-            el.appendChild(img);
-            canvas.appendChild(el);
-
-            // 5. Mettre à jour la hauteur de la colonne + l'écart
-            colHeights[colIndex] += randomHeight + config.gap;
-        });
-
-        // Centrer le tout au démarrage
-        const totalWidth = (config.colCount * config.colWidth) + ((config.colCount - 1) * config.gap);
-        const maxHeight = Math.max(...colHeights);
-        
-        // On place le canvas au centre de l'écran initialement
-        let currentX = (window.innerWidth - totalWidth) / 2;
-        let currentY = (window.innerHeight - maxHeight) / 2;
-        
-        let targetX = currentX;
-        let targetY = currentY;
-
-        // --- 3. LOGIQUE DE DRAG (Inertie fluide) ---
         let isDragging = false;
         let startX, startY;
-        let velocityX = 0, velocityY = 0;
+        let targetX = 0, targetY = 0;
+        let currentX = 0, currentY = 0;
+        let dragVelocityX = 0, dragVelocityY = 0;
+        let lastDragTime = 0;
+        let visibleItems = new Set();
+        let lastUpdateTime = 0;
+        let lastX = 0, lastY = 0;
+        let isExpanded = false;
+        let activeItemId = null;
+        let expandedItem = null;
+        let titleSplit = null;
 
-        wrapper.addEventListener('mousedown', (e) => {
-            isDragging = true;
-            startX = e.clientX;
-            startY = e.clientY;
-            velocityX = 0; velocityY = 0;
-            e.preventDefault(); // Curseur main
-        });
+        // Fonction pour créer une carte image
+        function createItem(col, row) {
+            const itemNum = Math.abs((row * columns + col) % itemCount);
+            const sizeIndex = Math.abs((row * columns + col) % itemSizes.length);
+            const size = itemSizes[sizeIndex];
+            const xPos = col * cellWidth;
+            const yPos = row * cellHeight;
+            const itemId = `${col},${row}`;
 
-        window.addEventListener('mouseup', () => { isDragging = false; });
-
-        window.addEventListener('mousemove', (e) => {
-            if(!isDragging) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
+            const item = document.createElement("div");
+            item.className = "item";
+            item.id = itemId;
+            item.style.width = `${size.width}px`;
+            item.style.height = `${size.height}px`;
+            item.style.left = `${xPos}px`;
+            item.style.top = `${yPos}px`;
             
-            targetX += dx;
-            targetY += dy;
+            // Stockage des données pour l'animation
+            item.dataset.imgSrc = imageUrls[itemNum];
+            item.dataset.title = itemsNames[itemNum] || "Projet";
+            item.dataset.width = size.width;
+            item.dataset.height = size.height;
+
+            const imgContainer = document.createElement("div");
+            imgContainer.className = "item-image-container";
             
-            velocityX = dx;
-            velocityY = dy;
+            const img = document.createElement("img");
+            img.src = imageUrls[itemNum];
+            imgContainer.appendChild(img);
+            item.appendChild(imgContainer);
 
-            startX = e.clientX;
-            startY = e.clientY;
-        });
+            // Légende
+            const caption = document.createElement("div");
+            caption.className = "item-caption";
+            caption.innerHTML = `
+                <div class="item-name">${itemsNames[itemNum] || "Projet"}</div>
+                <div class="item-number">#${(itemNum + 1).toString().padStart(2, '0')}</div>
+            `;
+            item.appendChild(caption);
 
-        // Boucle d'animation
-        function animate() {
-            // Ajout de l'inertie quand on relâche (momentum)
-            if(!isDragging) {
-                targetX += velocityX * 0.05;
-                targetY += velocityY * 0.05;
-                velocityX *= 0.95; // Friction
-                velocityY *= 0.95;
+            item.addEventListener("click", () => {
+                if(Math.abs(dragVelocityX) < 0.5 && Math.abs(dragVelocityY) < 0.5) {
+                    expandItem(item);
+                }
+            });
+
+            return item;
+        }
+
+        function updateVisibleItems() {
+            const buffer = settings.bufferZone;
+            const viewW = window.innerWidth * (1 + buffer);
+            const viewH = window.innerHeight * (1 + buffer);
+            
+            const startCol = Math.floor((-currentX - viewW/2) / cellWidth);
+            const endCol = Math.ceil((-currentX + viewW*1.5) / cellWidth);
+            const startRow = Math.floor((-currentY - viewH/2) / cellHeight);
+            const endRow = Math.ceil((-currentY + viewH*1.5) / cellHeight);
+
+            const currentIds = new Set();
+
+            for(let r = startRow; r <= endRow; r++) {
+                for(let c = startCol; c <= endCol; c++) {
+                    const id = `${c},${r}`;
+                    currentIds.add(id);
+                    
+                    if(!visibleItems.has(id)) {
+                        const item = createItem(c, r);
+                        canvas.appendChild(item);
+                        visibleItems.add(id);
+                    }
+                }
             }
 
-            // Interpolation fluide (Lerp)
-            currentX += (targetX - currentX) * 0.08;
-            currentY += (targetY - currentY) * 0.08;
+            // Nettoyage
+            visibleItems.forEach(id => {
+                if(!currentIds.has(id) && id !== activeItemId) {
+                    const el = document.getElementById(id);
+                    if(el) el.remove();
+                    visibleItems.delete(id);
+                }
+            });
+        }
 
-            // Application
-            canvas.style.transform = `translate(${currentX}px, ${currentY}px)`;
-
+        // Animation Loop
+        function animate() {
+            if(!isExpanded) {
+                currentX += (targetX - currentX) * settings.dragEase;
+                currentY += (targetY - currentY) * settings.dragEase;
+                canvas.style.transform = `translate(${currentX}px, ${currentY}px)`;
+                
+                updateVisibleItems();
+            }
             requestAnimationFrame(animate);
         }
 
+        // Gestion du Drag
+        container.addEventListener("mousedown", e => {
+            if(isExpanded) return;
+            isDragging = true;
+            container.classList.add("active");
+            startX = e.clientX;
+            startY = e.clientY;
+            dragVelocityX = 0; dragVelocityY = 0;
+        });
+
+        window.addEventListener("mousemove", e => {
+            if(!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            targetX += dx;
+            targetY += dy;
+            
+            dragVelocityX = dx;
+            dragVelocityY = dy;
+            
+            startX = e.clientX;
+            startY = e.clientY;
+        });
+
+        window.addEventListener("mouseup", () => {
+            isDragging = false;
+            container.classList.remove("active");
+            // Momentum (Inertie)
+            targetX += dragVelocityX * (settings.momentumFactor / 10);
+            targetY += dragVelocityY * (settings.momentumFactor / 10);
+        });
+
+        // --- LOGIQUE D'EXPANSION (ZOOM) ---
+        function expandItem(item) {
+            if(isExpanded) return;
+            isExpanded = true;
+            activeItemId = item.id;
+            
+            // Titre animation
+            if(titleSplit) titleSplit.revert();
+            projectTitleElement.textContent = item.dataset.title;
+            titleSplit = new SplitType(projectTitleElement, { types: "words, chars" });
+            
+            // Clone pour agrandissement
+            const rect = item.getBoundingClientRect();
+            expandedItem = document.createElement("div");
+            expandedItem.className = "expanded-item";
+            expandedItem.style.width = rect.width + "px";
+            expandedItem.style.height = rect.height + "px";
+            expandedItem.style.top = (rect.top + rect.height/2) + "px";
+            expandedItem.style.left = (rect.left + rect.width/2) + "px";
+            
+            const img = document.createElement("img");
+            img.src = item.dataset.imgSrc;
+            expandedItem.appendChild(img);
+            
+            expandedItem.addEventListener("click", closeExpanded);
+            document.body.appendChild(expandedItem);
+            overlay.classList.add("active");
+
+            // Animation GSAP
+            const scaleW = (window.innerWidth * settings.expandedScale) / rect.width;
+            
+            // Fade out grid
+            gsap.to(".item", { opacity: 0.1, duration: 0.5 });
+            
+            // Zoom Image
+            gsap.to(expandedItem, {
+                width: window.innerWidth * settings.expandedScale,
+                height: window.innerHeight * 0.8,
+                top: "50%", left: "50%",
+                duration: 0.8, ease: "hop"
+            });
+
+            // Titre Apparition
+            gsap.from(titleSplit.chars, {
+                y: 100, opacity: 0, stagger: 0.02, delay: 0.2, duration: 0.8, ease: "power3.out"
+            });
+        }
+
+        function closeExpanded() {
+            if(!expandedItem) return;
+            
+            // Close animation
+            overlay.classList.remove("active");
+            gsap.to(".item", { opacity: 1, duration: 0.5 });
+            
+            const originalItem = document.getElementById(activeItemId);
+            const rect = originalItem ? originalItem.getBoundingClientRect() : { top: window.innerHeight/2, left: window.innerWidth/2, width: 0, height: 0};
+
+            gsap.to(titleSplit.chars, { y: -100, opacity: 0, duration: 0.4 });
+
+            gsap.to(expandedItem, {
+                width: rect.width, height: rect.height,
+                top: rect.top + rect.height/2,
+                left: rect.left + rect.width/2,
+                duration: 0.6, ease: "power3.inOut",
+                onComplete: () => {
+                    expandedItem.remove();
+                    expandedItem = null;
+                    isExpanded = false;
+                    activeItemId = null;
+                }
+            });
+        }
+
+        // Lancement
+        updateVisibleItems();
         animate();
 
     </script>
