@@ -68,14 +68,13 @@
             position: absolute; top: 0; left: 0;
             display: block; will-change: transform; 
             transform-origin: center center;
-            overflow: hidden; /* Important pour le crop */
+            overflow: hidden;
         }
 
-        /* --- CORRECTION ESSENTIELLE ICI --- */
-        .gallery-item img, .gallery-item video {
+        .gallery-item img {
             width: 100%; 
-            height: 100%; /* Force l'image à remplir la hauteur calculée */
-            object-fit: cover; /* COUPE les bords pour remplir sans déformer */
+            height: 100%; 
+            object-fit: cover; /* ESSENTIEL POUR LES SHORTS */
             display: block;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             filter: brightness(0.8) grayscale(0.2); 
@@ -84,7 +83,7 @@
         }
 
         .gallery-item:hover { z-index: 100 !important; }
-        .gallery-item:hover img, .gallery-item:hover video { 
+        .gallery-item:hover img { 
             filter: brightness(1.1) grayscale(0);
             transform: scale(1.05); 
             box-shadow: 0 30px 70px rgba(0,0,0,0.9); 
@@ -116,11 +115,12 @@
         const galleryItems = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
-            "https://www.youtube.com/watch?v=xvFZjo5PgG0", // Youtube Classique
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // TEST RickRoll
             "assets/galerie/galerie3.jpg",
+            "https://www.youtube.com/watch?v=xvFZjo5PgG0", // TA VIDÉO PAYSAGE
             "assets/galerie/galerie4.png",
             "assets/galerie/galerie5.png",
-            "https://youtube.com/shorts/MPQGFd9A0BQ",   // Youtube Short
+            "https://www.youtube.com/shorts/MPQGFd9A0BQ",   // TON SHORT
             "assets/galerie/galerie6.png",
             "assets/galerie/galerie7.jpg",
             "assets/galerie/galerie8.png",
@@ -148,6 +148,7 @@
         let totalWorldWidth = 0;
         let colHeights = []; 
 
+        // --- OUTILS YOUTUBE ---
         const isVideoLocal = (src) => /\.(mp4|webm|mov)$/i.test(src);
         
         const getYoutubeID = (url) => {
@@ -173,14 +174,10 @@
                 if (isYoutube(src)) {
                     const id = getYoutubeID(src);
                     const img = new Image();
-                    img.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                    // On utilise hqdefault DIRECTEMENT (Standard Quality, existe toujours)
+                    img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
                     img.onload = check;
-                    img.onerror = () => {
-                        // Fallback si maxresdefault n'existe pas
-                        img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-                        img.onload = check;
-                        img.onerror = check; // Si même ça échoue, on continue
-                    };
+                    img.onerror = check; 
                 } else {
                     const img = new Image();
                     img.src = src;
@@ -225,12 +222,8 @@
                     
                     if (isYt) {
                         const id = getYoutubeID(url);
-                        // On tente la HD
-                        img.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-                        // Si erreur, on passe en SD (C'est ça qui répare le carré gris)
-                        img.onerror = function() {
-                            this.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-                        };
+                        // On charge hqdefault (Standard) pour éviter le carré gris
+                        img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
                         
                         const icon = document.createElement('div');
                         icon.className = 'play-icon';
@@ -247,11 +240,10 @@
                     let renderHeight;
                     
                     if(isYt) {
-                        // FORCE LE RATIO VERTICAL POUR LES SHORTS
                         if(isShorts(url)) {
-                            renderHeight = colW * (16 / 9);
+                            renderHeight = colW * (16 / 9); // Vertical
                         } else {
-                            renderHeight = colW * (9 / 16);
+                            renderHeight = colW * (9 / 16); // Horizontal
                         }
                     } else {
                         const ratio = img.naturalHeight / img.naturalWidth;
@@ -260,7 +252,6 @@
 
                     if(!renderHeight || renderHeight === 0) renderHeight = colW;
 
-                    // On applique la hauteur calculée au conteneur pour figer la grille
                     item.style.height = renderHeight + "px";
 
                     items.push({
@@ -349,12 +340,11 @@
         window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
-
-        // --- ZOOM MIXTE CORRIGÉ (DÉPART POSITION RÉELLE) ---
+        // --- ZOOM FLUIDE CORRIGÉ ---
         let expandedOverlay = null;
 
         function zoomMedia(itemDiv, src) {
-            // 1. ON PREND LA POSITION VISUELLE ACTUELLE (Sans désactiver le transform)
+            // 1. Position visuelle exacte
             const rect = itemDiv.getBoundingClientRect();
             
             const youtubeID = getYoutubeID(src);
@@ -369,6 +359,7 @@
             
             let content;
             if (youtubeID) {
+                // Pour le zoom, on essaie la HD, mais on fallback sur HQ si besoin
                 content = document.createElement("img");
                 const id = getYoutubeID(src);
                 content.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
@@ -382,17 +373,11 @@
                 content.src = src;
             }
             
-            // 2. POSITIONNEMENT EXACT SUR LA MINIATURE
             content.style.cssText = `
-                position: absolute; 
-                top: ${rect.top}px; 
-                left: ${rect.left}px;
-                width: ${rect.width}px; 
-                height: ${rect.height}px;
-                object-fit: cover; 
-                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                position: absolute; top: ${rect.top}px; left: ${rect.left}px;
+                width: ${rect.width}px; height: ${rect.height}px;
+                object-fit: cover; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
                 transform-origin: center center;
-                will-change: transform, width, height, top, left;
             `;
             
             expandedOverlay.appendChild(content);
@@ -400,7 +385,6 @@
 
             gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
 
-            // Calcul Ratio Cible
             let naturalW = 16, naturalH = 9;
             if (youtubeID) {
                 if (isShorts(src)) { naturalW = 9; naturalH = 16; }
@@ -414,21 +398,10 @@
             const ratioH = window.innerHeight * 0.9 / rect.height;
             const scale = Math.min(ratioW, ratioH); 
 
-            // Calcul des dimensions finales (Centrées)
-            const finalW = rect.width * scale;
-            const finalH = rect.height * scale;
-            
-            // 3. ANIMATION GSAP VERS LE CENTRE
             gsap.to(content, {
-                top: "50%", 
-                left: "50%", 
-                x: "-50%", // Centrage précis via transform CSS
-                y: "-50%",
-                width: finalW, 
-                height: finalH,
-                objectFit: "contain", // On passe en contain pour être sûr de tout voir
-                duration: 0.5, // Un peu plus rapide pour la fluidité
-                ease: "power2.inOut", // Courbe plus douce pour éviter les à-coups
+                top: "50%", left: "50%", x: "-50%", y: "-50%",
+                width: rect.width * scale, height: rect.height * scale,
+                duration: 0.6, ease: "power3.inOut",
                 onComplete: () => {
                     if(youtubeID) {
                         const iframe = document.createElement("iframe");
@@ -436,7 +409,7 @@
                         iframe.style.cssText = `
                             position: absolute; top: 50%; left: 50%; 
                             transform: translate(-50%, -50%);
-                            width: ${finalW}px; height: ${finalH}px; 
+                            width: ${rect.width * scale}px; height: ${rect.height * scale}px; 
                             border: none; box-shadow: 0 0 50px rgba(0,0,0,0.8);
                         `;
                         iframe.allow = "autoplay; encrypted-media";
@@ -446,38 +419,22 @@
                 }
             });
 
-            // FERMETURE
             expandedOverlay.onclick = (e) => {
                 if(e.target === expandedOverlay) {
                     if(content.tagName === 'IFRAME') {
                         const id = getYoutubeID(src);
                         const imgBack = document.createElement("img");
-                        imgBack.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`; 
-                        imgBack.onerror = function() { this.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; };
-                        
-                        // On reprend les dimensions actuelles
+                        imgBack.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; 
                         imgBack.style.cssText = content.style.cssText;
-                        imgBack.style.objectFit = "contain";
-                        
                         expandedOverlay.replaceChild(imgBack, content);
                         content = imgBack;
                     }
-                    
-                    // ON RECALCULE LA POSITION CIBLE (car la galerie a pu bouger un peu ou fisheye)
                     const newRect = itemDiv.getBoundingClientRect();
-
                     gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
-                    
                     gsap.to(content, {
-                        top: newRect.top, 
-                        left: newRect.left, 
-                        x: 0, // On annule le centrage
-                        y: 0,
-                        width: newRect.width, 
-                        height: newRect.height,
-                        objectFit: "cover", // On repasse en cover pour matcher la grille
-                        duration: 0.4, 
-                        ease: "power2.inOut",
+                        top: newRect.top, left: newRect.left, x: 0, y: 0,
+                        width: newRect.width, height: newRect.height,
+                        duration: 0.5, ease: "power3.inOut",
                         onComplete: () => { expandedOverlay.remove(); }
                     });
                 }
