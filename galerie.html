@@ -353,7 +353,12 @@
         let expandedOverlay = null;
 
         function zoomMedia(itemDiv, src) {
+            // 1. On annule la 3D temporairement pour avoir la vraie position à plat
+            const originalTransform = itemDiv.style.transform;
+            itemDiv.style.transform = 'none';
             const rect = itemDiv.getBoundingClientRect();
+            itemDiv.style.transform = originalTransform; 
+
             const youtubeID = getYoutubeID(src);
             const isLocalVid = isVideoLocal(src);
             
@@ -366,7 +371,6 @@
             
             let content;
             if (youtubeID) {
-                // Utilisation de la miniature HQ par sécurité si MaxRes échoue
                 content = document.createElement("img");
                 const id = getYoutubeID(src);
                 content.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
@@ -380,10 +384,16 @@
                 content.src = src;
             }
             
+            // Position de départ (exactement sur la miniature)
             content.style.cssText = `
-                position: absolute; top: ${rect.top}px; left: ${rect.left}px;
-                width: ${rect.width}px; height: ${rect.height}px;
-                object-fit: cover; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                position: absolute; 
+                top: ${rect.top}px; 
+                left: ${rect.left}px;
+                width: ${rect.width}px; 
+                height: ${rect.height}px;
+                object-fit: cover; 
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                transform-origin: top left;
             `;
             
             expandedOverlay.appendChild(content);
@@ -391,29 +401,55 @@
 
             gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
 
+            // Calcul Taille Cible (90% de l'écran max)
             let naturalW = 16, naturalH = 9;
             if (youtubeID) {
                 if (isShorts(src)) { naturalW = 9; naturalH = 16; }
             } else if (isLocalVid) {
                 naturalW = content.videoWidth || 16; naturalH = content.videoHeight || 9;
             } else {
-                naturalW = content.naturalWidth; naturalH = content.naturalHeight;
+                naturalW = content.naturalWidth || 1000; naturalH = content.naturalHeight || 1000;
             }
 
-            const ratioW = window.innerWidth * 0.9 / rect.width;
-            const ratioH = window.innerHeight * 0.9 / rect.height;
-            const scale = Math.min(ratioW, ratioH); 
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+            const ratioImg = naturalW / naturalH;
+            const ratioScreen = screenW / screenH;
+            
+            let targetW, targetH;
 
+            if (ratioScreen > ratioImg) { 
+                targetH = screenH * 0.9;
+                targetW = targetH * ratioImg;
+            } else { 
+                targetW = screenW * 0.9;
+                targetH = targetW / ratioImg;
+            }
+
+            // Animation vers le centre
             gsap.to(content, {
-                top: "50%", left: "50%", x: "-50%", y: "-50%",
-                width: rect.width * scale, height: rect.height * scale,
-                duration: 0.6, ease: "power3.inOut",
+                top: "50%", 
+                left: "50%", 
+                x: "-50%", 
+                y: "-50%",
+                width: targetW, 
+                height: targetH,
+                objectFit: "contain", // On passe en contain pour tout voir
+                duration: 0.6, 
+                ease: "power3.inOut",
                 onComplete: () => {
                     if(youtubeID) {
                         const iframe = document.createElement("iframe");
                         iframe.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0`;
-                        iframe.style.cssText = content.style.cssText;
-                        iframe.style.border = "none";
+                        iframe.style.cssText = `
+                            position: absolute; 
+                            top: 50%; left: 50%; 
+                            transform: translate(-50%, -50%);
+                            width: ${targetW}px; 
+                            height: ${targetH}px; 
+                            border: none;
+                            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+                        `;
                         iframe.allow = "autoplay; encrypted-media";
                         expandedOverlay.replaceChild(iframe, content);
                         content = iframe;
@@ -421,22 +457,37 @@
                 }
             });
 
+            // Fermeture
             expandedOverlay.onclick = (e) => {
                 if(e.target === expandedOverlay) {
                     if(content.tagName === 'IFRAME') {
                         const id = getYoutubeID(src);
                         const imgBack = document.createElement("img");
-                        imgBack.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; // Retour en HQ pour sécurité
+                        imgBack.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; 
                         imgBack.style.cssText = content.style.cssText;
+                        imgBack.style.objectFit = "contain";
                         expandedOverlay.replaceChild(imgBack, content);
                         content = imgBack;
                     }
+                    
+                    // Recalcul position actuelle
+                    const currentTrans = itemDiv.style.transform;
+                    itemDiv.style.transform = 'none';
                     const newRect = itemDiv.getBoundingClientRect();
+                    itemDiv.style.transform = currentTrans;
+
                     gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
+                    
                     gsap.to(content, {
-                        top: newRect.top, left: newRect.left, x: 0, y: 0,
-                        width: newRect.width, height: newRect.height,
-                        duration: 0.5, ease: "power3.inOut",
+                        top: newRect.top, 
+                        left: newRect.left, 
+                        x: 0, 
+                        y: 0,
+                        width: newRect.width, 
+                        height: newRect.height,
+                        objectFit: "cover",
+                        duration: 0.5, 
+                        ease: "power3.inOut",
                         onComplete: () => { expandedOverlay.remove(); }
                     });
                 }
