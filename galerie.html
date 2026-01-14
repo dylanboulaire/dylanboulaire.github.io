@@ -116,7 +116,7 @@
         const galleryItems = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
-            "https://youtu.be/jqAytnGVjkQ", // Youtube Classique
+            "https://www.youtube.com/watch?v=jqAytnGVjkQ", // Youtube Classique
             "assets/galerie/galerie3.jpg",
             "assets/galerie/galerie4.png",
             "assets/galerie/galerie5.png",
@@ -349,16 +349,14 @@
         window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
-        // --- ZOOM ---
+
+        // --- ZOOM MIXTE CORRIGÉ (DÉPART POSITION RÉELLE) ---
         let expandedOverlay = null;
 
         function zoomMedia(itemDiv, src) {
-            // 1. On annule la 3D temporairement pour avoir la vraie position à plat
-            const originalTransform = itemDiv.style.transform;
-            itemDiv.style.transform = 'none';
+            // 1. ON PREND LA POSITION VISUELLE ACTUELLE (Sans désactiver le transform)
             const rect = itemDiv.getBoundingClientRect();
-            itemDiv.style.transform = originalTransform; 
-
+            
             const youtubeID = getYoutubeID(src);
             const isLocalVid = isVideoLocal(src);
             
@@ -384,7 +382,7 @@
                 content.src = src;
             }
             
-            // Position de départ (exactement sur la miniature)
+            // 2. POSITIONNEMENT EXACT SUR LA MINIATURE
             content.style.cssText = `
                 position: absolute; 
                 top: ${rect.top}px; 
@@ -393,7 +391,8 @@
                 height: ${rect.height}px;
                 object-fit: cover; 
                 box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-                transform-origin: top left;
+                transform-origin: center center;
+                will-change: transform, width, height, top, left;
             `;
             
             expandedOverlay.appendChild(content);
@@ -401,7 +400,7 @@
 
             gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
 
-            // Calcul Taille Cible (90% de l'écran max)
+            // Calcul Ratio Cible
             let naturalW = 16, naturalH = 9;
             if (youtubeID) {
                 if (isShorts(src)) { naturalW = 9; naturalH = 16; }
@@ -411,44 +410,34 @@
                 naturalW = content.naturalWidth || 1000; naturalH = content.naturalHeight || 1000;
             }
 
-            const screenW = window.innerWidth;
-            const screenH = window.innerHeight;
-            const ratioImg = naturalW / naturalH;
-            const ratioScreen = screenW / screenH;
+            const ratioW = window.innerWidth * 0.9 / rect.width;
+            const ratioH = window.innerHeight * 0.9 / rect.height;
+            const scale = Math.min(ratioW, ratioH); 
+
+            // Calcul des dimensions finales (Centrées)
+            const finalW = rect.width * scale;
+            const finalH = rect.height * scale;
             
-            let targetW, targetH;
-
-            if (ratioScreen > ratioImg) { 
-                targetH = screenH * 0.9;
-                targetW = targetH * ratioImg;
-            } else { 
-                targetW = screenW * 0.9;
-                targetH = targetW / ratioImg;
-            }
-
-            // Animation vers le centre
+            // 3. ANIMATION GSAP VERS LE CENTRE
             gsap.to(content, {
                 top: "50%", 
                 left: "50%", 
-                x: "-50%", 
+                x: "-50%", // Centrage précis via transform CSS
                 y: "-50%",
-                width: targetW, 
-                height: targetH,
-                objectFit: "contain", // On passe en contain pour tout voir
-                duration: 0.6, 
-                ease: "power3.inOut",
+                width: finalW, 
+                height: finalH,
+                objectFit: "contain", // On passe en contain pour être sûr de tout voir
+                duration: 0.5, // Un peu plus rapide pour la fluidité
+                ease: "power2.inOut", // Courbe plus douce pour éviter les à-coups
                 onComplete: () => {
                     if(youtubeID) {
                         const iframe = document.createElement("iframe");
                         iframe.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0`;
                         iframe.style.cssText = `
-                            position: absolute; 
-                            top: 50%; left: 50%; 
+                            position: absolute; top: 50%; left: 50%; 
                             transform: translate(-50%, -50%);
-                            width: ${targetW}px; 
-                            height: ${targetH}px; 
-                            border: none;
-                            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+                            width: ${finalW}px; height: ${finalH}px; 
+                            border: none; box-shadow: 0 0 50px rgba(0,0,0,0.8);
                         `;
                         iframe.allow = "autoplay; encrypted-media";
                         expandedOverlay.replaceChild(iframe, content);
@@ -457,37 +446,38 @@
                 }
             });
 
-            // Fermeture
+            // FERMETURE
             expandedOverlay.onclick = (e) => {
                 if(e.target === expandedOverlay) {
                     if(content.tagName === 'IFRAME') {
                         const id = getYoutubeID(src);
                         const imgBack = document.createElement("img");
-                        imgBack.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; 
+                        imgBack.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`; 
+                        imgBack.onerror = function() { this.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; };
+                        
+                        // On reprend les dimensions actuelles
                         imgBack.style.cssText = content.style.cssText;
                         imgBack.style.objectFit = "contain";
+                        
                         expandedOverlay.replaceChild(imgBack, content);
                         content = imgBack;
                     }
                     
-                    // Recalcul position actuelle
-                    const currentTrans = itemDiv.style.transform;
-                    itemDiv.style.transform = 'none';
+                    // ON RECALCULE LA POSITION CIBLE (car la galerie a pu bouger un peu ou fisheye)
                     const newRect = itemDiv.getBoundingClientRect();
-                    itemDiv.style.transform = currentTrans;
 
                     gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
                     
                     gsap.to(content, {
                         top: newRect.top, 
                         left: newRect.left, 
-                        x: 0, 
+                        x: 0, // On annule le centrage
                         y: 0,
                         width: newRect.width, 
                         height: newRect.height,
-                        objectFit: "cover",
-                        duration: 0.5, 
-                        ease: "power3.inOut",
+                        objectFit: "cover", // On repasse en cover pour matcher la grille
+                        duration: 0.4, 
+                        ease: "power2.inOut",
                         onComplete: () => { expandedOverlay.remove(); }
                     });
                 }
