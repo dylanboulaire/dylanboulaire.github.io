@@ -10,7 +10,9 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
 </head>
-<body style="overflow: hidden; background-color: #222;"> <header>
+<body style="overflow: hidden; background-color: #1a1a1a;">
+
+    <header>
         <nav class="nav-left">
             <ul>
                 <li><a href="index.html#realisations">Réalisations</a></li>
@@ -38,7 +40,7 @@
     </div>
 
     <script>
-        // --- 1. CONFIGURATION ---
+        // --- 1. CONFIGURATION DES IMAGES ---
         const imageUrls = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
@@ -52,27 +54,27 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // RÈGLAGES SERRÉS (Type Screen 2)
+        // --- 2. RÉGLAGES ---
         const settings = {
-            // Pas de grille (Espace alloué par image)
-            // On réduit pour que ça se touche presque
-            gridStepX: 360,      
-            gridStepY: 300,      
+            // Espace alloué pour chaque "cellule" invisible
+            gridStepX: 400,      
+            gridStepY: 400,      
             
-            dragEase: 0.08,      // Fluidité
-            momentumFactor: 150, // Inertie
-            hoverScale: 1.05,    // Petit zoom au survol
-            bufferZone: 1        // Préchargement hors écran
+            dragEase: 0.08,
+            momentumFactor: 150,
+            hoverScale: 1.05,
+            bufferZone: 1
         };
 
-        // FORMATS ADAPTÉS (Pour ne pas couper les textes)
-        // J'ai mis des formats plus "larges" pour tes miniatures Youtube/Vidéos
+        // --- 3. FORMATS DE CADRES ---
+        // Puisqu'on utilise "contain", ces tailles définissent la zone MAXIMUM occupée par l'image.
+        // J'ai mis des formats variés pour créer du rythme.
         const formats = [
-            { w: 340, h: 190 }, // 16:9 (Vidéo Standard) - Parfait pour miniatures
-            { w: 320, h: 420 }, // Portrait Haut (Affiche)
-            { w: 300, h: 300 }, // Carré
-            { w: 340, h: 250 }, // 4:3 (Photo classique)
-            { w: 280, h: 380 }  // Portrait Étroit
+            { w: 350, h: 350 }, // Carré Max
+            { w: 300, h: 450 }, // Portrait Haut (type Story/Poster)
+            { w: 450, h: 300 }, // Paysage Large
+            { w: 380, h: 250 }, // Paysage Standard
+            { w: 280, h: 380 }  // Portrait Standard
         ];
 
         // --- MOTEUR ---
@@ -95,7 +97,6 @@
 
         const itemCount = imageUrls.length;
 
-        // Fonction aléatoire stable
         function seededRandom(x, y) {
             let n = x * 3711.61 + y * 5344.72;
             return Math.abs(Math.sin(n) * 10000 % 1);
@@ -104,18 +105,16 @@
         function createItem(col, row) {
             const itemNum = Math.abs((row * 7 + col * 3) % itemCount);
             
-            // Choix du format
+            // Choix aléatoire d'une zone de conteneur
             const randSeed = seededRandom(col, row);
             const formatIndex = Math.floor(randSeed * formats.length);
             const size = formats[formatIndex];
 
-            // Positionnement avec un "Jitter" (Décalage) très faible
-            // pour garder l'aspect grille compacte mais organique
-            const jitter = 15; 
+            // Petit décalage pour l'aspect organique
+            const jitter = 20; 
             const offsetX = (seededRandom(col + 10, row) - 0.5) * jitter;
             const offsetY = (seededRandom(col, row + 10) - 0.5) * jitter;
 
-            // Centrage dans la grille
             const centerX = col * settings.gridStepX + (settings.gridStepX - size.w) / 2;
             const centerY = row * settings.gridStepY + (settings.gridStepY - size.h) / 2;
 
@@ -124,50 +123,63 @@
 
             const itemId = `${col},${row}`;
 
+            // LE CONTENEUR (Invisible)
             const item = document.createElement("div");
             item.className = "item";
             item.id = itemId;
             
-            // Style inline critique
             item.style.position = "absolute";
             item.style.width = `${size.w}px`;
             item.style.height = `${size.h}px`;
             item.style.left = `${xPos}px`;
             item.style.top = `${yPos}px`;
-            item.style.overflow = "hidden";
-            item.style.cursor = "pointer";
-            item.style.borderRadius = "2px"; // Coins légèrement moins ronds pour faire "pro"
             
-            // Données pour le zoom
+            // IMPORTANT : On retire overflow hidden pour que l'ombre soit visible
+            // et on rend le fond transparent.
+            item.style.overflow = "visible"; 
+            item.style.backgroundColor = "transparent";
+            item.style.cursor = "pointer";
+            
+            // Données
             item.dataset.imgSrc = imageUrls[itemNum];
 
-            // Image
+            // L'IMAGE
             const img = document.createElement("img");
             img.src = imageUrls[itemNum];
+            
+            // STYLE POUR NE PAS COUPER L'IMAGE
             img.style.width = "100%";
             img.style.height = "100%";
-            img.style.objectFit = "cover"; 
+            img.style.objectFit = "contain"; // <--- C'est ici la magie : L'image rentre TOUJOURS en entier
+            img.style.objectPosition = "center";
             img.style.display = "block";
-            img.style.transition = "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
-            img.style.pointerEvents = "none"; // Important pour le drag
+            
+            // Esthétique de l'image (puisque le conteneur est invisible)
+            // On met l'ombre portée sur l'image elle-même (via un filter drop-shadow pour la précision si PNG)
+            // Ou box-shadow sur le conteneur si ce sont des rectangles.
+            // Ici, comme on est en "contain", l'image peut être plus petite que la boite. 
+            // L'astuce propre : filter drop-shadow gère la forme réelle de l'image.
+            img.style.filter = "drop-shadow(0 10px 15px rgba(0,0,0,0.5))";
+            
+            img.style.transition = "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.3s";
+            img.style.pointerEvents = "none";
 
             item.appendChild(img);
 
-            // Hover
+            // Effet Hover
             item.onmouseenter = () => {
-                gsap.to(img, { scale: settings.hoverScale, duration: 0.3 });
-                item.style.zIndex = 10;
-                item.style.boxShadow = "0 15px 30px rgba(0,0,0,0.5)";
+                gsap.to(img, { scale: 1.08, duration: 0.3 });
+                item.style.zIndex = 100;
+                img.style.filter = "drop-shadow(0 20px 30px rgba(0,0,0,0.7))";
             };
             item.onmouseleave = () => {
                 gsap.to(img, { scale: 1, duration: 0.3 });
                 item.style.zIndex = 1;
-                item.style.boxShadow = "none";
+                img.style.filter = "drop-shadow(0 10px 15px rgba(0,0,0,0.5))";
             };
 
-            // Click -> Expand
+            // Click
             item.addEventListener("click", () => {
-                // On n'ouvre que si on ne drague pas (mouvement < 2px)
                 if(Math.abs(dragVelocityX) < 2 && Math.abs(dragVelocityY) < 2) {
                     expandItem(item);
                 }
@@ -176,6 +188,7 @@
             return item;
         }
 
+        // --- GESTION DE L'AFFICHAGE INFINI ---
         function updateVisibleItems() {
             const buffer = settings.bufferZone;
             const viewW = window.innerWidth;
@@ -197,8 +210,7 @@
                         const item = createItem(c, r);
                         canvas.appendChild(item);
                         visibleItems.add(id);
-                        // Animation d'apparition
-                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.4 });
+                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.5, delay: Math.random() * 0.1 });
                     }
                 }
             }
@@ -222,7 +234,7 @@
             requestAnimationFrame(animate);
         }
 
-        // --- EVENTS (SOURIS + TACTILE) ---
+        // --- DRAG & DROP ---
         function onStart(x, y) {
             if(isExpanded) return;
             isDragging = true;
@@ -236,8 +248,8 @@
             if(!isDragging) return;
             const dx = x - startX;
             const dy = y - startY;
-            targetX += dx * 1.2; // Multiplicateur pour aller un peu plus vite
-            targetY += dy * 1.2;
+            targetX += dx * 1.3;
+            targetY += dy * 1.3;
             dragVelocityX = dx;
             dragVelocityY = dy;
             startX = x;
@@ -251,28 +263,22 @@
             targetY += dragVelocityY * (settings.momentumFactor / 10);
         }
 
-        // Mouse
         container.addEventListener("mousedown", e => onStart(e.clientX, e.clientY));
         window.addEventListener("mousemove", e => onMove(e.clientX, e.clientY));
         window.addEventListener("mouseup", onEnd);
-
-        // Touch
+        
         container.addEventListener("touchstart", e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
-        window.addEventListener("touchmove", e => {
-            e.preventDefault(); 
-            onMove(e.touches[0].clientX, e.touches[0].clientY);
-        }, {passive: false});
+        window.addEventListener("touchmove", e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener("touchend", onEnd);
 
-        // --- EXPAND / ZOOM ---
+        // --- LIGHTBOX (ZOOM) ---
         function expandItem(item) {
             if(isExpanded) return;
             isExpanded = true;
             activeItemId = item.id;
             
-            const rect = item.getBoundingClientRect();
+            const rect = item.querySelector('img').getBoundingClientRect(); // On prend la taille réelle de l'image visible
             
-            // Fond noir transparent pour isoler l'image
             expandedItem = document.createElement("div");
             expandedItem.style.position = "fixed";
             expandedItem.style.zIndex = "9999";
@@ -280,49 +286,38 @@
             expandedItem.style.left = "0";
             expandedItem.style.width = "100%";
             expandedItem.style.height = "100%";
-            expandedItem.style.backgroundColor = "rgba(0,0,0,0.9)";
+            expandedItem.style.backgroundColor = "rgba(0,0,0,0.95)";
             expandedItem.style.display = "flex";
             expandedItem.style.justifyContent = "center";
             expandedItem.style.alignItems = "center";
             expandedItem.style.opacity = "0";
             expandedItem.style.cursor = "zoom-out";
             
-            // Image clônée
             const img = document.createElement("img");
             img.src = item.dataset.imgSrc;
-            img.style.maxWidth = "90%";
-            img.style.maxHeight = "90%";
+            img.style.maxWidth = "95%";
+            img.style.maxHeight = "95%";
             img.style.objectFit = "contain";
-            img.style.boxShadow = "0 0 50px rgba(0,0,0,0.5)";
-            img.style.transform = "scale(0.8)";
+            img.style.boxShadow = "0 0 40px rgba(0,0,0,1)";
             
             expandedItem.appendChild(img);
             expandedItem.addEventListener("click", closeExpanded);
             document.body.appendChild(expandedItem);
 
-            // Animation d'ouverture
             gsap.to(expandedItem, { opacity: 1, duration: 0.3 });
-            gsap.to(img, { scale: 1, duration: 0.5, ease: "hop" });
+            gsap.from(img, { scale: 0.8, duration: 0.5, ease: "hop" });
         }
 
         function closeExpanded() {
             if(!expandedItem) return;
-            const img = expandedItem.querySelector("img");
-            
-            gsap.to(expandedItem, { opacity: 0, duration: 0.3 });
-            gsap.to(img, { 
-                scale: 0.8, 
-                duration: 0.3, 
-                onComplete: () => {
-                    expandedItem.remove();
-                    expandedItem = null;
-                    isExpanded = false;
-                    activeItemId = null;
-                }
-            });
+            gsap.to(expandedItem, { opacity: 0, duration: 0.3, onComplete: () => {
+                expandedItem.remove();
+                expandedItem = null;
+                isExpanded = false;
+                activeItemId = null;
+            }});
         }
 
-        // Démarrage
         animate();
     </script>
 </body>
