@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
 </head>
 <body style="overflow: hidden; background-color: #111;">
 
@@ -30,17 +29,73 @@
         </div>
     </header>
 
-    <div class="gallery-container">
-        <div class="canvas" id="canvas"></div>
-        <div class="gallery-overlay" id="overlay"></div>
+    <div class="gallery-wrapper">
+        <div class="gallery-content" id="gallery-content">
+            </div>
     </div>
+
+    <div id="overlay" class="gallery-overlay"></div>
 
     <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-family: sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
         DRAG & EXPLORE
     </div>
 
+    <style>
+        .gallery-wrapper {
+            position: fixed;
+            top: -50%; left: -50%; /* On centre large pour avoir de la marge */
+            width: 200%; height: 200%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: grab;
+        }
+        .gallery-wrapper:active { cursor: grabbing; }
+
+        .gallery-content {
+            display: flex; /* Colonnes côte à côte */
+            gap: 20px; /* Espace horizontal entre les colonnes */
+            padding: 20px;
+            will-change: transform;
+        }
+
+        /* Une colonne verticale */
+        .gallery-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* Espace vertical entre les images */
+            width: 300px; /* Largeur par défaut */
+        }
+        
+        /* On varie la largeur des colonnes pour le rythme "Big/Small" */
+        .gallery-column:nth-child(1) { width: 350px; margin-top: 0px; }
+        .gallery-column:nth-child(2) { width: 280px; margin-top: 150px; } /* Décalage */
+        .gallery-column:nth-child(3) { width: 400px; margin-top: 50px; }
+        .gallery-column:nth-child(4) { width: 320px; margin-top: 200px; }
+        .gallery-column:nth-child(5) { width: 260px; margin-top: 80px; }
+        
+        /* Images */
+        .gallery-item {
+            width: 100%;
+            position: relative;
+            transition: transform 0.3s ease;
+        }
+        .gallery-item img {
+            width: 100%;
+            height: auto; /* RESPECTE LE RATIO NATUREL */
+            display: block;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+        
+        /* Hover Effect */
+        .gallery-item:hover { z-index: 10; transform: scale(1.03); }
+        .gallery-item:hover img { box-shadow: 0 20px 40px rgba(0,0,0,0.7); }
+    </style>
+
     <script>
-        // --- 1. CONFIGURATION IMAGES ---
+        // --- 1. IMAGES ---
         const imageUrls = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
@@ -54,231 +109,127 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // --- 2. CONFIGURATION DU MOTIF (CLUSTER) ---
-        // C'est ici la magie. On définit un bloc de 1200x900px
-        // Et on place 6 points dedans manuellement pour que ça fasse "naturel" mais sans toucher.
-        const clusterSettings = {
-            blockWidth: 1200, 
-            blockHeight: 900,
-            
-            // Positions relatives (x, y) dans le bloc + taille max autorisée (s)
-            // On alterne les positions pour bien remplir l'espace
-            positions: [
-                { x: 50,  y: 50,  s: 350 }, // Haut Gauche (Gros)
-                { x: 500, y: 0,   s: 300 }, // Haut Milieu
-                { x: 900, y: 80,  s: 280 }, // Haut Droite
-                { x: 300, y: 450, s: 380 }, // Centre Gauche (Très gros)
-                { x: 800, y: 400, s: 320 }, // Centre Droite
-                { x: 100, y: 700, s: 280 }, // Bas Gauche
-                { x: 600, y: 750, s: 350 }  // Bas Droite
-            ],
-            
-            dragEase: 0.08,
-            momentumFactor: 150,
-            hoverScale: 1.05,
+        // --- 2. CONFIGURATION ---
+        const config = {
+            columnCount: 5,   // Nombre de colonnes
+            duplicateSet: 4,  // Combien de fois on répète les images verticalement (pour scroller longtemps)
+            dragSpeed: 1.5,
+            momentum: 0.95
         };
 
-        // --- MOTEUR ---
-        gsap.registerPlugin(CustomEase);
-        CustomEase.create("hop", "0.9, 0, 0.1, 1");
+        const content = document.getElementById('gallery-content');
+        const overlay = document.getElementById('overlay');
+        const wrapper = document.querySelector('.gallery-wrapper');
 
-        const container = document.querySelector(".gallery-container");
-        const canvas = document.getElementById("canvas");
-        const overlay = document.getElementById("overlay");
-
-        let isDragging = false;
-        let startX, startY;
-        let targetX = 0, targetY = 0;
-        let currentX = 0, currentY = 0;
-        let dragVelocityX = 0, dragVelocityY = 0;
-        let visibleItems = new Set(); // Stocke les IDs "BlocX,BlocY,Index"
-        let isExpanded = false;
-        let activeItemId = null;
-        let expandedItem = null;
-
-        const itemCount = imageUrls.length;
-
-        // Fonction aléatoire stable basée sur la position du bloc
-        function seededRandom(seed) {
-            var x = Math.sin(seed++) * 10000;
-            return x - Math.floor(x);
+        // --- 3. GÉNÉRATION HTML ---
+        // On crée les colonnes
+        const columnsDOM = [];
+        for(let i=0; i<config.columnCount; i++) {
+            const col = document.createElement('div');
+            col.className = 'gallery-column';
+            content.appendChild(col);
+            columnsDOM.push(col);
         }
 
-        // Création d'un élément
-        function createItem(blockX, blockY, posIndex) {
-            // ID Unique : Coordonnées du bloc + index dans le motif
-            const itemId = `${blockX},${blockY},${posIndex}`;
-            
-            // On récupère la configuration de position prédéfinie
-            const posData = clusterSettings.positions[posIndex];
-            
-            // Calcul de la position absolue dans le monde infini
-            const absoluteX = (blockX * clusterSettings.blockWidth) + posData.x;
-            const absoluteY = (blockY * clusterSettings.blockHeight) + posData.y;
-
-            // Choix de l'image (mélange aléatoire basé sur le bloc pour éviter la répétition visuelle)
-            // On utilise blockX/Y pour que chaque bloc ait des images différentes
-            const randomSeed = Math.abs(blockX * 7 + blockY * 13 + posIndex);
-            const imgIndex = Math.floor(seededRandom(randomSeed) * itemCount);
-            
-            // --- DOM ---
-            const item = document.createElement("div");
-            item.className = "item";
-            item.id = itemId;
-            
-            // Style de base
-            item.style.position = "absolute";
-            item.style.left = `${absoluteX}px`;
-            item.style.top = `${absoluteY}px`;
-            // Le conteneur s'adapte à l'image, on ne fixe pas de taille ici
-            item.style.width = "auto";
-            item.style.height = "auto";
-            item.style.display = "block";
-            item.style.cursor = "pointer";
-
-            // Données
-            item.dataset.imgSrc = imageUrls[imgIndex];
-
-            // Image
-            const img = document.createElement("img");
-            img.src = imageUrls[imgIndex];
-            
-            // --- C'EST ICI QUE TOUT SE JOUE POUR LE FORMAT ---
-            // 1. On donne une taille MAX pour que l'image ne soit pas géante.
-            // 2. On laisse width/height en AUTO pour conserver le ratio naturel.
-            // 3. Résultat : Aucune coupe, aucun étirement.
-            img.style.maxWidth = `${posData.s}px`; 
-            img.style.maxHeight = `${posData.s}px`;
-            img.style.width = "auto";
-            img.style.height = "auto";
-            img.style.display = "block";
-            
-            // Esthétique "Photo posée sur table"
-            img.style.boxShadow = "0 15px 35px rgba(0,0,0,0.5)";
-            img.style.transition = "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s";
-            img.style.pointerEvents = "none"; // Important pour le drag
-
-            item.appendChild(img);
-
-            // Hover
-            item.onmouseenter = () => {
-                gsap.to(img, { scale: clusterSettings.hoverScale, duration: 0.3 });
-                item.style.zIndex = 100;
-                img.style.boxShadow = "0 25px 50px rgba(0,0,0,0.7)";
-            };
-            item.onmouseleave = () => {
-                gsap.to(img, { scale: 1, duration: 0.3 });
-                item.style.zIndex = 1;
-                img.style.boxShadow = "0 15px 35px rgba(0,0,0,0.5)";
-            };
-
-            // Click
-            item.addEventListener("click", () => {
-                if(Math.abs(dragVelocityX) < 2 && Math.abs(dragVelocityY) < 2) {
-                    expandItem(item);
-                }
-            });
-
-            return item;
-        }
-
-        function updateVisibleItems() {
-            // On calcule quels "Blocs" de 1200x900 sont visibles à l'écran
-            const buffer = 1; // On charge 1 bloc autour pour que ce soit fluide
-            
-            const viewW = window.innerWidth;
-            const viewH = window.innerHeight;
-            
-            const startBlockX = Math.floor((-currentX - viewW*0.5) / clusterSettings.blockWidth) - buffer;
-            const endBlockX = Math.ceil((-currentX + viewW*1.5) / clusterSettings.blockWidth) + buffer;
-            
-            const startBlockY = Math.floor((-currentY - viewH*0.5) / clusterSettings.blockHeight) - buffer;
-            const endBlockY = Math.ceil((-currentY + viewH*1.5) / clusterSettings.blockHeight) + buffer;
-
-            const currentIds = new Set();
-
-            // Double boucle sur les blocs visibles
-            for(let bx = startBlockX; bx <= endBlockX; bx++) {
-                for(let by = startBlockY; by <= endBlockY; by++) {
+        // On remplit les colonnes
+        function populateGallery() {
+            // On répète le set d'images plusieurs fois
+            for(let d=0; d<config.duplicateSet; d++) {
+                imageUrls.forEach((url, index) => {
+                    // On choisit une colonne (soit aléatoire, soit séquentielle)
+                    // Séquentielle permet de bien équilibrer
+                    const colIndex = (index + d) % config.columnCount;
                     
-                    // Pour chaque bloc, on boucle sur nos 7 positions prédéfinies
-                    for(let i = 0; i < clusterSettings.positions.length; i++) {
-                        const id = `${bx},${by},${i}`;
-                        currentIds.add(id);
-                        
-                        if(!visibleItems.has(id)) {
-                            const item = createItem(bx, by, i);
-                            canvas.appendChild(item);
-                            visibleItems.add(id);
-                            // Apparition douce
-                            gsap.from(item, { opacity: 0, scale: 0.5, duration: 0.5, ease: "back.out(1.5)" });
-                        }
-                    }
-                }
+                    const item = document.createElement('div');
+                    item.className = 'gallery-item';
+                    item.dataset.src = url; // Pour le zoom
+                    
+                    const img = document.createElement('img');
+                    img.src = url;
+                    
+                    item.appendChild(img);
+                    
+                    // Clic pour zoomer
+                    item.addEventListener('click', () => expandImage(url));
+                    
+                    columnsDOM[colIndex].appendChild(item);
+                });
             }
-
-            // Nettoyage
-            visibleItems.forEach(id => {
-                if(!currentIds.has(id) && id !== activeItemId) {
-                    const el = document.getElementById(id);
-                    if(el) el.remove();
-                    visibleItems.delete(id);
-                }
-            });
         }
+        populateGallery();
+
+
+        // --- 4. MOTEUR INFINI (LOGIQUE MODULO) ---
+        let currentX = 0;
+        let currentY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        let isDragging = false;
+        let startX = 0, startY = 0;
+
+        // Limites virtuelles pour le "Loop"
+        // On estime la taille du contenu une fois chargé. 
+        // L'astuce : Quand on atteint une limite, on se "téléporte" au centre.
+        const loopLimit = 3000; // Pixels avant reset
 
         function animate() {
-            if(!isExpanded) {
-                currentX += (targetX - currentX) * clusterSettings.dragEase;
-                currentY += (targetY - currentY) * clusterSettings.dragEase;
-                canvas.style.transform = `translate(${currentX}px, ${currentY}px)`;
-                updateVisibleItems();
-            }
+            // Inertie
+            currentX += (targetX - currentX) * 0.1;
+            currentY += (targetY - currentY) * 0.1;
+
+            // Logique INFINIE (Wrap Around)
+            // Si on va trop loin en bas, on revient en haut (invisiblement)
+            if (currentY > loopLimit) { currentY -= loopLimit; targetY -= loopLimit; }
+            if (currentY < -loopLimit) { currentY += loopLimit; targetY += loopLimit; }
+            
+            // Si on va trop loin à droite/gauche (optionnel si on veut infini horizontal aussi)
+            if (currentX > loopLimit/2) { currentX -= loopLimit/2; targetX -= loopLimit/2; }
+            if (currentX < -loopLimit/2) { currentX += loopLimit/2; targetX += loopLimit/2; }
+
+            // Application
+            content.style.transform = `translate(${currentX}px, ${currentY}px)`;
+            
             requestAnimationFrame(animate);
         }
+        animate();
 
-        // --- GESTION DRAG (Souri + Touch) ---
-        function onStart(x, y) {
-            if(isExpanded) return;
+
+        // --- 5. DRAG EVENTS ---
+        const onStart = (x, y) => {
             isDragging = true;
-            container.classList.add("active");
-            startX = x;
-            startY = y;
-            dragVelocityX = 0; dragVelocityY = 0;
-        }
-
-        function onMove(x, y) {
+            startX = x - targetX; // Offset pour ne pas sauter
+            startY = y - targetY;
+        };
+        
+        const onMove = (x, y) => {
             if(!isDragging) return;
-            const dx = x - startX;
-            const dy = y - startY;
-            targetX += dx * 1.3;
-            targetY += dy * 1.3;
-            dragVelocityX = dx;
-            dragVelocityY = dy;
-            startX = x;
-            startY = y;
-        }
+            targetX = x - startX;
+            targetY = y - startY;
+        };
+        
+        const onEnd = () => { isDragging = false; };
 
-        function onEnd() {
-            isDragging = false;
-            container.classList.remove("active");
-            targetX += dragVelocityX * (clusterSettings.momentumFactor / 10);
-            targetY += dragVelocityY * (clusterSettings.momentumFactor / 10);
-        }
+        // Souris
+        wrapper.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup', onEnd);
+        
+        // Touch
+        wrapper.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
+        window.addEventListener('touchmove', e => { 
+            e.preventDefault(); 
+            onMove(e.touches[0].clientX, e.touches[0].clientY); 
+        }, {passive: false});
+        window.addEventListener('touchend', onEnd);
 
-        container.addEventListener("mousedown", e => onStart(e.clientX, e.clientY));
-        window.addEventListener("mousemove", e => onMove(e.clientX, e.clientY));
-        window.addEventListener("mouseup", onEnd);
-        container.addEventListener("touchstart", e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
-        window.addEventListener("touchmove", e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
-        window.addEventListener("touchend", onEnd);
 
-        // --- ZOOM ---
-        function expandItem(item) {
-            if(isExpanded) return;
-            isExpanded = true;
-            activeItemId = item.id;
-            
+        // --- 6. ZOOM (LIGHTBOX) ---
+        let expandedItem = null;
+
+        function expandImage(src) {
+            // Empêche le clic si on était en train de draguer
+            if(Math.abs(targetX - currentX) > 5 || Math.abs(targetY - currentY) > 5) return;
+
             expandedItem = document.createElement("div");
             Object.assign(expandedItem.style, {
                 position: "fixed", zIndex: "9999", top: "0", left: "0",
@@ -288,31 +239,22 @@
             });
             
             const img = document.createElement("img");
-            img.src = item.dataset.imgSrc;
+            img.src = src;
             Object.assign(img.style, {
                 maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain",
                 boxShadow: "0 0 50px rgba(0,0,0,0.8)"
             });
             
             expandedItem.appendChild(img);
-            expandedItem.addEventListener("click", closeExpanded);
+            expandedItem.addEventListener("click", () => {
+                gsap.to(expandedItem, { opacity: 0, duration: 0.3, onComplete: () => expandedItem.remove() });
+            });
             document.body.appendChild(expandedItem);
 
             gsap.to(expandedItem, { opacity: 1, duration: 0.3 });
-            gsap.from(img, { scale: 0.9, duration: 0.4, ease: "hop" });
+            gsap.from(img, { scale: 0.9, duration: 0.4, ease: "power2.out" });
         }
 
-        function closeExpanded() {
-            if(!expandedItem) return;
-            gsap.to(expandedItem, { opacity: 0, duration: 0.3, onComplete: () => {
-                expandedItem.remove();
-                expandedItem = null;
-                isExpanded = false;
-                activeItemId = null;
-            }});
-        }
-
-        animate();
     </script>
 </body>
 </html>
