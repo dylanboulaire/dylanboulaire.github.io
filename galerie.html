@@ -1,5 +1,44 @@
-<script>
-        // 1. CONFIGURATION DE VOS IMAGES
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galerie - Dylan Boulaire</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
+</head>
+<body style="overflow: hidden; background-color: #222;"> <header>
+        <nav class="nav-left">
+            <ul>
+                <li><a href="index.html#realisations">Réalisations</a></li>
+                <li><a href="bio.html">Bio</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="galerie.html" class="active-link">Galerie</a></li>
+            </ul>
+        </nav>
+        <div class="logo-center">
+            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
+        </div>
+        <div class="nav-right">
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="mailto:votre-email@gmail.com"><i class="fas fa-envelope"></i></a>
+        </div>
+    </header>
+
+    <div class="gallery-container">
+        <div class="canvas" id="canvas"></div>
+        <div class="gallery-overlay" id="overlay"></div>
+    </div>
+
+    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.2); font-family: sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
+        DRAG & EXPLORE
+    </div>
+
+    <script>
+        // --- 1. CONFIGURATION ---
         const imageUrls = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
@@ -13,31 +52,30 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // 2. RÉGLAGES "COMPACTS" (Style référence écran 2)
+        // RÈGLAGES SERRÉS (Type Screen 2)
         const settings = {
-            // La grille est plus serrée. 
-            // BaseWidth sert de référence pour la largeur d'une colonne
-            gridStepX: 350,      
-            gridStepY: 350,      
+            // Pas de grille (Espace alloué par image)
+            // On réduit pour que ça se touche presque
+            gridStepX: 360,      
+            gridStepY: 300,      
             
-            dragEase: 0.08,
-            momentumFactor: 150,
-            hoverScale: 1.05,
-            expandedScale: 0.85,
-            bufferZone: 1
+            dragEase: 0.08,      // Fluidité
+            momentumFactor: 150, // Inertie
+            hoverScale: 1.05,    // Petit zoom au survol
+            bufferZone: 1        // Préchargement hors écran
         };
 
-        // 3. FORMATS (Ratios adaptés pour éviter de couper le texte)
-        // On définit des tailles proches des standards (Poster, Video, Carré)
+        // FORMATS ADAPTÉS (Pour ne pas couper les textes)
+        // J'ai mis des formats plus "larges" pour tes miniatures Youtube/Vidéos
         const formats = [
-            { w: 320, h: 450 }, // Grand Portrait (Poster A4 ratio)
-            { w: 320, h: 240 }, // Paysage (Video/Miniature)
+            { w: 340, h: 190 }, // 16:9 (Vidéo Standard) - Parfait pour miniatures
+            { w: 320, h: 420 }, // Portrait Haut (Affiche)
             { w: 300, h: 300 }, // Carré
-            { w: 320, h: 380 }, // Portrait moyen
-            { w: 340, h: 220 }  // Grand Paysage
+            { w: 340, h: 250 }, // 4:3 (Photo classique)
+            { w: 280, h: 380 }  // Portrait Étroit
         ];
 
-        // --- MOTEUR DE LA GALERIE ---
+        // --- MOTEUR ---
         gsap.registerPlugin(CustomEase);
         CustomEase.create("hop", "0.9, 0, 0.1, 1");
 
@@ -57,7 +95,7 @@
 
         const itemCount = imageUrls.length;
 
-        // Fonction aléatoire stable (pour que l'image X soit toujours au même endroit)
+        // Fonction aléatoire stable
         function seededRandom(x, y) {
             let n = x * 3711.61 + y * 5344.72;
             return Math.abs(Math.sin(n) * 10000 % 1);
@@ -66,20 +104,18 @@
         function createItem(col, row) {
             const itemNum = Math.abs((row * 7 + col * 3) % itemCount);
             
-            // 1. Choix du format basé sur la position
+            // Choix du format
             const randSeed = seededRandom(col, row);
             const formatIndex = Math.floor(randSeed * formats.length);
             const size = formats[formatIndex];
 
-            // 2. Positionnement "Centré + Léger décalage"
-            // Au lieu d'un grand aléatoire, on centre l'image dans sa cellule de grille
-            // Puis on applique un tout petit décalage pour casser la rigidité (max 30px)
-            
-            const jitter = 30; 
+            // Positionnement avec un "Jitter" (Décalage) très faible
+            // pour garder l'aspect grille compacte mais organique
+            const jitter = 15; 
             const offsetX = (seededRandom(col + 10, row) - 0.5) * jitter;
             const offsetY = (seededRandom(col, row + 10) - 0.5) * jitter;
 
-            // Calcul pour centrer l'élément dans la "case" virtuelle de la grille
+            // Centrage dans la grille
             const centerX = col * settings.gridStepX + (settings.gridStepX - size.w) / 2;
             const centerY = row * settings.gridStepY + (settings.gridStepY - size.h) / 2;
 
@@ -92,7 +128,7 @@
             item.className = "item";
             item.id = itemId;
             
-            // Style de la "carte"
+            // Style inline critique
             item.style.position = "absolute";
             item.style.width = `${size.w}px`;
             item.style.height = `${size.h}px`;
@@ -100,10 +136,9 @@
             item.style.top = `${yPos}px`;
             item.style.overflow = "hidden";
             item.style.cursor = "pointer";
-            // Retrait de l'ombre portée forte pour un look plus "flat" comme ton exemple
-            // item.style.boxShadow = "0 10px 30px rgba(0,0,0,0.3)"; 
+            item.style.borderRadius = "2px"; // Coins légèrement moins ronds pour faire "pro"
             
-            // Stockage Data
+            // Données pour le zoom
             item.dataset.imgSrc = imageUrls[itemNum];
 
             // Image
@@ -111,27 +146,28 @@
             img.src = imageUrls[itemNum];
             img.style.width = "100%";
             img.style.height = "100%";
-            // "cover" coupe l'image pour remplir le cadre. 
-            // Grâce aux formats ajustés ci-dessus, cela coupera moins de texte important.
             img.style.objectFit = "cover"; 
             img.style.display = "block";
-            img.style.transition = "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.3s ease";
-            img.style.pointerEvents = "none";
+            img.style.transition = "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
+            img.style.pointerEvents = "none"; // Important pour le drag
 
             item.appendChild(img);
 
-            // Hover: Zoom léger + assombrissement des autres (optionnel)
+            // Hover
             item.onmouseenter = () => {
-                gsap.to(img, { scale: settings.hoverScale, duration: 0.4 });
-                item.style.zIndex = 10; // Passe au dessus
+                gsap.to(img, { scale: settings.hoverScale, duration: 0.3 });
+                item.style.zIndex = 10;
+                item.style.boxShadow = "0 15px 30px rgba(0,0,0,0.5)";
             };
             item.onmouseleave = () => {
-                gsap.to(img, { scale: 1, duration: 0.4 });
+                gsap.to(img, { scale: 1, duration: 0.3 });
                 item.style.zIndex = 1;
+                item.style.boxShadow = "none";
             };
 
-            // Clic
+            // Click -> Expand
             item.addEventListener("click", () => {
+                // On n'ouvre que si on ne drague pas (mouvement < 2px)
                 if(Math.abs(dragVelocityX) < 2 && Math.abs(dragVelocityY) < 2) {
                     expandItem(item);
                 }
@@ -161,7 +197,8 @@
                         const item = createItem(c, r);
                         canvas.appendChild(item);
                         visibleItems.add(id);
-                        gsap.from(item, { opacity: 0, scale: 0.9, duration: 0.4 });
+                        // Animation d'apparition
+                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.4 });
                     }
                 }
             }
@@ -185,8 +222,8 @@
             requestAnimationFrame(animate);
         }
 
-        // --- GESTION DU DRAG (Support Tactile + Souris) ---
-        function handleDragStart(x, y) {
+        // --- EVENTS (SOURIS + TACTILE) ---
+        function onStart(x, y) {
             if(isExpanded) return;
             isDragging = true;
             container.classList.add("active");
@@ -195,38 +232,39 @@
             dragVelocityX = 0; dragVelocityY = 0;
         }
 
-        function handleDragMove(x, y) {
+        function onMove(x, y) {
             if(!isDragging) return;
             const dx = x - startX;
             const dy = y - startY;
-            targetX += dx; // Tu peux multiplier par 1.2 ici pour scroller plus vite
-            targetY += dy;
+            targetX += dx * 1.2; // Multiplicateur pour aller un peu plus vite
+            targetY += dy * 1.2;
             dragVelocityX = dx;
             dragVelocityY = dy;
             startX = x;
             startY = y;
         }
 
-        function handleDragEnd() {
+        function onEnd() {
             isDragging = false;
             container.classList.remove("active");
             targetX += dragVelocityX * (settings.momentumFactor / 10);
             targetY += dragVelocityY * (settings.momentumFactor / 10);
         }
 
-        container.addEventListener("mousedown", e => handleDragStart(e.clientX, e.clientY));
-        window.addEventListener("mousemove", e => handleDragMove(e.clientX, e.clientY));
-        window.addEventListener("mouseup", handleDragEnd);
+        // Mouse
+        container.addEventListener("mousedown", e => onStart(e.clientX, e.clientY));
+        window.addEventListener("mousemove", e => onMove(e.clientX, e.clientY));
+        window.addEventListener("mouseup", onEnd);
 
-        container.addEventListener("touchstart", e => handleDragStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
+        // Touch
+        container.addEventListener("touchstart", e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
         window.addEventListener("touchmove", e => {
-            e.preventDefault();
-            handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
+            e.preventDefault(); 
+            onMove(e.touches[0].clientX, e.touches[0].clientY);
         }, {passive: false});
-        window.addEventListener("touchend", handleDragEnd);
+        window.addEventListener("touchend", onEnd);
 
-
-        // --- LOGIQUE D'AGRANDISSEMENT ---
+        // --- EXPAND / ZOOM ---
         function expandItem(item) {
             if(isExpanded) return;
             isExpanded = true;
@@ -234,58 +272,47 @@
             
             const rect = item.getBoundingClientRect();
             
+            // Fond noir transparent pour isoler l'image
             expandedItem = document.createElement("div");
             expandedItem.style.position = "fixed";
-            expandedItem.style.zIndex = "10000";
-            expandedItem.style.top = rect.top + "px";
-            expandedItem.style.left = rect.left + "px";
-            expandedItem.style.width = rect.width + "px";
-            expandedItem.style.height = rect.height + "px";
+            expandedItem.style.zIndex = "9999";
+            expandedItem.style.top = "0";
+            expandedItem.style.left = "0";
+            expandedItem.style.width = "100%";
+            expandedItem.style.height = "100%";
+            expandedItem.style.backgroundColor = "rgba(0,0,0,0.9)";
+            expandedItem.style.display = "flex";
+            expandedItem.style.justifyContent = "center";
+            expandedItem.style.alignItems = "center";
+            expandedItem.style.opacity = "0";
             expandedItem.style.cursor = "zoom-out";
             
+            // Image clônée
             const img = document.createElement("img");
             img.src = item.dataset.imgSrc;
-            img.style.width = "100%";
-            img.style.height = "100%";
-            img.style.objectFit = "contain"; 
-            img.style.backgroundColor = "rgba(0,0,0,0.8)"; // Fond sombre derrière l'image zoomée
-            expandedItem.appendChild(img);
+            img.style.maxWidth = "90%";
+            img.style.maxHeight = "90%";
+            img.style.objectFit = "contain";
+            img.style.boxShadow = "0 0 50px rgba(0,0,0,0.5)";
+            img.style.transform = "scale(0.8)";
             
+            expandedItem.appendChild(img);
             expandedItem.addEventListener("click", closeExpanded);
             document.body.appendChild(expandedItem);
-            overlay.classList.add("active");
 
-            gsap.to(".item", { opacity: 0.1, duration: 0.3 });
-            
-            const targetWidth = window.innerWidth;
-            const targetHeight = window.innerHeight;
-
-            gsap.to(expandedItem, {
-                top: 0,
-                left: 0,
-                width: targetWidth,
-                height: targetHeight,
-                duration: 0.5,
-                ease: "hop"
-            });
+            // Animation d'ouverture
+            gsap.to(expandedItem, { opacity: 1, duration: 0.3 });
+            gsap.to(img, { scale: 1, duration: 0.5, ease: "hop" });
         }
 
         function closeExpanded() {
             if(!expandedItem) return;
-
-            overlay.classList.remove("active");
-            gsap.to(".item", { opacity: 1, duration: 0.5 });
+            const img = expandedItem.querySelector("img");
             
-            const originalItem = document.getElementById(activeItemId);
-            const rect = originalItem ? originalItem.getBoundingClientRect() : { top: window.innerHeight/2, left: window.innerWidth/2, width: 0, height: 0};
-
-            gsap.to(expandedItem, {
-                top: rect.top,
-                left: rect.left,
-                width: rect.width,
-                height: rect.height,
-                duration: 0.4,
-                ease: "power3.inOut",
+            gsap.to(expandedItem, { opacity: 0, duration: 0.3 });
+            gsap.to(img, { 
+                scale: 0.8, 
+                duration: 0.3, 
                 onComplete: () => {
                     expandedItem.remove();
                     expandedItem = null;
@@ -295,5 +322,8 @@
             });
         }
 
+        // Démarrage
         animate();
     </script>
+</body>
+</html>
