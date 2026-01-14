@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script> </head>
+</head>
 <body style="overflow: hidden; background-color: #050505; margin: 0;">
 
     <header>
@@ -64,7 +64,7 @@
         #gallery-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             cursor: grab;
-            perspective: 1000px; /* INDISPENSABLE POUR L'EFFET FISHEYE 3D */
+            perspective: 1500px; /* Perspective un peu plus lointaine pour adoucir */
         }
         #gallery-container:active { cursor: grabbing; }
 
@@ -72,20 +72,18 @@
             position: absolute; top: 0; left: 0;
             display: block;
             will-change: transform; 
-            /* On centre le point de transformation pour que la rotation se fasse bien */
             transform-origin: center center; 
         }
 
         .gallery-item img {
             width: 100%; height: auto; display: block;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            /* Petit filtre pour le style sombre */
             filter: brightness(0.8) grayscale(0.2); 
             transition: filter 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             pointer-events: none;
         }
 
-        /* Hover : L'image s'éclaire et vient vers nous */
+        /* Hover */
         .gallery-item:hover { z-index: 100 !important; }
         .gallery-item:hover img { 
             filter: brightness(1.1) grayscale(0);
@@ -114,11 +112,12 @@
             verticalDuplicates: 4, 
             horizontalSets: 3, 
             dragSpeed: 1.5,
-            ease: 0.04, // INERTIE FLUIDE (Lourd)
+            ease: 0.04,
             
-            // CONFIGURATION FISHEYE
-            curveStrength: 200, // Intensité de la courbure Z (plus c'est haut, plus c'est courbé)
-            rotationMax: 15     // Rotation max en degrés sur les bords
+            // --- CONFIGURATION FISHEYE (AJUSTÉE) ---
+            // Valeurs très réduites pour un effet subtil
+            curveStrength: 40,   // Éloignement Z max sur les bords (était 200)
+            rotationMax: 3       // Rotation max en degrés (était 15)
         };
 
         const container = document.getElementById('gallery-container');
@@ -150,7 +149,6 @@
             const totalCols = config.colWidths.length * config.horizontalSets;
             colHeights = new Array(totalCols).fill(0);
             
-            // Rythme vertical initial
             for(let i=0; i<totalCols; i++) {
                 const type = i % 5;
                 if(type === 1) colHeights[i] = 100;
@@ -178,13 +176,12 @@
                     item.appendChild(img);
                     container.appendChild(item);
 
-                    // Calcul hauteur
                     const ratio = img.naturalHeight / img.naturalWidth;
                     const renderHeight = colW * ratio;
 
                     items.push({
                         element: item,
-                        imgElement: img, // Ref pour l'anim
+                        imgElement: img, 
                         x: baseX,
                         y: colHeights[c],
                         width: colW,
@@ -194,7 +191,6 @@
 
                     colHeights[c] += renderHeight + config.gap;
                     
-                    // CLIC -> ZOOM FLUIDE
                     item.addEventListener('click', () => {
                         if(Math.abs(targetX - scrollX) < 5 && Math.abs(targetY - scrollY) < 5) {
                             zoomImage(item, url);
@@ -206,14 +202,13 @@
             loader.style.display = 'none';
             animate();
             
-            // Centre de départ
             targetX = -totalWorldWidth / 3;
             targetY = -Math.max(...colHeights) / 3;
             scrollX = targetX;
             scrollY = targetY;
         }
 
-        // --- MOTEUR RENDU (AVEC FISHEYE) ---
+        // --- MOTEUR RENDU (AVEC FISHEYE SUBTIL) ---
         function animate() {
             scrollX += (targetX - scrollX) * config.ease;
             scrollY += (targetY - scrollY) * config.ease;
@@ -221,166 +216,7 @@
             const winW = window.innerWidth;
             const winH = window.innerHeight;
             const centerX = winW / 2;
-            const centerY = winH / 2;
 
             items.forEach(item => {
-                // 1. Calcul Position de base
                 let x = item.x + scrollX;
-                let loopedX = ((x % totalWorldWidth) + totalWorldWidth) % totalWorldWidth;
-                if (loopedX > totalWorldWidth / 2 + winW) loopedX -= totalWorldWidth;
-                
-                const totalH = colHeights[item.colIndex];
-                let y = item.y + scrollY;
-                let loopedY = ((y % totalH) + totalH) % totalH;
-                if (loopedY > totalH / 2 + winH) loopedY -= totalH;
-
-                // 2. Vérification visibilité (Culling)
-                const isVisible = loopedX > -400 && loopedX < winW + 400 && 
-                                  loopedY > -400 && loopedY < winH + 400;
-
-                if (isVisible) {
-                    item.element.style.display = 'block';
-
-                    // --- EFFET FISHEYE / COURBURE ---
-                    // On calcule la distance du centre de l'image par rapport au centre de l'écran
-                    const itemCenterX = loopedX + item.width / 2;
-                    const distFromCenterX = (itemCenterX - centerX) / centerX; // -1 (gauche) à 1 (droite)
-                    
-                    // Rotation Y : L'image tourne un peu quand elle est sur les bords
-                    const rotateY = distFromCenterX * config.rotationMax;
-                    
-                    // Recul Z : L'image s'éloigne quand elle est sur les bords (Courbure cylindrique)
-                    const translateZ = -Math.abs(distFromCenterX * config.curveStrength);
-
-                    // Opacité/Scale subtile sur les bords extrêmes
-                    // const scale = 1 - Math.abs(distFromCenterX * 0.1);
-
-                    item.element.style.transform = 
-                        `translate3d(${loopedX}px, ${loopedY}px, ${translateZ}px) rotateY(${rotateY}deg)`;
-                    
-                } else {
-                    item.element.style.display = 'none';
-                }
-            });
-
-            requestAnimationFrame(animate);
-        }
-
-        // --- GESTION INPUT ---
-        let isDragging = false;
-        let startX = 0, startY = 0;
-
-        const onStart = (x, y) => {
-            isDragging = true;
-            startX = x; startY = y;
-            container.style.cursor = "grabbing";
-        };
-
-        const onMove = (x, y) => {
-            if(!isDragging) return;
-            const dx = x - startX;
-            const dy = y - startY;
-            targetX += dx * config.dragSpeed;
-            targetY += dy * config.dragSpeed;
-            startX = x; startY = y;
-        };
-
-        const onEnd = () => {
-            isDragging = false;
-            container.style.cursor = "grab";
-        };
-
-        window.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
-        window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
-        window.addEventListener('mouseup', onEnd);
-        window.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
-        window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
-        window.addEventListener('touchend', onEnd);
-
-
-        // --- ZOOM "FLUIDE" (FLIP ANIMATION) ---
-        let expandedOverlay = null;
-        let originalItem = null; // Pour remettre l'opacité après
-
-        function zoomImage(itemDiv, src) {
-            // 1. Capture position départ
-            const rect = itemDiv.getBoundingClientRect();
-            
-            // 2. Création Overlay
-            expandedOverlay = document.createElement("div");
-            expandedOverlay.style.cssText = `
-                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-                background: rgba(0,0,0,0.95); z-index: 9999; cursor: zoom-out;
-                display: flex; justify-content: center; align-items: center; opacity: 0;
-            `;
-            
-            // 3. Image Clônée (Positionnée exactement sur l'originale au départ)
-            const img = document.createElement("img");
-            img.src = src;
-            img.style.cssText = `
-                position: absolute;
-                top: ${rect.top}px;
-                left: ${rect.left}px;
-                width: ${rect.width}px;
-                height: ${rect.height}px;
-                object-fit: cover;
-                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-                transition: none; /* On gère l'anim avec GSAP */
-            `;
-            
-            expandedOverlay.appendChild(img);
-            document.body.appendChild(expandedOverlay);
-
-            // 4. Animation (Etat Final)
-            // On fade in le fond noir
-            gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
-
-            // On anime l'image vers le centre et en grand
-            const targetWidth = Math.min(window.innerWidth * 0.9, img.naturalWidth);
-            const targetHeight = Math.min(window.innerHeight * 0.9, img.naturalHeight);
-            
-            // Calcul ratio pour "contain"
-            const ratioW = window.innerWidth * 0.9 / rect.width;
-            const ratioH = window.innerHeight * 0.9 / rect.height;
-            const scale = Math.min(ratioW, ratioH); // On prend le plus petit ratio pour que ça rentre
-
-            // Animation GSAP Complexe pour centrer
-            gsap.to(img, {
-                top: "50%",
-                left: "50%",
-                x: "-50%",
-                y: "-50%",
-                width: rect.width * scale, // On scale par rapport à la taille d'origine
-                height: rect.height * scale,
-                duration: 0.6,
-                ease: "power3.inOut"
-            });
-
-            // 5. Fermeture
-            expandedOverlay.onclick = () => {
-                // Retour à la position d'origine (même si on a scrollé, on retourne vers les coord actuelles de l'item)
-                const newRect = itemDiv.getBoundingClientRect();
-                
-                gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
-                
-                gsap.to(img, {
-                    top: newRect.top,
-                    left: newRect.left,
-                    x: 0,
-                    y: 0,
-                    width: newRect.width,
-                    height: newRect.height,
-                    duration: 0.5,
-                    ease: "power3.inOut",
-                    onComplete: () => {
-                        expandedOverlay.remove();
-                    }
-                });
-            };
-        }
-
-        preloadImages();
-
-    </script>
-</body>
-</html>
+                let looped
