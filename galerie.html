@@ -340,26 +340,26 @@
         window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
-        // --- ZOOM FLUIDE CORRIGÉ ---
+        // --- ZOOM FLUIDE CORRIGÉ (CALCUL PIXEL PERFECTION) ---
         let expandedOverlay = null;
 
         function zoomMedia(itemDiv, src) {
-            // 1. Position visuelle exacte
+            // 1. Position de départ
             const rect = itemDiv.getBoundingClientRect();
             
             const youtubeID = getYoutubeID(src);
             const isLocalVid = isVideoLocal(src);
             
             expandedOverlay = document.createElement("div");
+            // On retire flexbox ici, on gère tout en absolute pour éviter les conflits
             expandedOverlay.style.cssText = `
                 position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
                 background: rgba(0,0,0,0.95); z-index: 9999; cursor: zoom-out;
-                display: flex; justify-content: center; align-items: center; opacity: 0;
+                opacity: 0;
             `;
             
             let content;
             if (youtubeID) {
-                // Pour le zoom, on essaie la HD, mais on fallback sur HQ si besoin
                 content = document.createElement("img");
                 const id = getYoutubeID(src);
                 content.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
@@ -373,11 +373,15 @@
                 content.src = src;
             }
             
+            // Position initiale (identique à la miniature)
             content.style.cssText = `
-                position: absolute; top: ${rect.top}px; left: ${rect.left}px;
-                width: ${rect.width}px; height: ${rect.height}px;
-                object-fit: cover; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-                transform-origin: center center;
+                position: absolute; 
+                top: ${rect.top}px; 
+                left: ${rect.left}px;
+                width: ${rect.width}px; 
+                height: ${rect.height}px;
+                object-fit: cover; 
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             `;
             
             expandedOverlay.appendChild(content);
@@ -385,6 +389,7 @@
 
             gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
 
+            // 2. Calcul des dimensions cibles (Ratio)
             let naturalW = 16, naturalH = 9;
             if (youtubeID) {
                 if (isShorts(src)) { naturalW = 9; naturalH = 16; }
@@ -394,22 +399,44 @@
                 naturalW = content.naturalWidth || 1000; naturalH = content.naturalHeight || 1000;
             }
 
-            const ratioW = window.innerWidth * 0.9 / rect.width;
-            const ratioH = window.innerHeight * 0.9 / rect.height;
-            const scale = Math.min(ratioW, ratioH); 
+            // Calcul taille max (90% de l'écran)
+            const screenW = window.innerWidth;
+            const screenH = window.innerHeight;
+            const ratioImg = naturalW / naturalH;
+            const ratioScreen = screenW / screenH;
+            
+            let targetW, targetH;
 
+            if (ratioScreen > ratioImg) { 
+                targetH = screenH * 0.9;
+                targetW = targetH * ratioImg;
+            } else { 
+                targetW = screenW * 0.9;
+                targetH = targetW / ratioImg;
+            }
+
+            // 3. CALCUL DE LA POSITION CENTRALE EN PIXELS (La correction est ici)
+            // On centre mathématiquement au lieu d'utiliser css translate -50%
+            const targetTop = (screenH - targetH) / 2;
+            const targetLeft = (screenW - targetW) / 2;
+
+            // 4. Animation
             gsap.to(content, {
-                top: "50%", left: "50%", x: "-50%", y: "-50%",
-                width: rect.width * scale, height: rect.height * scale,
-                duration: 0.6, ease: "power3.inOut",
+                top: targetTop,
+                left: targetLeft,
+                width: targetW, 
+                height: targetH,
+                // On n'utilise PLUS x/y percent, c'est plus stable
+                duration: 0.6, 
+                ease: "power3.inOut",
                 onComplete: () => {
                     if(youtubeID) {
                         const iframe = document.createElement("iframe");
                         iframe.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0`;
                         iframe.style.cssText = `
-                            position: absolute; top: 50%; left: 50%; 
-                            transform: translate(-50%, -50%);
-                            width: ${rect.width * scale}px; height: ${rect.height * scale}px; 
+                            position: absolute; 
+                            top: ${targetTop}px; left: ${targetLeft}px; 
+                            width: ${targetW}px; height: ${targetH}px; 
                             border: none; box-shadow: 0 0 50px rgba(0,0,0,0.8);
                         `;
                         iframe.allow = "autoplay; encrypted-media";
@@ -419,22 +446,35 @@
                 }
             });
 
+            // Fermeture
             expandedOverlay.onclick = (e) => {
                 if(e.target === expandedOverlay) {
                     if(content.tagName === 'IFRAME') {
                         const id = getYoutubeID(src);
                         const imgBack = document.createElement("img");
-                        imgBack.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; 
+                        imgBack.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`; 
+                        imgBack.onerror = function() { this.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; };
+                        
+                        // On remet les dimensions actuelles pour la transition
                         imgBack.style.cssText = content.style.cssText;
+                        imgBack.style.objectFit = "cover"; // Retour en cover pour l'anim de fin
+                        
                         expandedOverlay.replaceChild(imgBack, content);
                         content = imgBack;
                     }
+                    
+                    // Recalcul position actuelle de la miniature
                     const newRect = itemDiv.getBoundingClientRect();
+
                     gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
+                    
                     gsap.to(content, {
-                        top: newRect.top, left: newRect.left, x: 0, y: 0,
-                        width: newRect.width, height: newRect.height,
-                        duration: 0.5, ease: "power3.inOut",
+                        top: newRect.top, 
+                        left: newRect.left, 
+                        width: newRect.width, 
+                        height: newRect.height,
+                        duration: 0.5, 
+                        ease: "power3.inOut",
                         onComplete: () => { expandedOverlay.remove(); }
                     });
                 }
