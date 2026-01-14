@@ -40,7 +40,7 @@
     </div>
 
     <script>
-        // --- 1. VOS IMAGES ---
+        // --- 1. IMAGES ---
         const imageUrls = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
@@ -54,16 +54,18 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // --- 2. RÉGLAGES "MUR DENSE" ---
+        // --- 2. RÉGLAGES DE LA GRILLE ---
         const settings = {
-            // Taille de la "case" invisible. 
+            // Taille de la "case invisible" de la grille.
             // C'est l'espace réservé pour chaque image.
-            // Aucune image ne dépassera cette taille, donc ZERO chevauchement.
-            gridWidth: 320,  
-            gridHeight: 380, 
+            // Aucune image ne dépassera cette taille pour éviter le chevauchement.
+            colWidth: 350,  
+            rowHeight: 400, 
             
-            // Espace de sécurité à l'intérieur de la case (marge)
-            padding: 15,
+            // Espace max occupé par l'image à l'intérieur de la case (Marge de sécurité)
+            // L'image sera redimensionnée pour tenir dans ce carré (ex: 320x370)
+            maxImageWidth: 320,
+            maxImageHeight: 370,
             
             dragEase: 0.08,
             momentumFactor: 150,
@@ -100,99 +102,83 @@
             const itemNum = Math.abs((row * 7 + col * 3) % itemCount);
             const randSeed = seededRandom(col, row);
 
-            // 1. Calcul de la position de la grille
-            // EFFET BRIQUE : On décale les colonnes impaires vers le bas (50% de la hauteur)
-            // Cela casse l'alignement horizontal stricte (effet "organique")
-            let yOffset = 0;
-            if (Math.abs(col) % 2 === 1) {
-                yOffset = settings.gridHeight * 0.5;
+            // --- 1. CALCUL DE POSITION (Grille décalée) ---
+            
+            // Position de base de la grille
+            let xPos = col * settings.colWidth;
+            let yPos = row * settings.rowHeight;
+
+            // DÉCALAGE QUINCONCE : On décale une colonne sur deux vers le bas
+            // Cela permet de "mélanger" visuellement les portraits et paysages
+            // et de réduire l'impression de vide.
+            if (col % 2 !== 0) {
+                yPos += settings.rowHeight * 0.5;
             }
 
-            const xBase = col * settings.gridWidth;
-            const yBase = row * settings.gridHeight + yOffset;
+            // Petit "Jitter" (bruit aléatoire) très faible pour casser la ligne droite
+            // On le garde petit (10px) pour éviter les chevauchements
+            const jitter = 10;
+            xPos += (randSeed - 0.5) * jitter;
+            yPos += (seededRandom(row, col) - 0.5) * jitter;
 
-            // 2. Détermination de la taille de l'image (Simulation de format)
-            // On ne choisit pas une taille fixe, on choisit un RATIO.
-            // On calcule ensuite la taille max possible dans notre case pour ce ratio.
-            
-            // 0-0.4: Portrait (Poster)
-            // 0.4-0.7: Carré
-            // 0.7-1.0: Paysage (Vidéo)
-            let ratioW, ratioH;
-            
-            if(randSeed < 0.4) { // Portrait (ex: 2:3)
-                ratioW = 2; ratioH = 3;
-            } else if (randSeed < 0.7) { // Carré (1:1)
-                ratioW = 1; ratioH = 1;
-            } else { // Paysage (16:9)
-                ratioW = 16; ratioH = 9;
-            }
-
-            // Calculer les dimensions max qui rentrent dans la case (moins le padding)
-            const maxW = settings.gridWidth - (settings.padding * 2);
-            const maxH = settings.gridHeight - (settings.padding * 2);
-            
-            // Algorithme "Fit Inside" (comme object-fit: contain mais en math)
-            let finalW = maxW;
-            let finalH = (maxW / ratioW) * ratioH;
-
-            if (finalH > maxH) {
-                finalH = maxH;
-                finalW = (maxH / ratioH) * ratioW;
-            }
-
-            // 3. Centrage dans la case
-            const xPos = xBase + (settings.gridWidth - finalW) / 2;
-            const yPos = yBase + (settings.gridHeight - finalH) / 2;
-
-            // --- CRÉATION DOM ---
+            // --- 2. CRÉATION DU CONTENEUR ---
             const itemId = `${col},${row}`;
             const item = document.createElement("div");
             item.className = "item";
             item.id = itemId;
             
-            // Positionnement
+            // Le conteneur fait la taille EXACTE de la case de grille
             item.style.position = "absolute";
             item.style.left = `${xPos}px`;
             item.style.top = `${yPos}px`;
-            item.style.width = `${finalW}px`;
-            item.style.height = `${finalH}px`;
+            item.style.width = `${settings.colWidth}px`;
+            item.style.height = `${settings.rowHeight}px`;
             
-            // Style
+            // Flexbox pour centrer parfaitement l'image dans sa case
+            item.style.display = "flex";
+            item.style.justifyContent = "center";
+            item.style.alignItems = "center";
+            
+            item.style.pointerEvents = "auto"; // Permet le clic
             item.style.cursor = "pointer";
-            item.style.zIndex = "1";
-            
+
             // Données
             item.dataset.imgSrc = imageUrls[itemNum];
 
-            // Image
+            // --- 3. L'IMAGE ---
             const img = document.createElement("img");
             img.src = imageUrls[itemNum];
-            img.style.width = "100%";
-            img.style.height = "100%";
-            // Important : L'image remplit exactement le div calculé
-            img.style.objectFit = "cover"; 
-            img.style.borderRadius = "4px";
+            
+            // RÈGLE D'OR : ZÉRO CROP
+            // On définit une taille MAXIMALE pour l'image.
+            // L'image va garder son ratio naturel et grandir jusqu'à toucher
+            // soit la largeur max, soit la hauteur max.
+            img.style.maxWidth = `${settings.maxImageWidth}px`;
+            img.style.maxHeight = `${settings.maxImageHeight}px`;
+            
+            // On s'assure que l'image ne force pas la taille
+            img.style.width = "auto";
+            img.style.height = "auto";
+            
+            // Esthétique
             img.style.display = "block";
-            // Ombre pour détacher du fond
-            img.style.boxShadow = "0 10px 25px rgba(0,0,0,0.4)";
-            img.style.transition = "transform 0.3s ease, box-shadow 0.3s ease";
-            img.style.pointerEvents = "none";
+            img.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)"; // Ombre portée
+            img.style.transition = "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)";
+            img.style.pointerEvents = "none"; // Le clic passe à travers vers le div parent
 
             item.appendChild(img);
 
-            // Interactions
+            // Hover Effect
             item.onmouseenter = () => {
                 gsap.to(img, { scale: settings.hoverScale, duration: 0.3 });
-                item.style.zIndex = 100;
-                img.style.boxShadow = "0 20px 40px rgba(0,0,0,0.6)";
+                item.style.zIndex = 100; // Passe au premier plan
             };
             item.onmouseleave = () => {
                 gsap.to(img, { scale: 1, duration: 0.3 });
                 item.style.zIndex = 1;
-                img.style.boxShadow = "0 10px 25px rgba(0,0,0,0.4)";
             };
 
+            // Click -> Expand
             item.addEventListener("click", () => {
                 if(Math.abs(dragVelocityX) < 2 && Math.abs(dragVelocityY) < 2) {
                     expandItem(item);
@@ -202,16 +188,16 @@
             return item;
         }
 
-        // --- GESTION INFINIE ---
+        // --- MOTEUR INFINI ---
         function updateVisibleItems() {
             const buffer = settings.bufferZone;
             const viewW = window.innerWidth;
             const viewH = window.innerHeight;
             
-            const startCol = Math.floor((-currentX - viewW * 0.5) / settings.gridWidth) - buffer;
-            const endCol = Math.ceil((-currentX + viewW * 1.5) / settings.gridWidth) + buffer;
-            const startRow = Math.floor((-currentY - viewH * 0.5) / settings.gridHeight) - buffer;
-            const endRow = Math.ceil((-currentY + viewH * 1.5) / settings.gridHeight) + buffer;
+            const startCol = Math.floor((-currentX - viewW * 0.5) / settings.colWidth) - buffer;
+            const endCol = Math.ceil((-currentX + viewW * 1.5) / settings.colWidth) + buffer;
+            const startRow = Math.floor((-currentY - viewH * 0.5) / settings.rowHeight) - buffer;
+            const endRow = Math.ceil((-currentY + viewH * 1.5) / settings.rowHeight) + buffer;
 
             const currentIds = new Set();
 
@@ -224,7 +210,7 @@
                         const item = createItem(c, r);
                         canvas.appendChild(item);
                         visibleItems.add(id);
-                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.4 });
+                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.5, delay: Math.random() * 0.1 });
                     }
                 }
             }
@@ -248,7 +234,7 @@
             requestAnimationFrame(animate);
         }
 
-        // --- DRAG ---
+        // --- DRAG (SOURIS + TACTILE) ---
         function onStart(x, y) {
             if(isExpanded) return;
             isDragging = true;
@@ -285,7 +271,7 @@
         window.addEventListener("touchmove", e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener("touchend", onEnd);
 
-        // --- LIGHTBOX ---
+        // --- ZOOM (LIGHTBOX) ---
         function expandItem(item) {
             if(isExpanded) return;
             isExpanded = true;
