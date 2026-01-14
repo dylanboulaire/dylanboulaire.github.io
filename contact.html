@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - Dylan Boulaire</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
+<body style="background-color: #050505; margin: 0; font-family: 'Montserrat', sans-serif; color: white;">
 
     <header>
         <nav class="nav-left">
@@ -24,53 +23,125 @@
         </div>
         <div class="nav-right">
             <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://www.behance.net" target="_blank"><i class="fab fa-behance"></i></a>
-            <a href="mailto:votre-email@gmail.com"><i class="fas fa-envelope"></i></a>
-            <a href="assets/mon-cv.pdf" target="_blank"><i class="fas fa-file-user"></i></a>
+            <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
     </header>
 
-    <main class="page-padding">
-        <div class="contact-container">
-            <h1 class="contact-title">Me contacter</h1>
-            <p class="contact-subtitle">Un projet ? Une collaboration ? N'hésitez pas à m'envoyer un message.</p>
-            
-            <form action="mailto:votre-email@gmail.com" method="post" enctype="text/plain" class="contact-form">
+    <div class="contact-container">
+        <div class="contact-content">
+            <h1>DISCUTONS ENSEMBLE</h1>
+            <p class="subtitle">Un projet ? Une collaboration ? N'hésitez pas.</p>
+
+            <form action="https://formsubmit.co/boulairedylan@gmail.com" method="POST" class="contact-form">
                 
-                <div class="form-group">
-                    <label>Nom</label>
-                    <input type="text" name="nom" placeholder="Votre nom" required>
+                <input type="hidden" name="_next" value="https://ton-site.com/merci.html"> 
+                <input type="hidden" name="_subject" value="Nouveau message du Portfolio !">
+                <input type="hidden" name="_captcha" value="false">
+                <input type="hidden" name="_template" value="table">
+
+                <div class="input-group">
+                    <input type="text" name="name" placeholder="Votre Nom" required>
                 </div>
 
-                <div class="form-group">
-                    <label>Prénom</label>
-                    <input type="text" name="prenom" placeholder="Votre prénom">
+                <div class="input-group">
+                    <input type="email" name="email" placeholder="Votre Email" required>
                 </div>
-                
-                <div class="form-group">
-                    <label>Adresse Email *</label>
-                    <input type="email" name="email" placeholder="Votre adresse mail" required>
+
+                <div class="input-group">
+                    <textarea name="message" rows="6" placeholder="Votre Message" required></textarea>
                 </div>
-                
-                <div class="form-group">
-                    <label>Message *</label>
-                    <textarea name="message" rows="6" placeholder="Votre message" required></textarea>
-                </div>
-                
-                <button type="submit">Envoyer</button>
+
+                <button type="submit" class="submit-btn">ENVOYER LE MESSAGE</button>
             </form>
-
-            <div class="contact-footer-icons">
-                <a href="https://www.behance.net" target="_blank">Bē</a>
-                <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank">in</a>
-                <a href="mailto:votre-email@gmail.com"><i class="fas fa-envelope"></i></a>
-            </div>
         </div>
-    </main>
+    </div>
 
-    <footer>
-        <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
-    </footer>
+    <style>
+        /* STYLE SPÉCIFIQUE CONTACT */
+        
+        .contact-container {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding-top: 80px; /* Espace pour le header */
+        }
 
+        .contact-content {
+            width: 100%;
+            max-width: 600px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: rgba(255,255,255,0.6);
+            margin-bottom: 50px;
+        }
+
+        .contact-form {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .input-group {
+            position: relative;
+        }
+
+        /* Styles des champs (Minimalistes) */
+        input, textarea {
+            width: 100%;
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid rgba(255,255,255,0.2);
+            padding: 15px 0;
+            color: white;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+            resize: none; /* Empêche de redimensionner le textarea */
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-bottom-color: white;
+        }
+
+        /* Placeholder style */
+        ::placeholder {
+            color: rgba(255,255,255,0.3);
+        }
+
+        /* Bouton */
+        .submit-btn {
+            margin-top: 20px;
+            padding: 15px 40px;
+            background: white;
+            color: #050505;
+            border: none;
+            font-weight: bold;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.3s ease, background 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .submit-btn:hover {
+            transform: scale(1.05);
+            background: #ECEAC4; /* Ta couleur crème si tu en as une, sinon laisse blanc */
+        }
+
+    </style>
 </body>
 </html>
