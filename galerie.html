@@ -35,12 +35,12 @@
         <div class="gallery-overlay" id="overlay"></div>
     </div>
 
-    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.2); font-family: sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
+    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-family: sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
         DRAG & EXPLORE
     </div>
 
     <script>
-        // --- 1. CONFIGURATION DES IMAGES ---
+        // --- 1. VOS IMAGES ---
         const imageUrls = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
@@ -54,28 +54,22 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // --- 2. RÉGLAGES ---
+        // --- 2. RÉGLAGES "MUR DENSE" ---
         const settings = {
-            // Espace alloué pour chaque "cellule" invisible
-            gridStepX: 400,      
-            gridStepY: 400,      
+            // Taille de la "case" invisible. 
+            // C'est l'espace réservé pour chaque image.
+            // Aucune image ne dépassera cette taille, donc ZERO chevauchement.
+            gridWidth: 320,  
+            gridHeight: 380, 
+            
+            // Espace de sécurité à l'intérieur de la case (marge)
+            padding: 15,
             
             dragEase: 0.08,
             momentumFactor: 150,
             hoverScale: 1.05,
             bufferZone: 1
         };
-
-        // --- 3. FORMATS DE CADRES ---
-        // Puisqu'on utilise "contain", ces tailles définissent la zone MAXIMUM occupée par l'image.
-        // J'ai mis des formats variés pour créer du rythme.
-        const formats = [
-            { w: 350, h: 350 }, // Carré Max
-            { w: 300, h: 450 }, // Portrait Haut (type Story/Poster)
-            { w: 450, h: 300 }, // Paysage Large
-            { w: 380, h: 250 }, // Paysage Standard
-            { w: 280, h: 380 }  // Portrait Standard
-        ];
 
         // --- MOTEUR ---
         gsap.registerPlugin(CustomEase);
@@ -104,81 +98,101 @@
 
         function createItem(col, row) {
             const itemNum = Math.abs((row * 7 + col * 3) % itemCount);
-            
-            // Choix aléatoire d'une zone de conteneur
             const randSeed = seededRandom(col, row);
-            const formatIndex = Math.floor(randSeed * formats.length);
-            const size = formats[formatIndex];
 
-            // Petit décalage pour l'aspect organique
-            const jitter = 20; 
-            const offsetX = (seededRandom(col + 10, row) - 0.5) * jitter;
-            const offsetY = (seededRandom(col, row + 10) - 0.5) * jitter;
+            // 1. Calcul de la position de la grille
+            // EFFET BRIQUE : On décale les colonnes impaires vers le bas (50% de la hauteur)
+            // Cela casse l'alignement horizontal stricte (effet "organique")
+            let yOffset = 0;
+            if (Math.abs(col) % 2 === 1) {
+                yOffset = settings.gridHeight * 0.5;
+            }
 
-            const centerX = col * settings.gridStepX + (settings.gridStepX - size.w) / 2;
-            const centerY = row * settings.gridStepY + (settings.gridStepY - size.h) / 2;
+            const xBase = col * settings.gridWidth;
+            const yBase = row * settings.gridHeight + yOffset;
 
-            const xPos = centerX + offsetX;
-            const yPos = centerY + offsetY;
+            // 2. Détermination de la taille de l'image (Simulation de format)
+            // On ne choisit pas une taille fixe, on choisit un RATIO.
+            // On calcule ensuite la taille max possible dans notre case pour ce ratio.
+            
+            // 0-0.4: Portrait (Poster)
+            // 0.4-0.7: Carré
+            // 0.7-1.0: Paysage (Vidéo)
+            let ratioW, ratioH;
+            
+            if(randSeed < 0.4) { // Portrait (ex: 2:3)
+                ratioW = 2; ratioH = 3;
+            } else if (randSeed < 0.7) { // Carré (1:1)
+                ratioW = 1; ratioH = 1;
+            } else { // Paysage (16:9)
+                ratioW = 16; ratioH = 9;
+            }
 
+            // Calculer les dimensions max qui rentrent dans la case (moins le padding)
+            const maxW = settings.gridWidth - (settings.padding * 2);
+            const maxH = settings.gridHeight - (settings.padding * 2);
+            
+            // Algorithme "Fit Inside" (comme object-fit: contain mais en math)
+            let finalW = maxW;
+            let finalH = (maxW / ratioW) * ratioH;
+
+            if (finalH > maxH) {
+                finalH = maxH;
+                finalW = (maxH / ratioH) * ratioW;
+            }
+
+            // 3. Centrage dans la case
+            const xPos = xBase + (settings.gridWidth - finalW) / 2;
+            const yPos = yBase + (settings.gridHeight - finalH) / 2;
+
+            // --- CRÉATION DOM ---
             const itemId = `${col},${row}`;
-
-            // LE CONTENEUR (Invisible)
             const item = document.createElement("div");
             item.className = "item";
             item.id = itemId;
             
+            // Positionnement
             item.style.position = "absolute";
-            item.style.width = `${size.w}px`;
-            item.style.height = `${size.h}px`;
             item.style.left = `${xPos}px`;
             item.style.top = `${yPos}px`;
+            item.style.width = `${finalW}px`;
+            item.style.height = `${finalH}px`;
             
-            // IMPORTANT : On retire overflow hidden pour que l'ombre soit visible
-            // et on rend le fond transparent.
-            item.style.overflow = "visible"; 
-            item.style.backgroundColor = "transparent";
+            // Style
             item.style.cursor = "pointer";
+            item.style.zIndex = "1";
             
             // Données
             item.dataset.imgSrc = imageUrls[itemNum];
 
-            // L'IMAGE
+            // Image
             const img = document.createElement("img");
             img.src = imageUrls[itemNum];
-            
-            // STYLE POUR NE PAS COUPER L'IMAGE
             img.style.width = "100%";
             img.style.height = "100%";
-            img.style.objectFit = "contain"; // <--- C'est ici la magie : L'image rentre TOUJOURS en entier
-            img.style.objectPosition = "center";
+            // Important : L'image remplit exactement le div calculé
+            img.style.objectFit = "cover"; 
+            img.style.borderRadius = "4px";
             img.style.display = "block";
-            
-            // Esthétique de l'image (puisque le conteneur est invisible)
-            // On met l'ombre portée sur l'image elle-même (via un filter drop-shadow pour la précision si PNG)
-            // Ou box-shadow sur le conteneur si ce sont des rectangles.
-            // Ici, comme on est en "contain", l'image peut être plus petite que la boite. 
-            // L'astuce propre : filter drop-shadow gère la forme réelle de l'image.
-            img.style.filter = "drop-shadow(0 10px 15px rgba(0,0,0,0.5))";
-            
-            img.style.transition = "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.3s";
+            // Ombre pour détacher du fond
+            img.style.boxShadow = "0 10px 25px rgba(0,0,0,0.4)";
+            img.style.transition = "transform 0.3s ease, box-shadow 0.3s ease";
             img.style.pointerEvents = "none";
 
             item.appendChild(img);
 
-            // Effet Hover
+            // Interactions
             item.onmouseenter = () => {
-                gsap.to(img, { scale: 1.08, duration: 0.3 });
+                gsap.to(img, { scale: settings.hoverScale, duration: 0.3 });
                 item.style.zIndex = 100;
-                img.style.filter = "drop-shadow(0 20px 30px rgba(0,0,0,0.7))";
+                img.style.boxShadow = "0 20px 40px rgba(0,0,0,0.6)";
             };
             item.onmouseleave = () => {
                 gsap.to(img, { scale: 1, duration: 0.3 });
                 item.style.zIndex = 1;
-                img.style.filter = "drop-shadow(0 10px 15px rgba(0,0,0,0.5))";
+                img.style.boxShadow = "0 10px 25px rgba(0,0,0,0.4)";
             };
 
-            // Click
             item.addEventListener("click", () => {
                 if(Math.abs(dragVelocityX) < 2 && Math.abs(dragVelocityY) < 2) {
                     expandItem(item);
@@ -188,16 +202,16 @@
             return item;
         }
 
-        // --- GESTION DE L'AFFICHAGE INFINI ---
+        // --- GESTION INFINIE ---
         function updateVisibleItems() {
             const buffer = settings.bufferZone;
             const viewW = window.innerWidth;
             const viewH = window.innerHeight;
             
-            const startCol = Math.floor((-currentX - viewW * 0.5) / settings.gridStepX) - buffer;
-            const endCol = Math.ceil((-currentX + viewW * 1.5) / settings.gridStepX) + buffer;
-            const startRow = Math.floor((-currentY - viewH * 0.5) / settings.gridStepY) - buffer;
-            const endRow = Math.ceil((-currentY + viewH * 1.5) / settings.gridStepY) + buffer;
+            const startCol = Math.floor((-currentX - viewW * 0.5) / settings.gridWidth) - buffer;
+            const endCol = Math.ceil((-currentX + viewW * 1.5) / settings.gridWidth) + buffer;
+            const startRow = Math.floor((-currentY - viewH * 0.5) / settings.gridHeight) - buffer;
+            const endRow = Math.ceil((-currentY + viewH * 1.5) / settings.gridHeight) + buffer;
 
             const currentIds = new Set();
 
@@ -210,7 +224,7 @@
                         const item = createItem(c, r);
                         canvas.appendChild(item);
                         visibleItems.add(id);
-                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.5, delay: Math.random() * 0.1 });
+                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.4 });
                     }
                 }
             }
@@ -234,7 +248,7 @@
             requestAnimationFrame(animate);
         }
 
-        // --- DRAG & DROP ---
+        // --- DRAG ---
         function onStart(x, y) {
             if(isExpanded) return;
             isDragging = true;
@@ -271,41 +285,33 @@
         window.addEventListener("touchmove", e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener("touchend", onEnd);
 
-        // --- LIGHTBOX (ZOOM) ---
+        // --- LIGHTBOX ---
         function expandItem(item) {
             if(isExpanded) return;
             isExpanded = true;
             activeItemId = item.id;
             
-            const rect = item.querySelector('img').getBoundingClientRect(); // On prend la taille réelle de l'image visible
-            
             expandedItem = document.createElement("div");
-            expandedItem.style.position = "fixed";
-            expandedItem.style.zIndex = "9999";
-            expandedItem.style.top = "0";
-            expandedItem.style.left = "0";
-            expandedItem.style.width = "100%";
-            expandedItem.style.height = "100%";
-            expandedItem.style.backgroundColor = "rgba(0,0,0,0.95)";
-            expandedItem.style.display = "flex";
-            expandedItem.style.justifyContent = "center";
-            expandedItem.style.alignItems = "center";
-            expandedItem.style.opacity = "0";
-            expandedItem.style.cursor = "zoom-out";
+            Object.assign(expandedItem.style, {
+                position: "fixed", zIndex: "9999", top: "0", left: "0",
+                width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.95)",
+                display: "flex", justifyContent: "center", alignItems: "center",
+                opacity: "0", cursor: "zoom-out"
+            });
             
             const img = document.createElement("img");
             img.src = item.dataset.imgSrc;
-            img.style.maxWidth = "95%";
-            img.style.maxHeight = "95%";
-            img.style.objectFit = "contain";
-            img.style.boxShadow = "0 0 40px rgba(0,0,0,1)";
+            Object.assign(img.style, {
+                maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain",
+                boxShadow: "0 0 50px rgba(0,0,0,0.8)"
+            });
             
             expandedItem.appendChild(img);
             expandedItem.addEventListener("click", closeExpanded);
             document.body.appendChild(expandedItem);
 
             gsap.to(expandedItem, { opacity: 1, duration: 0.3 });
-            gsap.from(img, { scale: 0.8, duration: 0.5, ease: "hop" });
+            gsap.from(img, { scale: 0.9, duration: 0.4, ease: "hop" });
         }
 
         function closeExpanded() {
