@@ -1,0 +1,43 @@
+COMMENT GÉRER LA GALERIE (IMAGES & VIDÉOS)
+
+Toute la configuration se trouve dans le fichier galerie.html, dans la balise <script> vers le bas de la page.
+1. AJOUTER / RETIRER DES ÉLÉMENTS
+
+Cherche la variable galleryItems au début du script :
+JavaScript
+
+const galleryItems = [
+    "assets/galerie/mon-image.jpg",
+    "assets/galerie/ma-video.mp4",
+    "assets/galerie/autre-image.png"
+];
+
+    Pour ajouter : Ajoute simplement une ligne avec le chemin de ton fichier entre guillemets, suivi d'une virgule.
+
+    Formats supportés :
+
+        Images : .jpg, .png, .jpeg, .webp
+
+        Vidéos : .mp4, .webm (Recommandé : MP4, codec H.264 pour compatibilité max).
+
+    Ordre : L'ordre dans la liste est l'ordre d'apparition dans les colonnes.
+
+2. REGLAGES VISUELS
+
+Juste en dessous, dans const config, tu peux modifier l'aspect :
+
+    gap: 30 -> Espace entre les images (en pixels).
+
+    dragSpeed: 1.5 -> Vitesse du glissement (plus haut = plus rapide).
+
+    ease: 0.04 -> Inertie (plus bas = plus lourd/fluide).
+
+    colWidths: [...] -> Largeur des colonnes. Si tu veux que tout soit pareil, mets les mêmes chiffres.
+
+3. NOTES IMPORTANTES
+
+    Vidéos : Les vidéos sont automatiquement mises en muet (muted) et en boucle (loop) dans la galerie pour la performance. Le son s'active uniquement quand on clique dessus pour zoomer.
+
+    Performance : Essaye de ne pas dépasser 20-30 éléments dans la liste galleryItems. Le script duplique ces éléments pour créer l'effet infini, donc 20 images deviennent vite 100 éléments à gérer pour le navigateur.
+
+    Poids des fichiers : Compresse tes images (TinyPNG) et tes vidéos (Handbrake) pour que le chargement soit rapide.
