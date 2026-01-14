@@ -40,7 +40,6 @@
     </div>
 
     <style>
-        /* BASE & RESET */
         body, #gallery-container {
             user-select: none;
             -webkit-user-select: none;
@@ -73,7 +72,6 @@
             transform-origin: center center; 
         }
 
-        /* STYLE COMMUN IMAGE ET VIDÉO */
         .gallery-item img, .gallery-item video {
             width: 100%; height: auto; display: block;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
@@ -82,26 +80,51 @@
             pointer-events: none;
         }
 
+        /* Indicateur Play pour YouTube */
+        .play-icon {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%) scale(0.8);
+            width: 50px; height: 50px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0.8; transition: 0.3s;
+            pointer-events: none;
+            backdrop-filter: blur(5px);
+        }
+        .play-icon i { color: white; font-size: 20px; margin-left: 3px; }
+
         .gallery-item:hover { z-index: 100 !important; }
         .gallery-item:hover img, .gallery-item:hover video { 
             filter: brightness(1.1) grayscale(0);
             transform: scale(1.05); 
             box-shadow: 0 30px 70px rgba(0,0,0,0.9); 
         }
+        .gallery-item:hover .play-icon {
+            background: rgba(255,255,255,0.9);
+            transform: translate(-50%, -50%) scale(1.1);
+        }
+        .gallery-item:hover .play-icon i { color: #000; }
+
+        /* Style pour l'iframe YouTube en Zoom */
+        .expanded-iframe {
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border: none;
+        }
     </style>
 
     <script>
-        // --- C'EST ICI QU'ON AJOUTE LES FICHIERS ---
+        // --- TES FICHIERS (IMAGES, MP4 LOCAL, OU YOUTUBE) ---
         const galleryItems = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
+            "https://www.youtube.com/watch?v=dQw4w9WgXcQ", // EXEMPLE YOUTUBE 1
             "assets/galerie/galerie3.jpg",
-            "assets/galerie/video1.mp4",   // Exemple Vidéo
             "assets/galerie/galerie4.png",
             "assets/galerie/galerie5.png",
+            "https://youtu.be/M7FIvfx5J10",                // EXEMPLE YOUTUBE 2 (Format court)
             "assets/galerie/galerie6.png",
             "assets/galerie/galerie7.jpg",
-            "assets/galerie/demo.mp4",     // Exemple Vidéo
             "assets/galerie/galerie8.png",
             "assets/galerie/galerie9.jpg",
             "assets/galerie/galerie10.jpg"
@@ -127,10 +150,16 @@
         let totalWorldWidth = 0;
         let colHeights = []; 
 
-        // Fonction utilitaire pour savoir si c'est une vidéo
-        const isVideo = (src) => /\.(mp4|webm|mov)$/i.test(src);
+        // --- UTILITAIRES YOUTUBE ---
+        const isVideoLocal = (src) => /\.(mp4|webm|mov)$/i.test(src);
+        const getYoutubeID = (url) => {
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : null;
+        };
+        const isYoutube = (src) => getYoutubeID(src) !== null;
 
-        // --- PRELOAD MIXTE (IMAGES + VIDÉOS) ---
+        // --- PRELOAD INTELLIGENT ---
         function preloadMedia() {
             let loaded = 0;
             
@@ -140,14 +169,26 @@
             };
 
             galleryItems.forEach(src => {
-                if (isVideo(src)) {
+                if (isVideoLocal(src)) {
+                    // Vidéo Locale
                     const vid = document.createElement('video');
                     vid.src = src;
-                    vid.muted = true; // Obligatoire pour charger sans interaction
-                    vid.preload = "metadata"; // On charge juste la taille
+                    vid.muted = true; 
+                    vid.preload = "metadata";
                     vid.onloadedmetadata = checkLoad;
                     vid.onerror = checkLoad;
+                } else if (isYoutube(src)) {
+                    // YouTube : On charge la miniature JPG
+                    const id = getYoutubeID(src);
+                    const img = new Image();
+                    img.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                    img.onload = checkLoad;
+                    img.onerror = () => {
+                        // Fallback si maxresdefault n'existe pas (rare)
+                        img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+                    };
                 } else {
+                    // Image standard
                     const img = new Image();
                     img.src = src;
                     img.onload = checkLoad;
@@ -189,22 +230,34 @@
                     let mediaElement;
                     let renderHeight = 0;
 
-                    if (isVideo(url)) {
+                    if (isVideoLocal(url)) {
+                        // MP4 LOCAL
                         mediaElement = document.createElement('video');
                         mediaElement.src = url;
                         mediaElement.muted = true;
                         mediaElement.loop = true;
                         mediaElement.autoplay = true;
                         mediaElement.playsInline = true;
-                        
-                        // Création temporaire pour choper le ratio si pas dispo
-                        // (Mais on a preload, donc ça devrait aller)
-                        // Note: videoWidth n'est dispo que si metadata chargée
-                        // Astuce de secours: ratio 16:9 par défaut si 0
                         const vW = mediaElement.videoWidth || 16;
                         const vH = mediaElement.videoHeight || 9;
                         renderHeight = colW * (vH / vW);
-                    } else {
+                    } 
+                    else if (isYoutube(url)) {
+                        // YOUTUBE (On affiche l'image de couverture)
+                        const id = getYoutubeID(url);
+                        mediaElement = document.createElement('img');
+                        mediaElement.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+                        // Ratio YouTube standard 16:9
+                        renderHeight = colW * (9 / 16);
+                        
+                        // Petit icone Play
+                        const icon = document.createElement('div');
+                        icon.className = 'play-icon';
+                        icon.innerHTML = '<i class="fas fa-play"></i>';
+                        item.appendChild(icon);
+                    }
+                    else {
+                        // IMAGE
                         mediaElement = document.createElement('img');
                         mediaElement.src = url;
                         const ratio = mediaElement.naturalHeight / mediaElement.naturalWidth;
@@ -214,12 +267,13 @@
                     item.appendChild(mediaElement);
                     container.appendChild(item);
 
-                    // Si jamais la hauteur est 0 (bug chargement), on met un fallback
                     if (!renderHeight || renderHeight === 0) renderHeight = colW;
 
                     items.push({
                         element: item,
-                        media: mediaElement,
+                        media: mediaElement, // Peut être img ou video
+                        type: isYoutube(url) ? 'youtube' : (isVideoLocal(url) ? 'video' : 'image'),
+                        url: url,
                         x: baseX,
                         y: colHeights[c],
                         width: colW,
@@ -229,7 +283,6 @@
 
                     colHeights[c] += renderHeight + config.gap;
                     
-                    // CLIC -> ZOOM
                     item.addEventListener('click', () => {
                         if(Math.abs(targetX - scrollX) < 5 && Math.abs(targetY - scrollY) < 5) {
                             zoomMedia(item, url);
@@ -290,8 +343,7 @@
         let startX = 0, startY = 0;
 
         const onStart = (x, y) => {
-            isDragging = true;
-            startX = x; startY = y;
+            isDragging = true; startX = x; startY = y;
             container.style.cursor = "grabbing";
         };
 
@@ -313,12 +365,13 @@
         window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
-        // --- ZOOM MIXTE (IMG + VIDEO) ---
+        // --- ZOOM UNIFIÉ (IMG / LOCAL / YOUTUBE) ---
         let expandedOverlay = null;
 
         function zoomMedia(itemDiv, src) {
             const rect = itemDiv.getBoundingClientRect();
-            const isVid = isVideo(src);
+            const youtubeID = getYoutubeID(src);
+            const isLocalVid = isVideoLocal(src);
             
             expandedOverlay = document.createElement("div");
             expandedOverlay.style.cssText = `
@@ -327,52 +380,85 @@
                 display: flex; justify-content: center; align-items: center; opacity: 0;
             `;
             
-            let mediaClone;
-            if (isVid) {
-                mediaClone = document.createElement("video");
-                mediaClone.muted = false; // On active le son en zoom !
-                mediaClone.loop = true;
-                mediaClone.autoplay = true;
-                mediaClone.controls = true; // On ajoute les contrôles en grand
+            let content;
+            let startRect = rect; // Position de départ pour l'anim
+
+            if (youtubeID) {
+                // Pour YouTube, on anime d'abord la miniature, puis on swap avec l'iframe
+                // C'est une astuce pour que l'anim soit fluide (une iframe ne s'anime pas bien)
+                content = document.createElement("img");
+                content.src = `https://img.youtube.com/vi/${youtubeID}/maxresdefault.jpg`;
+            } else if (isLocalVid) {
+                content = document.createElement("video");
+                content.src = src;
+                content.muted = false; content.loop = true; content.autoplay = true; content.controls = true;
             } else {
-                mediaClone = document.createElement("img");
+                content = document.createElement("img");
+                content.src = src;
             }
             
-            mediaClone.src = src;
-            mediaClone.style.cssText = `
+            content.style.cssText = `
                 position: absolute; top: ${rect.top}px; left: ${rect.left}px;
                 width: ${rect.width}px; height: ${rect.height}px;
                 object-fit: cover; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             `;
             
-            expandedOverlay.appendChild(mediaClone);
+            expandedOverlay.appendChild(content);
             document.body.appendChild(expandedOverlay);
 
             gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
 
             // Calcul ratio pour "contain"
-            // Pour la vidéo, on peut avoir besoin d'attendre les métadonnées si pas en cache, 
-            // mais normalement c'est bon.
-            const naturalW = isVid ? (mediaClone.videoWidth || 1920) : mediaClone.naturalWidth;
-            const naturalH = isVid ? (mediaClone.videoHeight || 1080) : mediaClone.naturalHeight;
+            // Pour YouTube, on force 16:9
+            let naturalW = content.naturalWidth;
+            let naturalH = content.naturalHeight;
+            if(youtubeID) { naturalW = 16; naturalH = 9; }
+            if(isLocalVid) { naturalW = content.videoWidth || 16; naturalH = content.videoHeight || 9; }
 
-            // On recalcule le scale pour centrer
             const ratioW = window.innerWidth * 0.9 / rect.width;
             const ratioH = window.innerHeight * 0.9 / rect.height;
             const scale = Math.min(ratioW, ratioH); 
 
-            gsap.to(mediaClone, {
+            // Animation d'ouverture
+            gsap.to(content, {
                 top: "50%", left: "50%", x: "-50%", y: "-50%",
                 width: rect.width * scale, height: rect.height * scale,
-                duration: 0.6, ease: "power3.inOut"
+                duration: 0.6, ease: "power3.inOut",
+                onComplete: () => {
+                    // Une fois ouvert, SI C'EST YOUTUBE, on remplace l'image par l'iframe
+                    if(youtubeID) {
+                        const iframe = document.createElement("iframe");
+                        iframe.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0`;
+                        iframe.style.cssText = content.style.cssText; // Copie dimensions
+                        iframe.style.border = "none";
+                        iframe.allow = "autoplay; encrypted-media";
+                        iframe.classList.add("expanded-iframe"); // Pour le style
+                        
+                        expandedOverlay.replaceChild(iframe, content);
+                        content = iframe; // Pour la fermeture
+                    }
+                }
             });
 
-            // Fermeture (Clic sur l'overlay, pas sur la vidéo si controls activés)
+            // Fermeture
             expandedOverlay.onclick = (e) => {
-                if(e.target !== mediaClone) {
+                // Si on clique sur l'overlay (pas la vidéo/iframe)
+                if(e.target === expandedOverlay) {
+                    
+                    // Si c'est une iframe, on remet l'image pour que l'anim retour soit fluide
+                    if(content.tagName === 'IFRAME') {
+                        const imgBack = document.createElement("img");
+                        imgBack.src = `https://img.youtube.com/vi/${youtubeID}/maxresdefault.jpg`;
+                        imgBack.style.cssText = content.style.cssText;
+                        expandedOverlay.replaceChild(imgBack, content);
+                        content = imgBack;
+                    }
+
+                    // On récupère la position actuelle de l'élément dans la grille (qui a pu bouger)
                     const newRect = itemDiv.getBoundingClientRect();
+                    
                     gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
-                    gsap.to(mediaClone, {
+                    gsap.to(content, {
                         top: newRect.top, left: newRect.left, x: 0, y: 0,
                         width: newRect.width, height: newRect.height,
                         duration: 0.5, ease: "power3.inOut",
@@ -382,7 +468,7 @@
             };
         }
 
-        preloadMedia(); // On lance le nouveau preload
+        preloadMedia();
 
     </script>
 </body>
