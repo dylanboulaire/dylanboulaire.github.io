@@ -10,7 +10,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/CustomEase.min.js"></script>
 </head>
-<body style="overflow: hidden; background-color: #1a1a1a;">
+<body style="overflow: hidden; background-color: #111;">
 
     <header>
         <nav class="nav-left">
@@ -40,7 +40,7 @@
     </div>
 
     <script>
-        // --- 1. IMAGES ---
+        // --- 1. CONFIGURATION IMAGES ---
         const imageUrls = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
@@ -54,23 +54,28 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // --- 2. RÉGLAGES DE LA GRILLE ---
-        const settings = {
-            // Taille de la "case invisible" de la grille.
-            // C'est l'espace réservé pour chaque image.
-            // Aucune image ne dépassera cette taille pour éviter le chevauchement.
-            colWidth: 350,  
-            rowHeight: 400, 
+        // --- 2. CONFIGURATION DU MOTIF (CLUSTER) ---
+        // C'est ici la magie. On définit un bloc de 1200x900px
+        // Et on place 6 points dedans manuellement pour que ça fasse "naturel" mais sans toucher.
+        const clusterSettings = {
+            blockWidth: 1200, 
+            blockHeight: 900,
             
-            // Espace max occupé par l'image à l'intérieur de la case (Marge de sécurité)
-            // L'image sera redimensionnée pour tenir dans ce carré (ex: 320x370)
-            maxImageWidth: 320,
-            maxImageHeight: 370,
+            // Positions relatives (x, y) dans le bloc + taille max autorisée (s)
+            // On alterne les positions pour bien remplir l'espace
+            positions: [
+                { x: 50,  y: 50,  s: 350 }, // Haut Gauche (Gros)
+                { x: 500, y: 0,   s: 300 }, // Haut Milieu
+                { x: 900, y: 80,  s: 280 }, // Haut Droite
+                { x: 300, y: 450, s: 380 }, // Centre Gauche (Très gros)
+                { x: 800, y: 400, s: 320 }, // Centre Droite
+                { x: 100, y: 700, s: 280 }, // Bas Gauche
+                { x: 600, y: 750, s: 350 }  // Bas Droite
+            ],
             
             dragEase: 0.08,
             momentumFactor: 150,
             hoverScale: 1.05,
-            bufferZone: 1
         };
 
         // --- MOTEUR ---
@@ -86,99 +91,88 @@
         let targetX = 0, targetY = 0;
         let currentX = 0, currentY = 0;
         let dragVelocityX = 0, dragVelocityY = 0;
-        let visibleItems = new Set();
+        let visibleItems = new Set(); // Stocke les IDs "BlocX,BlocY,Index"
         let isExpanded = false;
         let activeItemId = null;
         let expandedItem = null;
 
         const itemCount = imageUrls.length;
 
-        function seededRandom(x, y) {
-            let n = x * 3711.61 + y * 5344.72;
-            return Math.abs(Math.sin(n) * 10000 % 1);
+        // Fonction aléatoire stable basée sur la position du bloc
+        function seededRandom(seed) {
+            var x = Math.sin(seed++) * 10000;
+            return x - Math.floor(x);
         }
 
-        function createItem(col, row) {
-            const itemNum = Math.abs((row * 7 + col * 3) % itemCount);
-            const randSeed = seededRandom(col, row);
-
-            // --- 1. CALCUL DE POSITION (Grille décalée) ---
+        // Création d'un élément
+        function createItem(blockX, blockY, posIndex) {
+            // ID Unique : Coordonnées du bloc + index dans le motif
+            const itemId = `${blockX},${blockY},${posIndex}`;
             
-            // Position de base de la grille
-            let xPos = col * settings.colWidth;
-            let yPos = row * settings.rowHeight;
+            // On récupère la configuration de position prédéfinie
+            const posData = clusterSettings.positions[posIndex];
+            
+            // Calcul de la position absolue dans le monde infini
+            const absoluteX = (blockX * clusterSettings.blockWidth) + posData.x;
+            const absoluteY = (blockY * clusterSettings.blockHeight) + posData.y;
 
-            // DÉCALAGE QUINCONCE : On décale une colonne sur deux vers le bas
-            // Cela permet de "mélanger" visuellement les portraits et paysages
-            // et de réduire l'impression de vide.
-            if (col % 2 !== 0) {
-                yPos += settings.rowHeight * 0.5;
-            }
-
-            // Petit "Jitter" (bruit aléatoire) très faible pour casser la ligne droite
-            // On le garde petit (10px) pour éviter les chevauchements
-            const jitter = 10;
-            xPos += (randSeed - 0.5) * jitter;
-            yPos += (seededRandom(row, col) - 0.5) * jitter;
-
-            // --- 2. CRÉATION DU CONTENEUR ---
-            const itemId = `${col},${row}`;
+            // Choix de l'image (mélange aléatoire basé sur le bloc pour éviter la répétition visuelle)
+            // On utilise blockX/Y pour que chaque bloc ait des images différentes
+            const randomSeed = Math.abs(blockX * 7 + blockY * 13 + posIndex);
+            const imgIndex = Math.floor(seededRandom(randomSeed) * itemCount);
+            
+            // --- DOM ---
             const item = document.createElement("div");
             item.className = "item";
             item.id = itemId;
             
-            // Le conteneur fait la taille EXACTE de la case de grille
+            // Style de base
             item.style.position = "absolute";
-            item.style.left = `${xPos}px`;
-            item.style.top = `${yPos}px`;
-            item.style.width = `${settings.colWidth}px`;
-            item.style.height = `${settings.rowHeight}px`;
-            
-            // Flexbox pour centrer parfaitement l'image dans sa case
-            item.style.display = "flex";
-            item.style.justifyContent = "center";
-            item.style.alignItems = "center";
-            
-            item.style.pointerEvents = "auto"; // Permet le clic
+            item.style.left = `${absoluteX}px`;
+            item.style.top = `${absoluteY}px`;
+            // Le conteneur s'adapte à l'image, on ne fixe pas de taille ici
+            item.style.width = "auto";
+            item.style.height = "auto";
+            item.style.display = "block";
             item.style.cursor = "pointer";
 
             // Données
-            item.dataset.imgSrc = imageUrls[itemNum];
+            item.dataset.imgSrc = imageUrls[imgIndex];
 
-            // --- 3. L'IMAGE ---
+            // Image
             const img = document.createElement("img");
-            img.src = imageUrls[itemNum];
+            img.src = imageUrls[imgIndex];
             
-            // RÈGLE D'OR : ZÉRO CROP
-            // On définit une taille MAXIMALE pour l'image.
-            // L'image va garder son ratio naturel et grandir jusqu'à toucher
-            // soit la largeur max, soit la hauteur max.
-            img.style.maxWidth = `${settings.maxImageWidth}px`;
-            img.style.maxHeight = `${settings.maxImageHeight}px`;
-            
-            // On s'assure que l'image ne force pas la taille
+            // --- C'EST ICI QUE TOUT SE JOUE POUR LE FORMAT ---
+            // 1. On donne une taille MAX pour que l'image ne soit pas géante.
+            // 2. On laisse width/height en AUTO pour conserver le ratio naturel.
+            // 3. Résultat : Aucune coupe, aucun étirement.
+            img.style.maxWidth = `${posData.s}px`; 
+            img.style.maxHeight = `${posData.s}px`;
             img.style.width = "auto";
             img.style.height = "auto";
-            
-            // Esthétique
             img.style.display = "block";
-            img.style.boxShadow = "0 10px 30px rgba(0,0,0,0.5)"; // Ombre portée
-            img.style.transition = "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1)";
-            img.style.pointerEvents = "none"; // Le clic passe à travers vers le div parent
+            
+            // Esthétique "Photo posée sur table"
+            img.style.boxShadow = "0 15px 35px rgba(0,0,0,0.5)";
+            img.style.transition = "transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s";
+            img.style.pointerEvents = "none"; // Important pour le drag
 
             item.appendChild(img);
 
-            // Hover Effect
+            // Hover
             item.onmouseenter = () => {
-                gsap.to(img, { scale: settings.hoverScale, duration: 0.3 });
-                item.style.zIndex = 100; // Passe au premier plan
+                gsap.to(img, { scale: clusterSettings.hoverScale, duration: 0.3 });
+                item.style.zIndex = 100;
+                img.style.boxShadow = "0 25px 50px rgba(0,0,0,0.7)";
             };
             item.onmouseleave = () => {
                 gsap.to(img, { scale: 1, duration: 0.3 });
                 item.style.zIndex = 1;
+                img.style.boxShadow = "0 15px 35px rgba(0,0,0,0.5)";
             };
 
-            // Click -> Expand
+            // Click
             item.addEventListener("click", () => {
                 if(Math.abs(dragVelocityX) < 2 && Math.abs(dragVelocityY) < 2) {
                     expandItem(item);
@@ -188,33 +182,42 @@
             return item;
         }
 
-        // --- MOTEUR INFINI ---
         function updateVisibleItems() {
-            const buffer = settings.bufferZone;
+            // On calcule quels "Blocs" de 1200x900 sont visibles à l'écran
+            const buffer = 1; // On charge 1 bloc autour pour que ce soit fluide
+            
             const viewW = window.innerWidth;
             const viewH = window.innerHeight;
             
-            const startCol = Math.floor((-currentX - viewW * 0.5) / settings.colWidth) - buffer;
-            const endCol = Math.ceil((-currentX + viewW * 1.5) / settings.colWidth) + buffer;
-            const startRow = Math.floor((-currentY - viewH * 0.5) / settings.rowHeight) - buffer;
-            const endRow = Math.ceil((-currentY + viewH * 1.5) / settings.rowHeight) + buffer;
+            const startBlockX = Math.floor((-currentX - viewW*0.5) / clusterSettings.blockWidth) - buffer;
+            const endBlockX = Math.ceil((-currentX + viewW*1.5) / clusterSettings.blockWidth) + buffer;
+            
+            const startBlockY = Math.floor((-currentY - viewH*0.5) / clusterSettings.blockHeight) - buffer;
+            const endBlockY = Math.ceil((-currentY + viewH*1.5) / clusterSettings.blockHeight) + buffer;
 
             const currentIds = new Set();
 
-            for(let c = startCol; c <= endCol; c++) {
-                for(let r = startRow; r <= endRow; r++) {
-                    const id = `${c},${r}`;
-                    currentIds.add(id);
+            // Double boucle sur les blocs visibles
+            for(let bx = startBlockX; bx <= endBlockX; bx++) {
+                for(let by = startBlockY; by <= endBlockY; by++) {
                     
-                    if(!visibleItems.has(id)) {
-                        const item = createItem(c, r);
-                        canvas.appendChild(item);
-                        visibleItems.add(id);
-                        gsap.from(item, { opacity: 0, scale: 0.8, duration: 0.5, delay: Math.random() * 0.1 });
+                    // Pour chaque bloc, on boucle sur nos 7 positions prédéfinies
+                    for(let i = 0; i < clusterSettings.positions.length; i++) {
+                        const id = `${bx},${by},${i}`;
+                        currentIds.add(id);
+                        
+                        if(!visibleItems.has(id)) {
+                            const item = createItem(bx, by, i);
+                            canvas.appendChild(item);
+                            visibleItems.add(id);
+                            // Apparition douce
+                            gsap.from(item, { opacity: 0, scale: 0.5, duration: 0.5, ease: "back.out(1.5)" });
+                        }
                     }
                 }
             }
 
+            // Nettoyage
             visibleItems.forEach(id => {
                 if(!currentIds.has(id) && id !== activeItemId) {
                     const el = document.getElementById(id);
@@ -226,15 +229,15 @@
 
         function animate() {
             if(!isExpanded) {
-                currentX += (targetX - currentX) * settings.dragEase;
-                currentY += (targetY - currentY) * settings.dragEase;
+                currentX += (targetX - currentX) * clusterSettings.dragEase;
+                currentY += (targetY - currentY) * clusterSettings.dragEase;
                 canvas.style.transform = `translate(${currentX}px, ${currentY}px)`;
                 updateVisibleItems();
             }
             requestAnimationFrame(animate);
         }
 
-        // --- DRAG (SOURIS + TACTILE) ---
+        // --- GESTION DRAG (Souri + Touch) ---
         function onStart(x, y) {
             if(isExpanded) return;
             isDragging = true;
@@ -259,19 +262,18 @@
         function onEnd() {
             isDragging = false;
             container.classList.remove("active");
-            targetX += dragVelocityX * (settings.momentumFactor / 10);
-            targetY += dragVelocityY * (settings.momentumFactor / 10);
+            targetX += dragVelocityX * (clusterSettings.momentumFactor / 10);
+            targetY += dragVelocityY * (clusterSettings.momentumFactor / 10);
         }
 
         container.addEventListener("mousedown", e => onStart(e.clientX, e.clientY));
         window.addEventListener("mousemove", e => onMove(e.clientX, e.clientY));
         window.addEventListener("mouseup", onEnd);
-        
         container.addEventListener("touchstart", e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
         window.addEventListener("touchmove", e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener("touchend", onEnd);
 
-        // --- ZOOM (LIGHTBOX) ---
+        // --- ZOOM ---
         function expandItem(item) {
             if(isExpanded) return;
             isExpanded = true;
