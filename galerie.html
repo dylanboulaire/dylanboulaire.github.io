@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
-</head>
-<body style="overflow: hidden; background-color: #111; margin: 0;">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/Flip.min.js"></script> </head>
+<body style="overflow: hidden; background-color: #050505; margin: 0;">
 
     <header>
         <nav class="nav-left">
@@ -32,60 +32,66 @@
 
     <div id="gallery-container"></div>
 
-    <div id="loader" style="position: fixed; top:0; left:0; width:100%; height:100%; background:#111; z-index: 2000; display:flex; justify-content:center; align-items:center; color:white; font-family:sans-serif;">
-        CHARGEMENT DE LA GALERIE...
+    <div id="loader">
+        CHARGEMENT...
     </div>
 
-    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-family: sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
+    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
         GLISSEZ & EXPLOREZ
     </div>
 
     <style>
-        /* FIX SELECTION BLEUE */
+        /* BASE & RESET */
         body, #gallery-container {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
+            -webkit-user-select: none;
         }
 
-        /* VIGNETTE STYLE */
+        /* VIGNETTE "CINÉMA" */
         .vignette {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
-            pointer-events: none; /* Laisse passer le clic */
-            z-index: 10;
-            /* Gradient radial : Transparent au centre -> Noir à 80% sur les bords */
-            background: radial-gradient(circle at 50% 50%, rgba(0,0,0,0) 40%, rgba(0,0,0,0.8) 100%);
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            pointer-events: none; z-index: 10;
+            background: radial-gradient(circle at center, transparent 40%, #050505 120%);
+        }
+
+        #loader {
+            position: fixed; top:0; left:0; width:100%; height:100%; 
+            background:#050505; z-index: 2000; 
+            display:flex; justify-content:center; align-items:center; 
+            color:#fff; font-family: sans-serif; font-size: 0.8rem; letter-spacing: 2px;
         }
 
         #gallery-container {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100vw; height: 100vh;
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             cursor: grab;
+            perspective: 1000px; /* INDISPENSABLE POUR L'EFFET FISHEYE 3D */
         }
         #gallery-container:active { cursor: grabbing; }
 
         .gallery-item {
-            position: absolute;
-            top: 0; left: 0;
+            position: absolute; top: 0; left: 0;
             display: block;
             will-change: transform; 
+            /* On centre le point de transformation pour que la rotation se fasse bien */
+            transform-origin: center center; 
         }
 
         .gallery-item img {
-            width: 100%;
-            height: auto; 
-            display: block;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            transition: transform 0.3s ease;
+            width: 100%; height: auto; display: block;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+            /* Petit filtre pour le style sombre */
+            filter: brightness(0.8) grayscale(0.2); 
+            transition: filter 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             pointer-events: none;
         }
 
-        .gallery-item:hover { z-index: 100; }
-        .gallery-item:hover img { transform: scale(1.05); box-shadow: 0 20px 60px rgba(0,0,0,0.8); }
+        /* Hover : L'image s'éclaire et vient vers nous */
+        .gallery-item:hover { z-index: 100 !important; }
+        .gallery-item:hover img { 
+            filter: brightness(1.1) grayscale(0);
+            transform: scale(1.05); 
+            box-shadow: 0 30px 70px rgba(0,0,0,0.9); 
+        }
     </style>
 
     <script>
@@ -102,47 +108,40 @@
             "assets/galerie/galerie10.jpg"
         ];
 
-        // --- CONFIGURATION ---
         const config = {
             colWidths: [350, 280, 420, 300, 260],
             gap: 30,
             verticalDuplicates: 4, 
             horizontalSets: 3, 
+            dragSpeed: 1.5,
+            ease: 0.04, // INERTIE FLUIDE (Lourd)
             
-            dragSpeed: 1.5, // Vitesse du mouvement
-            ease: 0.04      // INERTIE (Plus bas = plus lourd/fluide)
+            // CONFIGURATION FISHEYE
+            curveStrength: 200, // Intensité de la courbure Z (plus c'est haut, plus c'est courbé)
+            rotationMax: 15     // Rotation max en degrés sur les bords
         };
 
         const container = document.getElementById('gallery-container');
         const loader = document.getElementById('loader');
 
         let items = []; 
-        let scrollX = 0;
-        let scrollY = 0;
-        let targetX = 0;
-        let targetY = 0;
-        
+        let scrollX = 0, scrollY = 0;
+        let targetX = 0, targetY = 0;
         let totalWorldWidth = 0;
         let colHeights = []; 
 
+        // --- PRELOAD ---
         function preloadImages() {
             let loaded = 0;
-            const totalImagesNeeded = imageUrls.length * config.verticalDuplicates * config.horizontalSets; 
-            
             imageUrls.forEach(src => {
                 const img = new Image();
                 img.src = src;
-                img.onload = () => {
-                    loaded++;
-                    if(loaded === imageUrls.length) initGallery();
-                };
-                img.onerror = () => { 
-                    loaded++; 
-                    if(loaded === imageUrls.length) initGallery();
-                };
+                img.onload = () => { loaded++; if(loaded === imageUrls.length) initGallery(); };
+                img.onerror = () => { loaded++; if(loaded === imageUrls.length) initGallery(); };
             });
         }
 
+        // --- INITIALISATION ---
         function initGallery() {
             let oneSetWidth = 0;
             config.colWidths.forEach(w => oneSetWidth += w + config.gap);
@@ -151,6 +150,7 @@
             const totalCols = config.colWidths.length * config.horizontalSets;
             colHeights = new Array(totalCols).fill(0);
             
+            // Rythme vertical initial
             for(let i=0; i<totalCols; i++) {
                 const type = i % 5;
                 if(type === 1) colHeights[i] = 100;
@@ -163,9 +163,7 @@
                 const colW = config.colWidths[colType];
                 
                 let baseX = 0;
-                for(let k=0; k<c; k++) {
-                    baseX += config.colWidths[k % config.colWidths.length] + config.gap;
-                }
+                for(let k=0; k<c; k++) baseX += config.colWidths[k % config.colWidths.length] + config.gap;
 
                 for(let r = 0; r < config.verticalDuplicates * imageUrls.length; r++) {
                     const url = imageUrls[(r + c) % imageUrls.length];
@@ -180,11 +178,13 @@
                     item.appendChild(img);
                     container.appendChild(item);
 
+                    // Calcul hauteur
                     const ratio = img.naturalHeight / img.naturalWidth;
                     const renderHeight = colW * ratio;
 
                     items.push({
                         element: item,
+                        imgElement: img, // Ref pour l'anim
                         x: baseX,
                         y: colHeights[c],
                         width: colW,
@@ -194,9 +194,10 @@
 
                     colHeights[c] += renderHeight + config.gap;
                     
+                    // CLIC -> ZOOM FLUIDE
                     item.addEventListener('click', () => {
                         if(Math.abs(targetX - scrollX) < 5 && Math.abs(targetY - scrollY) < 5) {
-                            expandImage(url);
+                            zoomImage(item, url);
                         }
                     });
                 }
@@ -205,20 +206,25 @@
             loader.style.display = 'none';
             animate();
             
+            // Centre de départ
             targetX = -totalWorldWidth / 3;
             targetY = -Math.max(...colHeights) / 3;
             scrollX = targetX;
             scrollY = targetY;
         }
 
+        // --- MOTEUR RENDU (AVEC FISHEYE) ---
         function animate() {
             scrollX += (targetX - scrollX) * config.ease;
             scrollY += (targetY - scrollY) * config.ease;
 
             const winW = window.innerWidth;
             const winH = window.innerHeight;
+            const centerX = winW / 2;
+            const centerY = winH / 2;
 
             items.forEach(item => {
+                // 1. Calcul Position de base
                 let x = item.x + scrollX;
                 let loopedX = ((x % totalWorldWidth) + totalWorldWidth) % totalWorldWidth;
                 if (loopedX > totalWorldWidth / 2 + winW) loopedX -= totalWorldWidth;
@@ -228,10 +234,30 @@
                 let loopedY = ((y % totalH) + totalH) % totalH;
                 if (loopedY > totalH / 2 + winH) loopedY -= totalH;
 
-                if (loopedX > -500 && loopedX < winW + 500 && 
-                    loopedY > -500 && loopedY < winH + 500) {
-                    item.element.style.transform = `translate3d(${loopedX}px, ${loopedY}px, 0)`;
+                // 2. Vérification visibilité (Culling)
+                const isVisible = loopedX > -400 && loopedX < winW + 400 && 
+                                  loopedY > -400 && loopedY < winH + 400;
+
+                if (isVisible) {
                     item.element.style.display = 'block';
+
+                    // --- EFFET FISHEYE / COURBURE ---
+                    // On calcule la distance du centre de l'image par rapport au centre de l'écran
+                    const itemCenterX = loopedX + item.width / 2;
+                    const distFromCenterX = (itemCenterX - centerX) / centerX; // -1 (gauche) à 1 (droite)
+                    
+                    // Rotation Y : L'image tourne un peu quand elle est sur les bords
+                    const rotateY = distFromCenterX * config.rotationMax;
+                    
+                    // Recul Z : L'image s'éloigne quand elle est sur les bords (Courbure cylindrique)
+                    const translateZ = -Math.abs(distFromCenterX * config.curveStrength);
+
+                    // Opacité/Scale subtile sur les bords extrêmes
+                    // const scale = 1 - Math.abs(distFromCenterX * 0.1);
+
+                    item.element.style.transform = 
+                        `translate3d(${loopedX}px, ${loopedY}px, ${translateZ}px) rotateY(${rotateY}deg)`;
+                    
                 } else {
                     item.element.style.display = 'none';
                 }
@@ -240,13 +266,13 @@
             requestAnimationFrame(animate);
         }
 
+        // --- GESTION INPUT ---
         let isDragging = false;
         let startX = 0, startY = 0;
 
         const onStart = (x, y) => {
             isDragging = true;
-            startX = x;
-            startY = y;
+            startX = x; startY = y;
             container.style.cursor = "grabbing";
         };
 
@@ -254,12 +280,9 @@
             if(!isDragging) return;
             const dx = x - startX;
             const dy = y - startY;
-            
             targetX += dx * config.dragSpeed;
             targetY += dy * config.dragSpeed;
-            
-            startX = x;
-            startY = y;
+            startX = x; startY = y;
         };
 
         const onEnd = () => {
@@ -270,37 +293,90 @@
         window.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
         window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
         window.addEventListener('mouseup', onEnd);
-        
         window.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
         window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
-        let expandedOverlay = null;
 
-        function expandImage(src) {
-            expandedOverlay = document.createElement("div");
-            Object.assign(expandedOverlay.style, {
-                position: "fixed", zIndex: "9999", top: "0", left: "0",
-                width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.95)",
-                display: "flex", justifyContent: "center", alignItems: "center",
-                opacity: "0", cursor: "zoom-out"
-            });
+        // --- ZOOM "FLUIDE" (FLIP ANIMATION) ---
+        let expandedOverlay = null;
+        let originalItem = null; // Pour remettre l'opacité après
+
+        function zoomImage(itemDiv, src) {
+            // 1. Capture position départ
+            const rect = itemDiv.getBoundingClientRect();
             
+            // 2. Création Overlay
+            expandedOverlay = document.createElement("div");
+            expandedOverlay.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+                background: rgba(0,0,0,0.95); z-index: 9999; cursor: zoom-out;
+                display: flex; justify-content: center; align-items: center; opacity: 0;
+            `;
+            
+            // 3. Image Clônée (Positionnée exactement sur l'originale au départ)
             const img = document.createElement("img");
             img.src = src;
-            Object.assign(img.style, {
-                maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain",
-                boxShadow: "0 0 50px rgba(0,0,0,0.8)"
-            });
+            img.style.cssText = `
+                position: absolute;
+                top: ${rect.top}px;
+                left: ${rect.left}px;
+                width: ${rect.width}px;
+                height: ${rect.height}px;
+                object-fit: cover;
+                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                transition: none; /* On gère l'anim avec GSAP */
+            `;
             
             expandedOverlay.appendChild(img);
-            expandedOverlay.addEventListener("click", () => {
-                gsap.to(expandedOverlay, { opacity: 0, duration: 0.3, onComplete: () => expandedOverlay.remove() });
-            });
             document.body.appendChild(expandedOverlay);
 
-            gsap.to(expandedOverlay, { opacity: 1, duration: 0.3 });
-            gsap.from(img, { scale: 0.9, duration: 0.4, ease: "power2.out" });
+            // 4. Animation (Etat Final)
+            // On fade in le fond noir
+            gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
+
+            // On anime l'image vers le centre et en grand
+            const targetWidth = Math.min(window.innerWidth * 0.9, img.naturalWidth);
+            const targetHeight = Math.min(window.innerHeight * 0.9, img.naturalHeight);
+            
+            // Calcul ratio pour "contain"
+            const ratioW = window.innerWidth * 0.9 / rect.width;
+            const ratioH = window.innerHeight * 0.9 / rect.height;
+            const scale = Math.min(ratioW, ratioH); // On prend le plus petit ratio pour que ça rentre
+
+            // Animation GSAP Complexe pour centrer
+            gsap.to(img, {
+                top: "50%",
+                left: "50%",
+                x: "-50%",
+                y: "-50%",
+                width: rect.width * scale, // On scale par rapport à la taille d'origine
+                height: rect.height * scale,
+                duration: 0.6,
+                ease: "power3.inOut"
+            });
+
+            // 5. Fermeture
+            expandedOverlay.onclick = () => {
+                // Retour à la position d'origine (même si on a scrollé, on retourne vers les coord actuelles de l'item)
+                const newRect = itemDiv.getBoundingClientRect();
+                
+                gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
+                
+                gsap.to(img, {
+                    top: newRect.top,
+                    left: newRect.left,
+                    x: 0,
+                    y: 0,
+                    width: newRect.width,
+                    height: newRect.height,
+                    duration: 0.5,
+                    ease: "power3.inOut",
+                    onComplete: () => {
+                        expandedOverlay.remove();
+                    }
+                });
+            };
         }
 
         preloadImages();
