@@ -28,39 +28,71 @@
         </div>
     </header>
 
-    <div id="gallery-view"></div>
+    <div class="gallery-viewport" id="viewport">
+        <div class="gallery-track" id="track">
+            </div>
+    </div>
 
-    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.3); font-family: sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
+    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.4); font-family: sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
         DRAG & EXPLORE
     </div>
 
     <style>
-        #gallery-view {
+        .gallery-viewport {
             position: fixed;
             top: 0; left: 0;
             width: 100%; height: 100%;
-            /* Pas de transform ici, on bouge les items */
+            cursor: grab;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .gallery-viewport:active { cursor: grabbing; }
+
+        .gallery-track {
+            display: flex;
+            gap: 20px; /* ESPACE HORIZONTAL ENTRE LES COLONNES */
+            padding: 0 10px;
+            /* On va transformer ce container pour le X et les colonnes pour le Y */
+            will-change: transform;
         }
 
+        .gallery-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px; /* ESPACE VERTICAL ENTRE LES IMAGES */
+            position: relative;
+            /* Important pour le loop vertical sans coupure */
+            will-change: transform; 
+        }
+
+        /* Largeurs variées pour le rythme (Masonry style) */
+        .col-0 { width: 350px; }
+        .col-1 { width: 280px; }
+        .col-2 { width: 400px; }
+        .col-3 { width: 300px; }
+        .col-4 { width: 260px; }
+
         .gallery-item {
-            position: absolute;
-            top: 0; left: 0;
-            will-change: transform; /* Optimisation performance */
-            user-select: none;
+            width: 100%;
+            position: relative;
+            display: block;
         }
 
         .gallery-item img {
             width: 100%;
-            height: auto; /* ZÉRO CROP : Respecte le ratio natif */
+            height: auto; /* ZÉRO CROP GARANTI */
             display: block;
-            box-shadow: 0 15px 40px rgba(0,0,0,0.6);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
             transition: transform 0.3s ease;
-            pointer-events: none; /* Laisse le clic passer au div parent */
+            pointer-events: none; /* Le clic est géré par le parent */
         }
 
-        /* Hover Effect */
-        .gallery-item:hover { z-index: 100 !important; }
-        .gallery-item:hover img { transform: scale(1.05); box-shadow: 0 25px 60px rgba(0,0,0,0.8); }
+        .gallery-item:hover img {
+            transform: scale(1.03);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
     </style>
 
     <script>
@@ -79,159 +111,149 @@
 
         // --- CONFIGURATION ---
         const config = {
-            // Largeurs des colonnes (Rythme varié)
-            columnWidths: [350, 280, 420, 300, 260], 
-            gap: 40,             // Espace entre les images
-            duplicateCount: 3,   // Combien de fois on duplique la liste pour remplir l'espace
-            dragSpeed: 1.2
+            columnCount: 5,     // Nombre de colonnes uniques
+            duplicateSetsX: 5,  // Combien de fois on duplique les colonnes horizontalement pour l'infini X
+            duplicateImagesY: 4,// Combien de fois on duplique les images verticalement pour l'infini Y
+            dragSpeed: 1.5,
+            momentum: 0.1
         };
 
-        // --- VARIABLES GLOBALES ---
-        let items = []; // Stockera { element, x, y, width, height } pour chaque image
-        let worldWidth = 0;
-        let worldHeight = 0;
-        
-        let currentScrollX = 0;
-        let currentScrollY = 0;
-        let targetScrollX = 0;
-        let targetScrollY = 0;
+        const track = document.getElementById('track');
+        let columns = []; // Stockera les références aux éléments colonnes
+        let columnHeights = []; // Stockera la hauteur "originale" du contenu unique par colonne
 
-        const container = document.getElementById('gallery-view');
-
-        // --- 1. GÉNÉRATION DE LA GRILLE (MASONRY) ---
-        function initGallery() {
-            // On vide le conteneur si besoin
-            container.innerHTML = '';
-            items = [];
-
-            // Calcul de la largeur totale d'un "Set" de colonnes
-            const totalCols = config.columnWidths.length;
-            let setWidth = 0;
-            config.columnWidths.forEach(w => setWidth += w + config.gap);
+        // --- 1. CONSTRUCTION DE LA GRILLE ---
+        function buildGallery() {
+            // On crée un GROS set de colonnes (ex: 5 colonnes x 3 sets = 15 colonnes au total)
+            // Cela permet de scroller horizontalement longtemps avant de reset
             
-            // Pour avoir un infini fluide, il faut que le "Monde" soit assez grand
-            // On va créer plusieurs rangées de colonnes
-            
-            // Tableaux pour suivre la hauteur actuelle de chaque colonne
-            let colHeights = new Array(totalCols).fill(0);
-            
-            // Décalage initial vertical des colonnes pour le style
-            colHeights[1] = 100; colHeights[3] = 150; colHeights[4] = 50;
+            const totalCols = config.columnCount * config.duplicateSetsX;
 
-            // On boucle pour créer suffisamment d'images
-            for(let i = 0; i < imageUrls.length * config.duplicateCount; i++) {
-                const url = imageUrls[i % imageUrls.length];
+            for (let i = 0; i < totalCols; i++) {
+                const colIndex = i % config.columnCount; // 0, 1, 2, 3, 4, 0, 1...
                 
-                // On choisit la colonne de manière séquentielle (ou celle qui est la moins haute pour optimiser)
-                const colIndex = i % totalCols; 
+                const col = document.createElement('div');
+                col.className = `gallery-column col-${colIndex}`;
                 
-                // Création DOM
-                const el = document.createElement('div');
-                el.className = 'gallery-item';
-                el.style.width = config.columnWidths[colIndex] + 'px';
+                // Décalage vertical initial pour l'esthétique "Mur de briques"
+                // On applique un padding-top différent selon la colonne
+                const marginTop = [0, 100, 50, 150, 80][colIndex];
+                col.style.paddingTop = marginTop + 'px';
+
+                // Remplissage vertical
+                let contentHeight = 0;
                 
-                const img = document.createElement('img');
-                img.src = url;
-                el.appendChild(img);
-                
-                // Ajout au DOM
-                container.appendChild(el);
+                // On ajoute les images
+                for (let j = 0; j < config.duplicateImagesY; j++) {
+                    imageUrls.forEach((url, imgIndex) => {
+                        // Distribution: on met l'image dans cette colonne si c'est son tour
+                        // Astuce: (imgIndex + colIndex) permet de mélanger un peu
+                        if ((imgIndex + colIndex) % config.columnCount === 0) {
+                            const item = document.createElement('div');
+                            item.className = 'gallery-item';
+                            
+                            const img = document.createElement('img');
+                            img.src = url;
+                            
+                            item.appendChild(img);
+                            col.appendChild(item);
+                            
+                            // Interaction Zoom
+                            item.addEventListener('click', () => {
+                                if(Math.abs(targetX - currentX) < 5 && Math.abs(targetY - currentY) < 5) {
+                                    expandImage(url);
+                                }
+                            });
+                        }
+                    });
+                }
 
-                // Clic Zoom
-                el.addEventListener('click', () => {
-                    if(Math.abs(targetScrollX - currentScrollX) < 5) expandImage(url);
-                });
-
-                // Calcul Position (On stocke une position "Virtuelle")
-                const xPos = config.columnWidths.slice(0, colIndex).reduce((a, b) => a + b + config.gap, 0);
-                const yPos = colHeights[colIndex];
-
-                // On stocke les données
-                // Note: On met une hauteur estimée (400) pour le calcul initial du monde.
-                // L'image s'affichera correctement height:auto via CSS.
-                items.push({
-                    element: el,
-                    baseX: xPos,
-                    baseY: yPos,
-                    width: config.columnWidths[colIndex],
-                    // On ajoute une hauteur arbitraire + gap pour la prochaine image de la colonne
-                    // (L'image réelle peut être plus grande/petite, mais ça suffit pour l'espacement)
-                    height: 350 
-                });
-
-                colHeights[colIndex] += 350 + config.gap; // On empile
+                track.appendChild(col);
+                columns.push(col);
             }
-
-            // Dimensions finales du "Monde" qui va boucler
-            worldWidth = setWidth;
-            worldHeight = Math.max(...colHeights); // La colonne la plus haute définit la hauteur du monde
-            
-            // Centrage initial
-            targetScrollX = -worldWidth / 4;
-            targetScrollY = -worldHeight / 4;
-            currentScrollX = targetScrollX;
-            currentScrollY = targetScrollY;
         }
 
-        // --- 2. BOUCLE D'ANIMATION (LE COEUR DU SYSTÈME) ---
+        // --- 2. CALCUL DES HAUTEURS POUR LE LOOP ---
+        // On doit attendre que les images soient chargées pour connaître la hauteur réelle
+        // pour faire un loop parfait.
+        function calculateDimensions() {
+            // On mesure la hauteur du premier "Set" d'images dans chaque colonne
+            // Pour simplifier: on va dire que le Loop se fait sur la hauteur totale de la colonne / 2
+            // C'est une approximation robuste.
+            columns.forEach(col => {
+                // Hauteur totale actuelle
+                const h = col.scrollHeight;
+                // On stocke la hauteur de loop (la moitié, car on a dupliqué assez de fois)
+                // Le modulo se fera sur cette valeur.
+                columnHeights.push(h / 2); 
+            });
+            
+            // Largeur totale pour le loop X
+            // Largeur d'un set de 5 colonnes + gaps
+            const singleSetWidth = track.scrollWidth / config.duplicateSetsX;
+            trackWidthLoop = singleSetWidth;
+        }
+
+
+        // --- 3. ANIMATION & INFINI ---
+        let currentX = 0;
+        let currentY = 0;
+        let targetX = 0;
+        let targetY = 0;
+        let trackWidthLoop = 0;
+
         function animate() {
-            // Inertie (Smooth scroll)
-            currentScrollX += (targetScrollX - currentScrollX) * 0.1;
-            currentScrollY += (targetScrollY - currentScrollY) * 0.1;
+            // Inertie
+            currentX += (targetX - currentX) * config.momentum;
+            currentY += (targetY - currentY) * config.momentum;
 
-            const winW = window.innerWidth;
-            const winH = window.innerHeight;
+            // --- LOOP HORIZONTAL (X) ---
+            // On déplace tout le "track"
+            // Si on dépasse la largeur d'un set, on revient en arrière (invisible car c'est cloné)
+            let x = currentX;
+            if (trackWidthLoop > 0) {
+                // Modulo pour X
+                x = x % trackWidthLoop; 
+                // Correction pour les négatifs (drag vers la droite)
+                if (x > 0) x -= trackWidthLoop;
+            }
+            
+            // On centre visuellement au départ (-trackWidthLoop est arbitraire pour être au milieu des clones)
+            const centeredX = x - trackWidthLoop; 
+            track.style.transform = `translateX(${centeredX}px)`;
 
-            // Pour chaque item, on calcule sa position à l'écran
-            items.forEach(item => {
-                
-                // 1. Position brute avec le scroll
-                let renderX = item.baseX + currentScrollX;
-                let renderY = item.baseY + currentScrollY;
 
-                // 2. FORMULE MAGIQUE (Modulo Centré)
-                // Cela permet à l'item de "wrapper" autour du centre de l'écran
-                // ((val % size) + size) % size -> Modulo positif JS correct
+            // --- LOOP VERTICAL (Y) ---
+            // Ici, on déplace CHAQUE COLONNE individuellement.
+            // C'est le secret pour que ça ne se chevauche jamais et que le loop soit propre.
+            columns.forEach((col, index) => {
+                const loopH = columnHeights[index] || 10000; // Sécurité si pas chargé
                 
-                // On calcule la distance par rapport au centre, on modulo, et on remet au centre
-                // Astuce simplifiée :
-                // On fait boucler renderX dans [0, worldWidth]
-                // Puis on décale pour centrer si besoin
+                // On ajoute un décalage Y pour chaque colonne pour l'effet "Parallax" ou "Briques"
+                // Ici on applique juste le scroll Y global
+                let y = currentY;
                 
-                let loopedX = ((renderX % worldWidth) + worldWidth) % worldWidth;
-                let loopedY = ((renderY % worldHeight) + worldHeight) % worldHeight;
-                
-                // Si l'item est trop à droite, on le passe à gauche (pour centrer la vue)
-                if (loopedX > worldWidth / 2) loopedX -= worldWidth;
-                if (loopedY > worldHeight / 2) loopedY -= worldHeight;
-                
-                // Centrage visuel par rapport à l'écran
-                // On ajoute winW/2 pour que (0,0) soit au centre
-                const finalX = loopedX + (winW / 2) - (worldWidth / 2); // Ajustement fin selon layout
-                const finalY = loopedY + (winH / 2) - (worldHeight / 2);
+                // Modulo Y
+                y = y % loopH;
+                if (y > 0) y -= loopH;
 
-                // Optimisation : Ne pas modifier le DOM si hors écran (Culling)
-                // Marge de sécurité de 500px
-                if(finalX > -500 && finalX < winW + 500 && finalY > -500 && finalY < winH + 500) {
-                    item.element.style.transform = `translate3d(${finalX}px, ${finalY}px, 0)`;
-                    item.element.style.display = 'block';
-                } else {
-                    item.element.style.display = 'none'; // Cache l'élément pour perf
-                }
+                col.style.transform = `translateY(${y}px)`;
             });
 
             requestAnimationFrame(animate);
         }
 
-        // --- 3. GESTION DU DRAG ---
+
+        // --- 4. DRAG EVENTS ---
         let isDragging = false;
         let startX = 0, startY = 0;
+        const viewport = document.getElementById('viewport');
 
         const onStart = (x, y) => {
             isDragging = true;
             startX = x;
             startY = y;
-            container.style.cursor = "grabbing";
+            viewport.style.cursor = "grabbing";
         };
 
         const onMove = (x, y) => {
@@ -239,9 +261,8 @@
             const dx = x - startX;
             const dy = y - startY;
             
-            // On bouge la cible du scroll (Inverser le signe si tu veux "tirer" vs "scroller")
-            targetScrollX += dx * config.dragSpeed;
-            targetScrollY += dy * config.dragSpeed;
+            targetX += dx * config.dragSpeed;
+            targetY += dy * config.dragSpeed;
             
             startX = x;
             startY = y;
@@ -249,25 +270,55 @@
 
         const onEnd = () => {
             isDragging = false;
-            container.style.cursor = "default";
+            viewport.style.cursor = "grab";
         };
 
-        // Events
         window.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
         window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
         window.addEventListener('mouseup', onEnd);
+        
         window.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
         window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
-        // --- ZOOM ---
-        let expandedOverlay = null;
+
+        // --- 5. INITIALISATION ---
+        buildGallery();
+        
+        // On attend que les images chargent pour calculer les dimensions correctes
+        // Sinon le scroll infini "saute"
+        let loadedCount = 0;
+        const imgs = document.querySelectorAll('img');
+        if(imgs.length === 0) animate(); // Pas d'images
+
+        imgs.forEach(img => {
+            if(img.complete) checkLoad();
+            else img.onload = checkLoad;
+        });
+
+        function checkLoad() {
+            loadedCount++;
+            if(loadedCount === imgs.length) {
+                // Tout est chargé
+                calculateDimensions();
+                animate();
+                
+                // Petit fade-in sympa
+                gsap.from(".gallery-item", {
+                    y: 100, opacity: 0, duration: 0.8, stagger: 0.05, ease: "power2.out"
+                });
+            }
+        }
+
+
+        // --- 6. LIGHTBOX (ZOOM) ---
+        let expandedDiv = null;
 
         function expandImage(src) {
-            if(isDragging) return; // Sécurité
+            if(isDragging) return;
 
-            expandedOverlay = document.createElement("div");
-            Object.assign(expandedOverlay.style, {
+            expandedDiv = document.createElement("div");
+            Object.assign(expandedDiv.style, {
                 position: "fixed", zIndex: "9999", top: "0", left: "0",
                 width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.95)",
                 display: "flex", justifyContent: "center", alignItems: "center",
@@ -278,25 +329,19 @@
             img.src = src;
             Object.assign(img.style, {
                 maxWidth: "90vw", maxHeight: "90vh", objectFit: "contain",
-                boxShadow: "0 0 50px rgba(0,0,0,0.8)"
+                boxShadow: "0 0 50px rgba(0,0,0,0.8)",
+                borderRadius: "0" // Pas de radius
             });
             
-            expandedOverlay.appendChild(img);
-            expandedOverlay.addEventListener("click", () => {
-                gsap.to(expandedOverlay, { opacity: 0, duration: 0.3, onComplete: () => expandedOverlay.remove() });
+            expandedDiv.appendChild(img);
+            expandedDiv.addEventListener("click", () => {
+                gsap.to(expandedDiv, { opacity: 0, duration: 0.3, onComplete: () => expandedDiv.remove() });
             });
-            document.body.appendChild(expandedOverlay);
+            document.body.appendChild(expandedDiv);
 
-            gsap.to(expandedOverlay, { opacity: 1, duration: 0.3 });
+            gsap.to(expandedDiv, { opacity: 1, duration: 0.3 });
             gsap.from(img, { scale: 0.9, duration: 0.4, ease: "power2.out" });
         }
-
-        // Lancement
-        // Petit délai pour assurer que le CSS est prêt
-        setTimeout(() => {
-            initGallery();
-            animate();
-        }, 100);
 
     </script>
 </body>
