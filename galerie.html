@@ -41,8 +41,7 @@
 
     <style>
         body, #gallery-container {
-            user-select: none;
-            -webkit-user-select: none;
+            user-select: none; -webkit-user-select: none;
         }
 
         .vignette {
@@ -61,18 +60,15 @@
         #gallery-container {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             cursor: grab;
-            perspective: 1000px;
         }
         #gallery-container:active { cursor: grabbing; }
 
         .gallery-item {
             position: absolute; top: 0; left: 0;
-            display: block;
-            will-change: transform; 
-            transform-origin: center center; 
+            display: block; will-change: transform; 
         }
 
-        .gallery-item img, .gallery-item video {
+        .gallery-item img {
             width: 100%; height: auto; display: block;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
             filter: brightness(0.8) grayscale(0.2); 
@@ -80,49 +76,45 @@
             pointer-events: none;
         }
 
-        /* Indicateur Play pour YouTube */
-        .play-icon {
-            position: absolute; top: 50%; left: 50%;
-            transform: translate(-50%, -50%) scale(0.8);
-            width: 50px; height: 50px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            display: flex; justify-content: center; align-items: center;
-            opacity: 0.8; transition: 0.3s;
-            pointer-events: none;
-            backdrop-filter: blur(5px);
-        }
-        .play-icon i { color: white; font-size: 20px; margin-left: 3px; }
-
         .gallery-item:hover { z-index: 100 !important; }
-        .gallery-item:hover img, .gallery-item:hover video { 
+        .gallery-item:hover img { 
             filter: brightness(1.1) grayscale(0);
             transform: scale(1.05); 
             box-shadow: 0 30px 70px rgba(0,0,0,0.9); 
         }
+
+        /* BOUTON PLAY YOUTUBE */
+        .play-icon {
+            position: absolute; top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px; height: 60px;
+            background: rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 50%;
+            display: flex; justify-content: center; align-items: center;
+            opacity: 0.9; transition: 0.3s;
+            pointer-events: none;
+            backdrop-filter: blur(4px);
+        }
+        .play-icon i { color: white; font-size: 20px; margin-left: 4px; }
+        
         .gallery-item:hover .play-icon {
             background: rgba(255,255,255,0.9);
+            border-color: white;
             transform: translate(-50%, -50%) scale(1.1);
         }
         .gallery-item:hover .play-icon i { color: #000; }
-
-        /* Style pour l'iframe YouTube en Zoom */
-        .expanded-iframe {
-            box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            border: none;
-        }
     </style>
 
     <script>
-        // --- TES FICHIERS (IMAGES, MP4 LOCAL, OU YOUTUBE) ---
         const galleryItems = [
             "assets/galerie/galerie1.png",
             "assets/galerie/galerie2.jpg",
-            "https://youtu.be/jqAytnGVjkQ", // EXEMPLE YOUTUBE 1
+            "https://youtu.be/jqAytnGVjkQ", // TEST YOUTUBE 1
             "assets/galerie/galerie3.jpg",
             "assets/galerie/galerie4.png",
             "assets/galerie/galerie5.png",
-            "https://youtu.be/jqAytnGVjkQ",                // EXEMPLE YOUTUBE 2 (Format court)
+            "https://youtu.be/jqAytnGVjkQ",                // TEST YOUTUBE 2
             "assets/galerie/galerie6.png",
             "assets/galerie/galerie7.jpg",
             "assets/galerie/galerie8.png",
@@ -136,9 +128,7 @@
             verticalDuplicates: 4, 
             horizontalSets: 3, 
             dragSpeed: 1.5,
-            ease: 0.04, 
-            curveStrength: 40,
-            rotationMax: 8
+            ease: 0.04
         };
 
         const container = document.getElementById('gallery-container');
@@ -150,8 +140,7 @@
         let totalWorldWidth = 0;
         let colHeights = []; 
 
-        // --- UTILITAIRES YOUTUBE ---
-        const isVideoLocal = (src) => /\.(mp4|webm|mov)$/i.test(src);
+        // --- OUTILS YOUTUBE ---
         const getYoutubeID = (url) => {
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
             const match = url.match(regExp);
@@ -159,40 +148,34 @@
         };
         const isYoutube = (src) => getYoutubeID(src) !== null;
 
-        // --- PRELOAD INTELLIGENT ---
+        // --- PRELOAD ROBUSTE ---
         function preloadMedia() {
             let loaded = 0;
-            
-            const checkLoad = () => {
+            const total = galleryItems.length;
+
+            const check = () => {
                 loaded++;
-                if(loaded === galleryItems.length) initGallery();
+                if (loaded === total) initGallery();
             };
 
             galleryItems.forEach(src => {
-                if (isVideoLocal(src)) {
-                    // Vidéo Locale
-                    const vid = document.createElement('video');
-                    vid.src = src;
-                    vid.muted = true; 
-                    vid.preload = "metadata";
-                    vid.onloadedmetadata = checkLoad;
-                    vid.onerror = checkLoad;
-                } else if (isYoutube(src)) {
-                    // YouTube : On charge la miniature JPG
+                if (isYoutube(src)) {
+                    // Charger la miniature YouTube
                     const id = getYoutubeID(src);
                     const img = new Image();
                     img.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-                    img.onload = checkLoad;
+                    img.onload = check;
                     img.onerror = () => {
-                        // Fallback si maxresdefault n'existe pas (rare)
+                        // Fallback si pas de HD
                         img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
+                        img.onload = check;
                     };
                 } else {
-                    // Image standard
+                    // Charger l'image locale
                     const img = new Image();
                     img.src = src;
-                    img.onload = checkLoad;
-                    img.onerror = checkLoad;
+                    img.onload = check;
+                    img.onerror = check;
                 }
             });
         }
@@ -213,6 +196,7 @@
                 if(type === 4) colHeights[i] = 50;
             }
 
+            // Génération
             for(let c = 0; c < totalCols; c++) {
                 const colType = c % config.colWidths.length;
                 const colW = config.colWidths[colType];
@@ -222,58 +206,46 @@
 
                 for(let r = 0; r < config.verticalDuplicates * galleryItems.length; r++) {
                     const url = galleryItems[(r + c) % galleryItems.length];
+                    const isYt = isYoutube(url);
                     
                     const item = document.createElement('div');
                     item.className = 'gallery-item';
                     item.style.width = colW + 'px';
                     
-                    let mediaElement;
-                    let renderHeight = 0;
-
-                    if (isVideoLocal(url)) {
-                        // MP4 LOCAL
-                        mediaElement = document.createElement('video');
-                        mediaElement.src = url;
-                        mediaElement.muted = true;
-                        mediaElement.loop = true;
-                        mediaElement.autoplay = true;
-                        mediaElement.playsInline = true;
-                        const vW = mediaElement.videoWidth || 16;
-                        const vH = mediaElement.videoHeight || 9;
-                        renderHeight = colW * (vH / vW);
-                    } 
-                    else if (isYoutube(url)) {
-                        // YOUTUBE (On affiche l'image de couverture)
+                    const img = document.createElement('img');
+                    
+                    if (isYt) {
                         const id = getYoutubeID(url);
-                        mediaElement = document.createElement('img');
-                        mediaElement.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-                        // Ratio YouTube standard 16:9
-                        renderHeight = colW * (9 / 16);
+                        img.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
                         
-                        // Petit icone Play
+                        // Icone Play
                         const icon = document.createElement('div');
                         icon.className = 'play-icon';
                         icon.innerHTML = '<i class="fas fa-play"></i>';
                         item.appendChild(icon);
-                    }
-                    else {
-                        // IMAGE
-                        mediaElement = document.createElement('img');
-                        mediaElement.src = url;
-                        const ratio = mediaElement.naturalHeight / mediaElement.naturalWidth;
-                        renderHeight = colW * ratio;
+                    } else {
+                        img.src = url;
                     }
                     
-                    item.appendChild(mediaElement);
+                    item.appendChild(img);
                     container.appendChild(item);
 
-                    if (!renderHeight || renderHeight === 0) renderHeight = colW;
+                    // IMPORTANT : Calcul de hauteur APRÈS appendChild
+                    // Si YouTube : Ratio 16:9 forcé (car parfois l'image youtube a des bandes noires)
+                    let renderHeight;
+                    if(isYt) {
+                        renderHeight = colW * (9/16);
+                    } else {
+                        // Image locale : Ratio naturel
+                        const ratio = img.naturalHeight / img.naturalWidth;
+                        renderHeight = colW * ratio;
+                    }
+
+                    // Sécurité anti-crash si hauteur 0
+                    if(!renderHeight || renderHeight === 0) renderHeight = colW;
 
                     items.push({
                         element: item,
-                        media: mediaElement, // Peut être img ou video
-                        type: isYoutube(url) ? 'youtube' : (isVideoLocal(url) ? 'video' : 'image'),
-                        url: url,
                         x: baseX,
                         y: colHeights[c],
                         width: colW,
@@ -281,8 +253,10 @@
                         colIndex: c
                     });
 
+                    // Incrément de la colonne
                     colHeights[c] += renderHeight + config.gap;
                     
+                    // Zoom
                     item.addEventListener('click', () => {
                         if(Math.abs(targetX - scrollX) < 5 && Math.abs(targetY - scrollY) < 5) {
                             zoomMedia(item, url);
@@ -300,14 +274,13 @@
             scrollY = targetY;
         }
 
-        // --- MOTEUR RENDU ---
+        // --- ANIMATION ---
         function animate() {
             scrollX += (targetX - scrollX) * config.ease;
             scrollY += (targetY - scrollY) * config.ease;
 
             const winW = window.innerWidth;
             const winH = window.innerHeight;
-            const centerX = winW / 2;
 
             items.forEach(item => {
                 let x = item.x + scrollX;
@@ -319,18 +292,10 @@
                 let loopedY = ((y % totalH) + totalH) % totalH;
                 if (loopedY > totalH / 2 + winH) loopedY -= totalH;
 
-                const isVisible = loopedX > -400 && loopedX < winW + 400 && 
-                                  loopedY > -400 && loopedY < winH + 400;
-
-                if (isVisible) {
+                if (loopedX > -500 && loopedX < winW + 500 && 
+                    loopedY > -500 && loopedY < winH + 500) {
+                    item.element.style.transform = `translate3d(${loopedX}px, ${loopedY}px, 0)`;
                     item.element.style.display = 'block';
-                    const itemCenterX = loopedX + item.width / 2;
-                    const distFromCenterX = (itemCenterX - centerX) / centerX; 
-                    const rotateY = distFromCenterX * config.rotationMax;
-                    const translateZ = -Math.abs(distFromCenterX * config.curveStrength);
-
-                    item.element.style.transform = 
-                        `translate3d(${loopedX}px, ${loopedY}px, ${translateZ}px) rotateY(${rotateY}deg)`;
                 } else {
                     item.element.style.display = 'none';
                 }
@@ -342,20 +307,13 @@
         let isDragging = false;
         let startX = 0, startY = 0;
 
-        const onStart = (x, y) => {
-            isDragging = true; startX = x; startY = y;
-            container.style.cursor = "grabbing";
-        };
-
+        const onStart = (x, y) => { isDragging = true; startX = x; startY = y; container.style.cursor = "grabbing"; };
         const onMove = (x, y) => {
             if(!isDragging) return;
-            const dx = x - startX;
-            const dy = y - startY;
-            targetX += dx * config.dragSpeed;
-            targetY += dy * config.dragSpeed;
+            targetX += (x - startX) * config.dragSpeed;
+            targetY += (y - startY) * config.dragSpeed;
             startX = x; startY = y;
         };
-
         const onEnd = () => { isDragging = false; container.style.cursor = "grab"; };
 
         window.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
@@ -365,13 +323,12 @@
         window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
         window.addEventListener('touchend', onEnd);
 
-        // --- ZOOM UNIFIÉ (IMG / LOCAL / YOUTUBE) ---
+        // --- ZOOM MIXTE ---
         let expandedOverlay = null;
 
         function zoomMedia(itemDiv, src) {
             const rect = itemDiv.getBoundingClientRect();
             const youtubeID = getYoutubeID(src);
-            const isLocalVid = isVideoLocal(src);
             
             expandedOverlay = document.createElement("div");
             expandedOverlay.style.cssText = `
@@ -381,17 +338,10 @@
             `;
             
             let content;
-            let startRect = rect; // Position de départ pour l'anim
-
             if (youtubeID) {
-                // Pour YouTube, on anime d'abord la miniature, puis on swap avec l'iframe
-                // C'est une astuce pour que l'anim soit fluide (une iframe ne s'anime pas bien)
+                // Miniature HD pour animer
                 content = document.createElement("img");
                 content.src = `https://img.youtube.com/vi/${youtubeID}/maxresdefault.jpg`;
-            } else if (isLocalVid) {
-                content = document.createElement("video");
-                content.src = src;
-                content.muted = false; content.loop = true; content.autoplay = true; content.controls = true;
             } else {
                 content = document.createElement("img");
                 content.src = src;
@@ -408,44 +358,36 @@
 
             gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
 
-            // Calcul ratio pour "contain"
-            // Pour YouTube, on force 16:9
-            let naturalW = content.naturalWidth;
-            let naturalH = content.naturalHeight;
-            if(youtubeID) { naturalW = 16; naturalH = 9; }
-            if(isLocalVid) { naturalW = content.videoWidth || 16; naturalH = content.videoHeight || 9; }
-
+            // Calcul Ratio
+            const naturalW = youtubeID ? 16 : content.naturalWidth;
+            const naturalH = youtubeID ? 9 : content.naturalHeight;
+            
             const ratioW = window.innerWidth * 0.9 / rect.width;
             const ratioH = window.innerHeight * 0.9 / rect.height;
             const scale = Math.min(ratioW, ratioH); 
 
-            // Animation d'ouverture
+            // Animation
             gsap.to(content, {
                 top: "50%", left: "50%", x: "-50%", y: "-50%",
                 width: rect.width * scale, height: rect.height * scale,
                 duration: 0.6, ease: "power3.inOut",
                 onComplete: () => {
-                    // Une fois ouvert, SI C'EST YOUTUBE, on remplace l'image par l'iframe
+                    // SWAP IFRAME
                     if(youtubeID) {
                         const iframe = document.createElement("iframe");
                         iframe.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0`;
-                        iframe.style.cssText = content.style.cssText; // Copie dimensions
+                        iframe.style.cssText = content.style.cssText;
                         iframe.style.border = "none";
                         iframe.allow = "autoplay; encrypted-media";
-                        iframe.classList.add("expanded-iframe"); // Pour le style
-                        
                         expandedOverlay.replaceChild(iframe, content);
-                        content = iframe; // Pour la fermeture
+                        content = iframe;
                     }
                 }
             });
 
-            // Fermeture
+            // Close
             expandedOverlay.onclick = (e) => {
-                // Si on clique sur l'overlay (pas la vidéo/iframe)
                 if(e.target === expandedOverlay) {
-                    
-                    // Si c'est une iframe, on remet l'image pour que l'anim retour soit fluide
                     if(content.tagName === 'IFRAME') {
                         const imgBack = document.createElement("img");
                         imgBack.src = `https://img.youtube.com/vi/${youtubeID}/maxresdefault.jpg`;
@@ -453,10 +395,9 @@
                         expandedOverlay.replaceChild(imgBack, content);
                         content = imgBack;
                     }
-
-                    // On récupère la position actuelle de l'élément dans la grille (qui a pu bouger)
-                    const newRect = itemDiv.getBoundingClientRect();
                     
+                    // On recalcule la position car le scroll a pu bouger
+                    const newRect = itemDiv.getBoundingClientRect();
                     gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
                     gsap.to(content, {
                         top: newRect.top, left: newRect.left, x: 0, y: 0,
