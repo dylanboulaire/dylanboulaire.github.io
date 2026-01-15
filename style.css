@@ -1,550 +1,129 @@
-/* --- 1. IMPORTATION DE LA POLICE GOPHER --- */
-/* On déclare les 3 versions : Normal, Gras, et Fin */
+/* --- 1. IMPORTATION POLICES (Gopher) --- */
+@font-face { font-family: 'Gopher'; src: url('assets/fonts/Gopher-Regular.woff2') format('woff2'), url('assets/fonts/Gopher-Regular.ttf') format('truetype'); font-weight: 400; font-style: normal; }
+@font-face { font-family: 'Gopher'; src: url('assets/fonts/Gopher-Bold.woff2') format('woff2'), url('assets/fonts/Gopher-Bold.ttf') format('truetype'); font-weight: 700; font-style: normal; }
+@font-face { font-family: 'Gopher'; src: url('assets/fonts/Gopher-Light.woff2') format('woff2'), url('assets/fonts/Gopher-Light.ttf') format('truetype'); font-weight: 300; font-style: normal; }
 
-/* 1. Gopher Regular (Poids 400 - Texte normal) */
-@font-face {
-    font-family: 'Gopher';
-    src: url('assets/fonts/Gopher-Regular.woff2') format('woff2'),
-         url('assets/fonts/Gopher-Regular.ttf') format('truetype');
-    font-weight: 400;
-    font-style: normal;
-}
-
-/* 2. Gopher Bold (Poids 700 - Titres et Menu Actif) */
-@font-face {
-    font-family: 'Gopher';
-    src: url('assets/fonts/Gopher-Bold.woff2') format('woff2'),
-         url('assets/fonts/Gopher-Bold.ttf') format('truetype');
-    font-weight: 700;
-    font-style: normal;
-}
-
-/* 3. Gopher Light (Poids 300 - Menu Fin) */
-@font-face {
-    font-family: 'Gopher';
-    src: url('assets/fonts/Gopher-Light.woff2') format('woff2'),
-         url('assets/fonts/Gopher-Light.ttf') format('truetype');
-    font-weight: 300;
-    font-style: normal;
-}
-
-/* --- 2. VARIABLES & COULEURS --- */
+/* --- 2. VARIABLES --- */
 :root {
     --bg-dark: #222222;
     --text-white: #FFFFFF;
-    --text-accent: #ECEAC4; /* Couleur Crème */
-    --btn-color: #2E7186;   /* Bleu (boutons uniquement) */
+    --text-accent: #ECEAC4; /* Crème */
+    --btn-color: #2E7186;   /* Bleu */
 }
 
-/* --- 3. BASE --- */
+/* --- 3. BASE GLOBALE --- */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
-    font-family: 'Gopher', sans-serif; /* Application de la police partout */
     background-color: var(--bg-dark);
+    font-family: 'Gopher', sans-serif;
     color: var(--text-white);
-    line-height: 1.6;
     overflow-x: hidden;
-    font-weight: 400; /* Poids normal par défaut */
+    position: relative;
+    min-height: 100vh;
 }
 
 a { text-decoration: none; color: inherit; transition: 0.3s; }
 
-/* --- 4. VIDÉO D'ARRIÈRE-PLAN --- */
-.video-background {
-    position: fixed;
-    top: 0; right: 0; bottom: 0; left: 0;
-    z-index: -100;
-    width: 100%; height: 100%;
-    overflow: hidden;
+/* --- 4. LUEUR INTERACTIVE (MOUSE GLOW) --- */
+.mouse-glow {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    pointer-events: none; z-index: -1;
+    background: radial-gradient(
+        600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+        rgba(46, 113, 134, 0.15), /* Ton bleu #2E7186 très transparent */
+        transparent 40%
+    );
+    will-change: background;
 }
 
-.video-background video {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    min-width: 100%; min-height: 100%;
-    width: auto; height: auto;
-    object-fit: cover;
-}
-
-.video-overlay {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(34, 34, 34, 0.4);
-}
-
-/* --- 5. HEADER (Modifié : Police Fine + Hover Crème) --- */
+/* --- 5. HEADER STANDARDISÉ --- */
 header {
+    position: fixed; top: 0; width: 100%; z-index: 1000;
+    padding: 25px 50px;
     display: flex; justify-content: space-between; align-items: center;
-    padding: 20px 50px; position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
-    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
+    background: transparent; /* Fond transparent pour voir la lueur */
 }
 
 /* Menu Gauche */
-.nav-left { flex: 1; }
-.nav-left ul { display: flex; gap: 25px; list-style: none; }
-
+.nav-left ul { display: flex; gap: 30px; list-style: none; }
 .nav-left a {
-    font-size: 0.85rem;
-    font-weight: 300; /* POLICE FINE (Gopher Light) */
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.8;
-    color: var(--text-white);
+    font-size: 0.85rem; font-weight: 300; /* Fin par défaut */
+    text-transform: uppercase; letter-spacing: 1px;
+    color: var(--text-white); opacity: 0.7;
 }
+.nav-left a:hover { opacity: 1; color: var(--text-accent); }
 
-.nav-left a:hover {
-    color: var(--text-accent); /* Couleur CRÈME au survol */
-    opacity: 1;
-}
-
-/* PAGE ACTIVE : Gras et Couleur Crème */
+/* Menu Actif (Réglage demandé) */
 .active-link {
-    font-weight: 700 !important; /* POLICE GRASSE (Gopher Bold) */
-    color: var(--text-accent) !important;
+    font-weight: 700 !important; /* Gras */
+    color: var(--text-accent) !important; /* Crème */
     opacity: 1 !important;
 }
 
-/* Logo Centre */
-.logo-center { flex: 1; text-align: center; display: flex; justify-content: center; }
-.logo-img { height: 50px; width: auto; display: block; transition: transform 0.3s ease; }
-.logo-center a:hover .logo-img { transform: scale(1.05); }
-
-/* Droite (Icônes) */
-.nav-right { flex: 1; display: flex; justify-content: flex-end; gap: 20px; }
-.nav-right a { font-size: 1.2rem; transition: 0.3s; }
-
-/* MODIFICATION : Les icônes deviennent CRÈME au survol */
-.nav-right a:hover {
-    color: var(--text-accent); 
-    transform: translateY(-3px);
+/* Logo Centre (Centrage Absolu pour précision parfaite) */
+.logo-center {
+    position: absolute; left: 50%; transform: translateX(-50%);
 }
+.logo-img { height: 40px; display: block; }
 
-/* --- 6. HERO (Aligné à droite) --- */
-.hero-content {
-    height: 100vh;
-    display: flex; flex-direction: column; justify-content: center;
-    align-items: flex-end;   /* Aligné à droite */
-    text-align: right;       /* Texte à droite */
-    padding-right: 10%;
-    position: relative;
-}
-.hero-content h1 {
-    font-size: 4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
-    text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-}
-.badge {
-    background: var(--text-white); color: var(--bg-dark); padding: 10px 25px;
-    border-radius: 50px; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;
-    text-transform: uppercase;
-    display: inline-block;
+/* Menu Droite */
+.nav-right { display: flex; gap: 20px; font-size: 1.2rem; }
+.nav-right a { opacity: 0.8; }
+.nav-right a:hover { color: var(--text-accent); opacity: 1; }
+
+
+/* --- 6. PAGE CONTACT (Styles Spécifiques) --- */
+.page-container {
+    min-height: 100vh;
+    display: flex; justify-content: center; align-items: center;
+    padding-top: 80px; /* Espace header */
 }
 
-/* Flèche de scroll */
-.scroll-down {
-    position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
-    z-index: 10; opacity: 0.5; transition: opacity 0.3s; padding: 20px; cursor: pointer;
+.contact-content {
+    width: 100%; max-width: 600px; text-align: center;
+    position: relative; z-index: 2; padding: 20px;
 }
-.scroll-down:hover { opacity: 1; }
-.scroll-down span {
-    display: block; width: 40px; height: 40px;
-    border-bottom: 1px solid white; border-right: 1px solid white;
-    transform: rotate(45deg); margin: -10px auto 0;
-    animation: scrollBounce 2s infinite;
-}
-@keyframes scrollBounce {
-    0% { transform: rotate(45deg) translate(0, 0); }
-    20% { transform: rotate(45deg) translate(10px, 10px); }
-    40% { transform: rotate(45deg) translate(0, 0); }
-}
-html { scroll-behavior: smooth; }
 
-/* --- 7. GALERIE --- */
-.gallery {
-    background: var(--bg-dark); position: relative; z-index: 1;
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 30px; padding: 100px 50px;
+.contact-content h1 {
+    font-size: 3rem; margin-bottom: 5px; letter-spacing: 2px;
+    text-transform: uppercase; font-weight: 700;
 }
-.project-card {
-    position: relative; height: 350px; overflow: hidden; display: block;
-    background: #000; border-radius: 8px;
-}
-.project-card img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.6s ease, opacity 0.3s ease; opacity: 0.9;
-}
-.project-card:hover img { transform: scale(1.05); opacity: 0.4; }
 
-.overlay-text {
-    position: absolute; bottom: 20px; left: 20px; pointer-events: none; padding-right: 20px;
-    opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(20px);
+.subtitle {
+    font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-bottom: 40px;
 }
-.project-card:hover .overlay-text { opacity: 1; transform: translateY(0); }
-.overlay-text h3 {
-    font-size: 1.5rem; margin-bottom: 5px; color: var(--text-accent); text-transform: uppercase; line-height: 1.2; font-weight: 700;
-}
-.overlay-text p { font-style: italic; font-size: 0.9rem; font-weight: 300; }
 
-/* --- 8. CONTACT & PAGES --- */
-.page-padding {
-    padding-top: 150px; padding-bottom: 50px; max-width: 1200px; margin: 0 auto; min-height: 80vh;
-}
-.contact-title { color: var(--text-accent); margin-bottom: 30px; text-transform: uppercase; font-size: 1.5rem; font-weight: 700; }
-.contact-subtitle { margin-bottom: 40px; font-style: italic; color: #ccc; font-weight: 300; }
-.contact-container { text-align: left; max-width: 600px; margin: 0 auto; }
-.contact-form .form-group { margin-bottom: 20px; }
-.contact-form label {
-    display: block; margin-bottom: 8px; font-weight: 700; color: var(--text-accent); font-size: 0.9rem;
-}
-.contact-form input, .contact-form textarea {
-    width: 100%; padding: 15px; background-color: #f9f9f9; border: none;
-    color: #333; font-family: 'Gopher', sans-serif; font-size: 0.9rem; border-radius: 4px;
-}
-.contact-form input:focus, .contact-form textarea:focus {
-    outline: 2px solid var(--btn-color); background-color: #fff;
-}
-.contact-form button {
-    background-color: var(--btn-color); color: white; padding: 12px 30px;
-    border: none; border-radius: 50px; font-weight: 700; cursor: pointer;
-    font-size: 1rem; margin-top: 10px; transition: background 0.3s;
-}
-.contact-form button:hover { background-color: white; color: var(--bg-dark); }
-.contact-footer-icons {
-    margin-top: 60px; text-align: center; display: flex; justify-content: center; gap: 30px;
-}
-.contact-footer-icons a { font-size: 1.2rem; font-weight: 700; color: white; }
-.contact-footer-icons a:hover { color: var(--text-accent); }
+.contact-form { display: flex; flex-direction: column; gap: 20px; }
 
-/* Bio Styles */
-.bio-container { display: flex; gap: 50px; align-items: center; padding: 0 20px; }
-.bio-img-box img {
-    width: 350px; height: 350px; object-fit: cover; border-radius: 50%; border: 4px solid var(--btn-color);
+input, textarea {
+    width: 100%; background: white; border: none; border-radius: 4px;
+    padding: 15px; color: #222222; font-family: 'Gopher', sans-serif;
+    font-size: 0.9rem; resize: none;
 }
-.bio-text h1 { color: var(--text-accent); margin-bottom: 20px; font-size: 2.5rem; text-transform: uppercase; font-weight: 700; }
-.bio-text p { margin-bottom: 15px; font-size: 1.1rem; }
 
-/* --- 9. FOOTER --- */
+input:focus, textarea:focus { outline: 2px solid var(--btn-color); }
+
+::placeholder { color: #888; opacity: 1; }
+
+.submit-btn {
+    margin-top: 10px; padding: 15px 40px;
+    background-color: var(--btn-color); color: white;
+    border: none; border-radius: 4px; font-weight: 700;
+    font-size: 0.9rem; letter-spacing: 2px; cursor: pointer;
+    text-transform: uppercase; transition: 0.3s;
+}
+
+.submit-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
+
+/* --- 7. FOOTER STANDARD --- */
 footer {
-    background: var(--bg-dark); color: #666; text-align: center; padding: 40px; position: relative; z-index: 1; font-weight: 300;
+    position: fixed; bottom: 0; width: 100%; text-align: center;
+    padding: 20px; color: rgba(255, 255, 255, 0.3);
+    font-size: 0.7rem; letter-spacing: 1px; pointer-events: none;
+    font-weight: 300;
 }
 
-/* --- MOBILE --- */
-@media (max-width: 768px) {
-    header { flex-direction: column; gap: 15px; padding: 20px; background: rgba(0,0,0,0.9); }
-    .nav-left ul { gap: 15px; font-size: 0.75rem; justify-content: center; }
-    .logo-img { height: 40px; }
-    .hero-content { align-items: center; text-align: center; padding-right: 0; }
-    .hero-content h1 { font-size: 2.5rem; }
-    .bio-container { flex-direction: column; text-align: center; }
-    .bio-img-box img { width: 250px; height: 250px; }
-    .gallery { padding: 50px 20px; grid-template-columns: 1fr; }
-}
-
-/* --- STYLE PAGE PROJET (KERNIAE & CO) --- */
-
-/* En-tête de projet */
-.project-hero-header {
-    text-align: center;
-    padding: 160px 20px 60px; /* Marge haute pour le menu */
-    background: var(--bg-dark);
-}
-.project-hero-header h1 {
-    font-size: 4rem; margin-bottom: 10px; color: var(--text-white);
-    letter-spacing: 2px;
-}
-.project-hero-header .subtitle {
-    font-size: 1.2rem; color: #888; margin-bottom: 40px; font-weight: 300;
-}
-
-/* Grille d'infos techniques (Rôle, Outils...) */
-.project-meta-grid {
-    display: flex; justify-content: center; gap: 50px; flex-wrap: wrap;
-    border-top: 1px solid #333; border-bottom: 1px solid #333;
-    padding: 30px 0; max-width: 900px; margin: 0 auto;
-}
-.meta-item { display: flex; flex-direction: column; align-items: center; }
-.meta-label { font-size: 0.8rem; text-transform: uppercase; color: #666; margin-bottom: 5px; letter-spacing: 1px; }
-.meta-value { font-weight: 700; color: var(--text-accent); font-size: 1rem; }
-
-/* Corps du projet */
-.project-body { padding-top: 50px; max-width: 1200px; margin: 0 auto; }
-.project-intro-text {
-    font-size: 1.3rem; line-height: 1.8; text-align: center; max-width: 800px; margin: 0 auto 60px;
-}
-
-.separator { border: 0; height: 1px; background: #333; margin: 60px 0; }
-
-/* Sections */
-.project-section { margin-bottom: 100px; }
-.section-title { margin-bottom: 40px; text-align: left; }
-.section-title h2 { font-size: 2rem; color: var(--text-white); margin-bottom: 10px; }
-.section-title p { color: #999; max-width: 600px; }
-
-/* Grilles & Médias */
-.media-container {
-    width: 100%; border-radius: 8px; overflow: hidden; position: relative;
-    background: #111;
-}
-.media-container img { width: 100%; height: auto; display: block; }
-
-.grid-2-col { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-.grid-3-col { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-
-/* Bouton Play sur image */
-.play-btn-overlay {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 80px; height: 80px; background: rgba(236, 234, 196, 0.9);
-    border-radius: 50%; display: flex; justify-content: center; align-items: center;
-    color: var(--bg-dark); font-size: 2rem; transition: 0.3s;
-}
-.play-btn-overlay:hover { transform: translate(-50%, -50%) scale(1.1); background: #fff; }
-.caption { text-align: center; font-size: 0.9rem; color: #666; margin-top: 10px; font-style: italic; }
-
-/* --- LE CARROUSEL HORIZONTAL (Magic Scroll) --- */
-.horizontal-scroller {
-    display: flex;
-    gap: 30px;
-    overflow-x: auto; /* Permet le scroll horizontal */
-    scroll-snap-type: x mandatory; /* Force l'image à se caler */
-    padding-bottom: 20px; /* Espace pour la barre de scroll */
-    -webkit-overflow-scrolling: touch; /* Fluidité sur mobile */
-}
-
-/* Barre de scroll stylisée */
-.horizontal-scroller::-webkit-scrollbar { height: 8px; }
-.horizontal-scroller::-webkit-scrollbar-track { background: #111; border-radius: 4px; }
-.horizontal-scroller::-webkit-scrollbar-thumb { background: var(--btn-color); border-radius: 4px; }
-
-.scroll-item {
-    flex: 0 0 auto; /* Ne pas réduire la taille des images */
-    scroll-snap-align: center; /* L'image se centre à l'arrêt */
-    border-radius: 8px; overflow: hidden;
-    transition: transform 0.3s;
-}
-
-/* Gestion des images longues (Newsletters) */
-.vertical-doc { width: 350px; /* Largeur fixe pour une newsletter */ }
-.vertical-doc img { width: 100%; height: auto; }
-
-/* Bouton Retour en bas */
-.project-nav-footer { text-align: center; margin: 80px 0; }
-.btn-back {
-    display: inline-block; border: 1px solid #555; padding: 15px 40px;
-    border-radius: 50px; text-transform: uppercase; font-weight: 700;
-    font-size: 0.9rem; transition: 0.3s;
-}
-.btn-back:hover { background: var(--text-white); color: var(--bg-dark); border-color: white; }
-
-/* RESPONSIVE PROJET */
-@media (max-width: 768px) {
-    .project-hero-header h1 { font-size: 2.5rem; }
-    .project-meta-grid { gap: 20px; flex-direction: column; }
-    .grid-2-col, .grid-3-col { grid-template-columns: 1fr; }
-    .horizontal-scroller { gap: 15px; }
-    .vertical-doc { width: 280px; } /* Plus petit sur mobile */
-}
-
-/* --- MISE À JOUR PROJET V2 (Plus compact) --- */
-
-/* Conteneur global des infos (Rôle + Défi) */
-.project-meta-container {
-    max-width: 700px; /* On limite la largeur pour que ça reste centré et propre */
-    margin: 0 auto;
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
-    padding: 30px 0;
-}
-
-/* Grille Rôle/Durée/Outils */
-.project-meta-grid {
-    display: flex; justify-content: center; gap: 40px; flex-wrap: wrap;
-    border: none; padding: 0; margin-bottom: 20px; /* Espace avant le texte défi */
-}
-
-/* Texte Défi Compact */
-.project-intro-compact p {
-    font-size: 0.95rem; /* Texte plus petit */
-    color: #bbb;
-    text-align: center;
-    line-height: 1.5;
-    margin: 0;
-}
-
-/* RÉDUCTION DES IMAGES ET VIDÉOS */
-
-/* Conteneur vidéo unique (Podcast) limité en largeur */
-.video-compact-wrapper {
-    max-width: 700px; /* Largeur max de la vidéo */
-    margin: 0 auto;   /* Centré */
-}
-
-/* Grilles plus compactes */
-.compact-grid {
-    gap: 15px; /* Moins d'espace entre les images */
-    max-width: 900px; /* La grille ne prend pas tout l'écran */
-    margin: 0 auto;
-}
-
-/* SLIDER DRAGGABLE (Style) */
-.horizontal-scroller.draggable {
-    cursor: grab; /* Curseur main ouverte */
-    /* On désactive le scroll-snap quand on drag pour que ce soit fluide */
-    scroll-snap-type: none; 
-}
-.horizontal-scroller.draggable.active {
-    cursor: grabbing; /* Curseur main fermée quand on clique */
-    transform: scale(1);
-}
-
-.drag-hint {
-    font-size: 0.8rem !important;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    opacity: 0.7;
-    margin-top: -10px;
-    margin-bottom: 20px;
-}
-
-/* Images dans le slider légèrement plus petites */
-.vertical-doc { width: 280px; } 
-
-/* Titres de section plus discrets */
-.section-title h2 { font-size: 1.5rem; margin-bottom: 5px; }
-.project-section { margin-bottom: 60px; } /* Moins d'espace entre les sections */
-
-/* --- CORRECTIFS V3 (Espacements & Bugs) --- */
-
-/* 1. Espacement du texte "Défi" */
-.project-intro-compact {
-    margin-top: 40px; /* Plus d'espace avec la ligne du dessus */
-    padding-top: 20px; /* Un peu d'air interne */
-}
-
-/* 2. Réparation du Carrousel (Drag & Drop) */
-.horizontal-scroller img {
-    /* INDISPENSABLE : Empêche le navigateur de croire qu'on veut "enregistrer" l'image */
-    pointer-events: none; 
-    user-select: none;
-}
-.horizontal-scroller {
-    cursor: grab;
-    overflow-x: auto; /* Scrollbar cachée mais fonctionnelle */
-    scrollbar-width: none; /* Firefox */
-}
-.horizontal-scroller::-webkit-scrollbar {
-    display: none; /* Chrome/Safari : On cache la barre moche */
-}
-
-/* 3. Sécurité Images Géantes (Réseaux Sociaux) */
-.project-section img, .media-container img {
-    max-width: 100%; /* Force l'image à ne jamais dépasser son conteneur */
-    height: auto;
-    display: block;
-}
-
-/* Grille flexible (Smart Grid) pour les réseaux sociaux */
-/* Elle remplace les grid-2-col ou 3-col fixes */
-.smart-grid {
-    display: grid;
-    /* Crée autant de colonnes que possible (min 300px de large) */
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
-    gap: 20px;
-    width: 100%;
-}
-
-/* --- STYLE GALERIE INFINIE (CodePen Adapté) --- */
-
-/* Conteneur principal qui prend tout l'écran */
-.gallery-container {
-    position: relative;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    cursor: grab;
-    background-color: var(--bg-dark);
-}
-
-.gallery-container.active {
-    cursor: grabbing;
-}
-
-/* Le Canvas où les images bougent */
-.canvas {
-    position: absolute;
-    will-change: transform;
-}
-
-/* Style d'une image individuelle */
-.item {
-    position: absolute;
-    overflow: hidden;
-    background-color: #000;
-    cursor: pointer;
-    border-radius: 4px; /* Un peu d'arrondi */
-}
-
-.item-image-container {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
-.item img {
-    width: 100%; height: 100%; object-fit: cover;
-    pointer-events: none; /* Important pour le drag */
-    transition: transform 0.3s ease;
-}
-
-.item:hover img { transform: scale(1.05); }
-
-/* Légendes sur les images */
-.item-caption {
-    position: absolute; bottom: 0; left: 0; width: 100%; padding: 10px; z-index: 2;
-    background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
-}
-
-.item-name {
-    font-family: 'Gopher', sans-serif; font-weight: 700; color: #fff;
-    font-size: 14px; text-transform: uppercase;
-}
-
-.item-number {
-    font-family: 'Montserrat', sans-serif; color: var(--text-accent); font-size: 10px;
-}
-
-/* EFFET D'EXPANSION (Quand on clique) */
-.expanded-item {
-    position: fixed; z-index: 10001; /* Au dessus de tout */
-    top: 50%; left: 50%; transform: translate(-50%, -50%);
-    background-color: #000; overflow: hidden; cursor: zoom-out;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-}
-
-.expanded-item img {
-    width: 100%; height: 100%; object-fit: contain; pointer-events: none;
-}
-
-/* Overlay noir arrière-plan */
-.gallery-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0,0,0,0.95);
-    pointer-events: none; opacity: 0; z-index: 9999;
-    transition: opacity 0.5s;
-}
-
-.gallery-overlay.active { pointer-events: auto; opacity: 1; }
-
-/* Titre du projet au centre (Animation) */
-.project-title-overlay {
-    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
-    width: 100%; text-align: center; pointer-events: none; z-index: 10002;
-}
-.project-title-overlay p {
-    font-family: 'Gopher', sans-serif; font-size: 3rem; color: var(--text-accent);
-    text-transform: uppercase; overflow: hidden; font-weight: 700;
-}
-
-/* Clone pour l'animation fluide du texte */
-.caption-clone { position: fixed; z-index: 10002; color: white; pointer-events: none;}
-
+/* --- 8. GALERIE & AUTRES (Gardés pour compatibilité) --- */
+.gallery-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; cursor: grab; }
+.vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 100%); }
