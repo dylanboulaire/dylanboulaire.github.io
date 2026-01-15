@@ -3,15 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dylan Boulaire - Portfolio</title>
+    <title>Portfolio - Dylan Boulaire</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
+    <div class="mouse-glow"></div>
+
     <div class="video-background">
         <video autoplay muted loop playsinline>
-            <source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4">
+            <source src="assets/video/background.mp4" type="video/mp4">
         </video>
         <div class="video-overlay"></div>
     </div>
@@ -19,101 +21,36 @@
     <header>
         <nav class="nav-left">
             <ul>
-                <li><a href="#realisations" class="active-link">Réalisations</a></li>
-                <li><a href="bio.html">Bio</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="galerie.html">Galerie</a></li>
+                <li><a href="#realisations">RÉALISATIONS</a></li>
+                <li><a href="bio.html">BIO</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li><a href="galerie.html">GALERIE</a></li>
             </ul>
         </nav>
-
+        
         <div class="logo-center">
-            <a href="index.html">
-                <img src="assets/logo.png" alt="Logo DB" class="logo-img">
-            </a>
+            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
         </div>
-
+        
         <div class="nav-right">
-            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank" title="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://www.behance.net" target="_blank" title="Behance"><i class="fab fa-behance"></i></a>
-            <a href="mailto:votre-email@gmail.com" title="Contact"><i class="fas fa-envelope"></i></a>
-            <a href="assets/mon-cv.pdf" target="_blank" title="Mon CV"><i class="fas fa-file-user"></i></a>
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
     </header>
 
-    <main>
-        <section class="hero-content">
-            <h1>DYLAN BOULAIRE</h1>
-            <div class="badge">ETUDIANT IUT LANNION</div>
-            
-            <a href="#realisations" class="scroll-down">
-                <span></span>
-            </a>
-        </section>
+    <section class="hero-content">
+        <div class="badge">ÉTUDIANT EN MMI</div>
+        <h1>Dylan<br>Boulaire</h1>
+    </section>
 
-        <section id="realisations" class="gallery">
-            
-            <a href="projet-detail.html" class="project-card">
-                <img src="assets/miniatures/projet1.png" alt="Cesson Volley Club">
-                <div class="overlay-text">
-                    <h3>Cesson Volley Club</h3>
-                    <p>Projet fictif</p>
-                </div>
-            </a>
-
-            <a href="projet-photonique.html" class="project-card">
-                <img src="assets/miniatures/projet2.png" alt="La Photonique">
-                <div class="overlay-text">
-                    <h3>La Photonique</h3>
-                    <p>Documentaire/Reportage</p>
-                </div>
-            </a>
-
-            <a href="projet-detail.html" class="project-card">
-                <img src="assets/miniatures/projet3.jpg" alt="Posters">
-                <div class="overlay-text">
-                    <h3>Posters</h3>
-                    <p>Créations personnelles</p>
-                </div>
-            </a>
-
-            <a href="projet-detail.html" class="project-card">
-                <img src="assets/miniatures/projet4.png" alt="Animations">
-                <div class="overlay-text">
-                    <h3>Motion Design</h3>
-                    <p>Animations</p>
-                </div>
-            </a>
-
-            <a href="projet-detail.html" class="project-card">
-                <img src="assets/miniatures/projet5.jpg" alt="Photos">
-                <div class="overlay-text">
-                    <h3>Photos Animalières</h3>
-                </div>
-            </a>
-
-            <a href="projet-kernae.html" class="project-card">
-                <img src="assets/miniatures/projet6.png" alt="Kernae">
-                <div class="overlay-text">
-                    <h3>KERNAE</h3>
-                    <p>Stage communication</p>
-                </div>
-            </a>
-
-            <a href="projet-detail.html" class="project-card">
-                <img src="assets/miniatures/projet7.png" alt="Infographies">
-                <div class="overlay-text">
-                    <h3>Infographies</h3>
-                </div>
-            </a>
-
-        </section>
-    </main>
+    <div class="scroll-down">
+        <span></span>
+    </div>
 
     <footer>
-        <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
+        © 2024 Dylan Boulaire. Tous droits réservés.
     </footer>
 
+    <script src="script.js"></script>
 </body>
 </html>
-
-
