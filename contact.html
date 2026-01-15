@@ -4,33 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contact - Dylan Boulaire</title>
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
 </head>
-
-<body style="background-color: #222222; margin: 0; font-family: 'Montserrat', sans-serif; color: white; overflow-x: hidden;">
+<body>
 
     <div class="mouse-glow"></div>
 
-    <header style="position: fixed; width: 100%; top: 0; z-index: 100; padding: 20px 50px; display: flex; justify-content: space-between; align-items: center; box-sizing: border-box;">
+    <header>
         <nav class="nav-left">
-            <ul style="list-style: none; display: flex; gap: 30px; margin: 0; padding: 0;">
-                <li><a href="index.html#realisations" style="text-decoration: none; color: white; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;">RÉALISATIONS</a></li>
-                <li><a href="bio.html" style="text-decoration: none; color: white; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;">BIO</a></li>
-                <li><a href="contact.html" class="active-link" style="text-decoration: none; color: white; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px; opacity: 0.6;">CONTACT</a></li>
-                <li><a href="galerie.html" style="text-decoration: none; color: white; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;">GALERIE</a></li>
+            <ul>
+                <li><a href="index.html#realisations">RÉALISATIONS</a></li>
+                <li><a href="bio.html">BIO</a></li>
+                <li><a href="contact.html" class="active-link">CONTACT</a></li>
+                <li><a href="galerie.html">GALERIE</a></li>
             </ul>
         </nav>
+        
         <div class="logo-center">
-            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" style="height: 40px;"></a>
+            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
         </div>
-        <div class="nav-right" style="display: flex; gap: 20px; font-size: 1.2rem;">
-            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank" style="color: white;"><i class="fab fa-linkedin-in"></i></a>
-            <a href="mailto:boulairedylan@gmail.com" style="color: white;"><i class="fas fa-envelope"></i></a>
+        
+        <div class="nav-right">
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
     </header>
 
-    <div class="contact-container">
+    <main class="page-container">
         <div class="contact-content">
             <h1>DISCUTONS ENSEMBLE</h1>
             <p class="subtitle">Un projet ? Une collaboration ? N'hésitez pas.</p>
@@ -39,16 +40,13 @@
                 <input type="hidden" name="_next" value="https://ton-site.com/merci.html">
                 <input type="hidden" name="_subject" value="Nouveau message du Portfolio !">
                 <input type="hidden" name="_captcha" value="false">
-                <input type="hidden" name="_template" value="table">
-
+                
                 <div class="input-group">
                     <input type="text" name="name" placeholder="Votre Nom" required>
                 </div>
-
                 <div class="input-group">
                     <input type="email" name="email" placeholder="Votre Email" required>
                 </div>
-
                 <div class="input-group">
                     <textarea name="message" rows="6" placeholder="Votre Message" required></textarea>
                 </div>
@@ -56,133 +54,12 @@
                 <button type="submit" class="submit-btn">ENVOYER LE MESSAGE</button>
             </form>
         </div>
-    </div>
+    </main>
 
-    <style>
-        /* --- STYLES LUEUR INTERACTIVE --- */
-        .mouse-glow {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            pointer-events: none; /* Important : laisse passer les clics au travers */
-            z-index: -1; /* Derrière tout le contenu */
-            /* Le dégradé radial qui suit la souris grâce aux variables CSS --x et --y */
-            /* J'ai utilisé une couleur bleu canard/teal proche de ton bouton. 
-               Change le rgba(0, 128, 128, 0.15) si tu veux une autre teinte.
-               0.15 est l'opacité (très subtile). */
-            background: radial-gradient(
-                800px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-                rgba(47, 158, 165, 0.15),
-                transparent 50%
-            );
-            will-change: background; /* Optimisation des performances */
-        }
+    <footer>
+        © 2024 Dylan Boulaire. Tous droits réservés.
+    </footer>
 
-
-        /* --- STYLES CONTACT --- */
-        .contact-container {
-            width: 100vw;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding-top: 80px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .contact-content {
-            width: 100%;
-            max-width: 600px;
-            padding: 40px;
-            text-align: center;
-        }
-
-        h1 {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        .subtitle {
-            font-size: 1rem;
-            color: rgba(255,255,255,0.6);
-            margin-bottom: 50px;
-        }
-
-        .contact-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px; /* Espace réduit entre les boites blanches */
-        }
-
-        /* MODIF 2 : Styles des champs (Boites blanches comme sur ton screen) */
-        input, textarea {
-            width: 100%;
-            background: white; /* Fond blanc */
-            border: none;
-            border-radius: 4px; /* Légèrement arrondi */
-            padding: 15px;
-            color: #222222; /* Texte foncé quand on écrit */
-            font-family: 'Montserrat', sans-serif;
-            font-size: 1rem;
-            resize: none;
-            box-sizing: border-box; /* Important pour que le padding ne dépasse pas */
-        }
-
-        input:focus, textarea:focus {
-            outline: 2px solid #2F9EA5; /* Petit contour bleu quand on clique */
-        }
-
-        /* MODIF 2 suite : Couleur du Placeholder (le texte d'aide) */
-        /* Il faut cibler spécifiquement le placeholder pour qu'il soit gris sur fond blanc */
-        ::placeholder {
-            color: #888888; /* Gris moyen pour être lisible */
-            opacity: 1; /* Nécessaire pour Firefox */
-        }
-
-        /* Bouton (J'ai repris le style bleu canard de ton screen) */
-        .submit-btn {
-            margin-top: 10px;
-            padding: 15px 40px;
-            background-color: #2F9EA5; /* Ta couleur tertiaire approximative */
-            color: white;
-            border: none;
-            font-weight: bold;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease;
-            text-transform: uppercase;
-            border-radius: 4px;
-        }
-
-        .submit-btn:hover {
-            transform: scale(1.02);
-            filter: brightness(1.1);
-        }
-
-    </style>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const body = document.body;
-            
-            // Écoute le mouvement de la souris sur toute la page
-            document.addEventListener('mousemove', (e) => {
-                // Récupère les coordonnées X et Y de la souris
-                const x = e.clientX;
-                const y = e.clientY;
-
-                // Met à jour les variables CSS sur le body
-                // Le dégradé radial dans le CSS utilise ces variables pour se positionner
-                body.style.setProperty('--mouse-x', `${x}px`);
-                body.style.setProperty('--mouse-y', `${y}px`);
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
