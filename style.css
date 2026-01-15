@@ -31,69 +31,110 @@ a { text-decoration: none; color: inherit; transition: 0.3s; }
     pointer-events: none; z-index: -1;
     background: radial-gradient(
         600px circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-        rgba(46, 113, 134, 0.15), /* Ton bleu #2E7186 très transparent */
+        rgba(46, 113, 134, 0.15), /* Bleu transparent */
         transparent 40%
     );
     will-change: background;
 }
 
-/* --- 5. HEADER STANDARDISÉ --- */
+/* --- 5. VIDÉO D'ARRIÈRE-PLAN (Pour l'accueil) --- */
+.video-background {
+    position: fixed; top: 0; right: 0; bottom: 0; left: 0;
+    z-index: -100; width: 100%; height: 100%; overflow: hidden;
+}
+.video-background video {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    min-width: 100%; min-height: 100%; width: auto; height: auto; object-fit: cover;
+}
+.video-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(34, 34, 34, 0.4); /* Assombrit la vidéo */
+}
+
+/* --- 6. HEADER STANDARDISÉ --- */
 header {
     position: fixed; top: 0; width: 100%; z-index: 1000;
     padding: 25px 50px;
     display: flex; justify-content: space-between; align-items: center;
-    background: transparent; /* Fond transparent pour voir la lueur */
+    background: linear-gradient(to bottom, rgba(0,0,0,0.8), transparent);
 }
 
-/* Menu Gauche */
 .nav-left ul { display: flex; gap: 30px; list-style: none; }
 .nav-left a {
-    font-size: 0.85rem; font-weight: 300; /* Fin par défaut */
+    font-size: 0.85rem; font-weight: 300; /* Fin */
     text-transform: uppercase; letter-spacing: 1px;
-    color: var(--text-white); opacity: 0.7;
+    color: var(--text-white); opacity: 0.8;
 }
 .nav-left a:hover { opacity: 1; color: var(--text-accent); }
 
-/* Menu Actif (Réglage demandé) */
 .active-link {
     font-weight: 700 !important; /* Gras */
     color: var(--text-accent) !important; /* Crème */
     opacity: 1 !important;
 }
 
-/* Logo Centre (Centrage Absolu pour précision parfaite) */
-.logo-center {
-    position: absolute; left: 50%; transform: translateX(-50%);
-}
-.logo-img { height: 40px; display: block; }
+/* Logo Centre */
+.logo-center { position: absolute; left: 50%; transform: translateX(-50%); }
+.logo-img { height: 40px; display: block; transition: transform 0.3s ease; }
+.logo-center a:hover .logo-img { transform: scale(1.05); }
 
 /* Menu Droite */
 .nav-right { display: flex; gap: 20px; font-size: 1.2rem; }
 .nav-right a { opacity: 0.8; }
-.nav-right a:hover { color: var(--text-accent); opacity: 1; }
+.nav-right a:hover { color: var(--text-accent); opacity: 1; transform: translateY(-3px); }
 
+/* --- 7. HERO SECTION (ACCUEIL) --- */
+.hero-content {
+    height: 100vh;
+    display: flex; flex-direction: column; justify-content: center;
+    align-items: flex-end;   /* Aligné à droite */
+    text-align: right;       /* Texte à droite */
+    padding-right: 10%;
+    position: relative;
+    z-index: 1;
+}
+.hero-content h1 {
+    font-size: 4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 20px;
+    text-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.badge {
+    background: var(--text-white); color: var(--bg-dark); padding: 10px 25px;
+    border-radius: 50px; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;
+    text-transform: uppercase; display: inline-block;
+}
 
-/* --- 6. PAGE CONTACT (Styles Spécifiques) --- */
+/* Flèche Scroll */
+.scroll-down {
+    position: absolute; bottom: 50px; left: 50%; transform: translateX(-50%);
+    z-index: 10; opacity: 0.5; padding: 20px; cursor: pointer;
+}
+.scroll-down span {
+    display: block; width: 40px; height: 40px;
+    border-bottom: 1px solid white; border-right: 1px solid white;
+    transform: rotate(45deg); margin: -10px auto 0;
+    animation: scrollBounce 2s infinite;
+}
+@keyframes scrollBounce {
+    0% { transform: rotate(45deg) translate(0, 0); }
+    20% { transform: rotate(45deg) translate(10px, 10px); }
+    40% { transform: rotate(45deg) translate(0, 0); }
+}
+
+/* --- 8. PAGE CONTACT (FORMULAIRE) --- */
 .page-container {
     min-height: 100vh;
     display: flex; justify-content: center; align-items: center;
-    padding-top: 80px; /* Espace header */
+    padding-top: 80px;
 }
-
 .contact-content {
     width: 100%; max-width: 600px; text-align: center;
     position: relative; z-index: 2; padding: 20px;
 }
-
 .contact-content h1 {
     font-size: 3rem; margin-bottom: 5px; letter-spacing: 2px;
     text-transform: uppercase; font-weight: 700;
 }
-
-.subtitle {
-    font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-bottom: 40px;
-}
-
+.subtitle { font-size: 0.9rem; color: rgba(255,255,255,0.5); margin-bottom: 40px; }
 .contact-form { display: flex; flex-direction: column; gap: 20px; }
 
 input, textarea {
@@ -101,9 +142,7 @@ input, textarea {
     padding: 15px; color: #222222; font-family: 'Gopher', sans-serif;
     font-size: 0.9rem; resize: none;
 }
-
 input:focus, textarea:focus { outline: 2px solid var(--btn-color); }
-
 ::placeholder { color: #888; opacity: 1; }
 
 .submit-btn {
@@ -113,17 +152,25 @@ input:focus, textarea:focus { outline: 2px solid var(--btn-color); }
     font-size: 0.9rem; letter-spacing: 2px; cursor: pointer;
     text-transform: uppercase; transition: 0.3s;
 }
-
 .submit-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
 
-/* --- 7. FOOTER STANDARD --- */
+/* --- 9. FOOTER --- */
 footer {
     position: fixed; bottom: 0; width: 100%; text-align: center;
     padding: 20px; color: rgba(255, 255, 255, 0.3);
-    font-size: 0.7rem; letter-spacing: 1px; pointer-events: none;
+    font-size: 0.7rem; letter-spacing: 1px; pointer-events: none; z-index: 10;
     font-weight: 300;
 }
 
-/* --- 8. GALERIE & AUTRES (Gardés pour compatibilité) --- */
+/* --- 10. GALERIE INFINIE & VIGNETTE (Compatibilité) --- */
 .gallery-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; cursor: grab; }
 .vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; background: radial-gradient(circle, transparent 50%, rgba(0,0,0,0.8) 100%); }
+
+/* Mobile */
+@media (max-width: 768px) {
+    header { padding: 20px; }
+    .nav-left ul { gap: 15px; font-size: 0.75rem; }
+    .logo-img { height: 30px; }
+    .hero-content { align-items: center; text-align: center; padding-right: 0; }
+    .hero-content h1 { font-size: 2.5rem; }
+}
