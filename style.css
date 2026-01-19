@@ -185,7 +185,9 @@ input:focus, textarea:focus {
 .project-card.visible { animation: fadeIn 0.5s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Modale Projet */
+/* ... (Garde tout le début de ton CSS jusqu'à la partie MODALE) ... */
+
+/* --- 9. MODALE PROJET (MISE À JOUR V2) --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.95); z-index: 2000;
@@ -193,13 +195,16 @@ input:focus, textarea:focus {
     opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(5px);
 }
 .modal-overlay.open { opacity: 1; pointer-events: auto; }
+
 .modal-container {
     width: 90%; max-width: 1200px; height: 85vh;
     background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1);
     display: flex; flex-direction: column; overflow: hidden;
-    border-radius: 10px; position: relative; transform: translateY(50px); transition: 0.4s;
+    border-radius: 10px; position: relative;
+    transform: translateY(50px); transition: 0.4s;
 }
 .modal-overlay.open .modal-container { transform: translateY(0); }
+
 .modal-close {
     position: absolute; top: 20px; right: 20px; z-index: 50;
     background: rgba(0,0,0,0.5); color: white; border: none;
@@ -207,7 +212,10 @@ input:focus, textarea:focus {
     font-size: 1.2rem; transition: 0.3s; display: flex; justify-content: center; align-items: center;
 }
 .modal-close:hover { background: var(--text-accent); color: black; }
+
 .modal-body { display: flex; height: 100%; flex-direction: row; }
+
+/* ZONE GAUCHE (Média) */
 .modal-media { flex: 2; background: black; position: relative; display: flex; align-items: center; justify-content: center; }
 .carousel-track { width: 100%; height: 100%; display: flex; overflow: hidden; scroll-behavior: smooth; }
 .carousel-slide { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
@@ -220,30 +228,52 @@ input:focus, textarea:focus {
 }
 .carousel-btn:hover { background: white; color: black; }
 .prev-btn { left: 10px; } .next-btn { right: 10px; }
+
+/* ZONE DROITE (Infos) */
 .modal-info {
     flex: 1; padding: 40px; overflow-y: auto;
     border-left: 1px solid rgba(255,255,255,0.1); background: #1a1a1a;
+    display: flex; flex-direction: column;
 }
-.modal-cat { color: var(--btn-color); font-size: 0.8rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
-.modal-title { font-size: 2.5rem; color: var(--text-accent); margin: 10px 0 5px 0; line-height: 1.1; }
-.modal-role { color: #888; font-style: italic; margin-bottom: 30px; }
-.modal-desc { color: #ccc; font-size: 0.95rem; line-height: 1.8; margin-bottom: 30px; }
-.modal-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; }
-.meta-box h4 { font-size: 0.7rem; color: #666; text-transform: uppercase; margin-bottom: 5px; }
-.meta-box p { font-size: 0.9rem; font-weight: 700; }
 
-/* --- 9. GALERIE INFINIE (PAGE GALERIE) --- */
-.gallery-container { position: relative; width: 100vw; height: 100vh; overflow: hidden; cursor: grab; background-color: var(--bg-dark); }
-.gallery-container.active { cursor: grabbing; }
-.vignette { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; background: radial-gradient(circle at center, transparent 40%, #050505 120%); }
-.gallery-item { position: absolute; top: 0; left: 0; display: block; will-change: transform; transform-origin: center center; overflow: hidden; }
-.gallery-item img, .gallery-item video { width: 100%; height: 100%; object-fit: cover; display: block; box-shadow: 0 20px 50px rgba(0,0,0,0.6); filter: brightness(0.8) grayscale(0.2); transition: filter 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease; pointer-events: none; }
-.gallery-item:hover { z-index: 100 !important; }
-.gallery-item:hover img, .gallery-item:hover video { filter: brightness(1.1) grayscale(0); transform: scale(1.05); box-shadow: 0 30px 70px rgba(0,0,0,0.9); }
-.play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 60px; height: 60px; background: rgba(0,0,0,0.6); border: 2px solid rgba(255,255,255,0.8); border-radius: 50%; display: flex; justify-content: center; align-items: center; opacity: 0.9; transition: 0.3s; pointer-events: none; backdrop-filter: blur(4px); }
-.play-icon i { color: white; font-size: 20px; margin-left: 4px; }
-.gallery-item:hover .play-icon { background: rgba(255,255,255,0.9); border-color: white; transform: translate(-50%, -50%) scale(1.1); }
-.gallery-item:hover .play-icon i { color: #000; }
+/* En-tête Info */
+.info-header { margin-bottom: 30px; }
+.cat-year-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
+.modal-cat { color: var(--btn-color); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+.modal-year { color: #666; font-size: 0.8rem; font-weight: 700; }
+
+.modal-title { font-size: 2.2rem; color: var(--text-accent); margin: 0 0 5px 0; line-height: 1.1; }
+.modal-role { color: #aaa; font-style: italic; font-size: 0.95rem; margin-bottom: 5px; }
+.modal-client { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+
+/* STYLE DES ACCORDÉONS (NOUVEAU) */
+.accordion-container { border-top: 1px solid rgba(255,255,255,0.1); }
+
+.accordion-item { border-bottom: 1px solid rgba(255,255,255,0.1); }
+
+.accordion-btn {
+    width: 100%; padding: 20px 0; background: none; border: none;
+    color: white; font-size: 1rem; font-weight: 700; text-align: left;
+    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    transition: color 0.3s; text-transform: uppercase; letter-spacing: 1px;
+}
+.accordion-btn:hover { color: var(--text-accent); }
+.accordion-btn i { font-size: 0.8rem; transition: transform 0.3s; }
+.accordion-btn.active i { transform: rotate(180deg); } /* Flèche qui tourne */
+
+.accordion-content {
+    max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
+}
+.inner-content {
+    padding-bottom: 20px; color: #ccc; font-size: 0.9rem; line-height: 1.6;
+}
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+    .modal-body { flex-direction: column; }
+    .modal-media { height: 50vh; flex: none; }
+    .modal-info { height: auto; border-left: none; border-top: 1px solid rgba(255,255,255,0.1); }
+}
 
 /* --- 10. FOOTER --- */
 footer {
@@ -251,12 +281,6 @@ footer {
     padding: 40px; position: relative; z-index: 10; font-weight: 300;
 }
 
-/* RESPONSIVE */
-@media (max-width: 1024px) {
-    .modal-body { flex-direction: column; }
-    .modal-media { height: 50%; flex: none; }
-    .modal-info { height: 50%; }
-    .filters { flex-wrap: wrap; }
 }
 @media (max-width: 768px) {
     header { flex-direction: column; gap: 15px; padding: 20px; background: rgba(0,0,0,0.9); }
@@ -267,3 +291,4 @@ footer {
     .projects-grid { grid-template-columns: 1fr; }
     .modal-container { width: 100%; height: 100%; border-radius: 0; }
 }
+
