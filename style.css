@@ -185,11 +185,7 @@ input:focus, textarea:focus {
 .project-card.visible { animation: fadeIn 0.5s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* ... (Garde tout le début de ton CSS jusqu'à la partie MODALE) ... */
-
-/* ... (Garde tout le début de ton CSS jusqu'à la partie MODALE) ... */
-
-/* --- 9. MODALE PROJET (MISE À JOUR V2) --- */
+/* --- 9. MODALE PROJET (CORRIGÉ : ANNÉE & POLICE) --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.95); z-index: 2000;
@@ -204,6 +200,9 @@ input:focus, textarea:focus {
     display: flex; flex-direction: column; overflow: hidden;
     border-radius: 10px; position: relative;
     transform: translateY(50px); transition: 0.4s;
+    
+    /* FORCE LA POLICE GOPHER PARTOUT DANS LA MODALE */
+    font-family: 'Gopher', sans-serif !important; 
 }
 .modal-overlay.open .modal-container { transform: translateY(0); }
 
@@ -238,19 +237,27 @@ input:focus, textarea:focus {
     display: flex; flex-direction: column;
 }
 
-/* En-tête Info */
+/* En-tête Info (CORRIGÉ) */
 .info-header { margin-bottom: 30px; }
-.cat-year-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; }
-.modal-cat { color: var(--btn-color); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
-.modal-year { color: #666; font-size: 0.8rem; font-weight: 700; }
 
-.modal-title { font-size: 2.2rem; color: var(--text-accent); margin: 0 0 5px 0; line-height: 1.1; }
-.modal-role { color: #aaa; font-style: italic; font-size: 0.95rem; margin-bottom: 5px; }
+/* Changement ici : justify-content: flex-start pour mettre l'année à gauche */
+.cat-year-row { 
+    display: flex; 
+    justify-content: flex-start; /* Au lieu de space-between */
+    align-items: center; 
+    gap: 20px; /* Espace entre Categorie et Année */
+    margin-bottom: 5px; 
+}
+
+.modal-cat { color: var(--btn-color); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+.modal-year { color: #666; font-size: 0.8rem; font-weight: 700; } /* L'année n'est plus cachée */
+
+.modal-title { font-size: 2.2rem; color: var(--text-accent); margin: 0 0 5px 0; line-height: 1.1; font-weight: 700; }
+.modal-role { color: #aaa; font-style: italic; font-size: 0.95rem; margin-bottom: 5px; font-weight: 300; }
 .modal-client { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
 
-/* STYLE DES ACCORDÉONS (NOUVEAU) */
+/* STYLE DES ACCORDÉONS */
 .accordion-container { border-top: 1px solid rgba(255,255,255,0.1); }
-
 .accordion-item { border-bottom: 1px solid rgba(255,255,255,0.1); }
 
 .accordion-btn {
@@ -258,16 +265,18 @@ input:focus, textarea:focus {
     color: white; font-size: 1rem; font-weight: 700; text-align: left;
     cursor: pointer; display: flex; justify-content: space-between; align-items: center;
     transition: color 0.3s; text-transform: uppercase; letter-spacing: 1px;
+    
+    font-family: 'Gopher', sans-serif !important; /* Force la police ici aussi */
 }
 .accordion-btn:hover { color: var(--text-accent); }
 .accordion-btn i { font-size: 0.8rem; transition: transform 0.3s; }
-.accordion-btn.active i { transform: rotate(180deg); } /* Flèche qui tourne */
+.accordion-btn.active i { transform: rotate(180deg); }
 
 .accordion-content {
     max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
 }
 .inner-content {
-    padding-bottom: 20px; color: #ccc; font-size: 0.9rem; line-height: 1.6;
+    padding-bottom: 20px; color: #ccc; font-size: 0.9rem; line-height: 1.6; font-weight: 300;
 }
 
 /* RESPONSIVE */
@@ -293,5 +302,6 @@ footer {
     .projects-grid { grid-template-columns: 1fr; }
     .modal-container { width: 100%; height: 100%; border-radius: 0; }
 }
+
 
 
