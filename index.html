@@ -20,9 +20,10 @@
     <header>
         <nav class="nav-left">
             <ul>
-                <li><a onclick="scrollToSection('home')">ACCUEIL</a></li>
-                <li><a onclick="scrollToSection('work')" class="active-link">PROJETS</a></li>
-                <li><a onclick="scrollToSection('skills')">BIO</a></li> <li><a href="contact.html">CONTACT</a></li> </ul>
+                <li><a onclick="scrollToSection('work')" class="active-link">RÉALISATIONS</a></li>
+                <li><a href="contact.html">CONTACT</a></li>
+                <li><a href="galerie.html">GALERIE</a></li>
+            </ul>
         </nav>
         <div class="logo-center">
             <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
@@ -40,7 +41,6 @@
     </section>
 
     <section id="work" class="projects-section">
-        
         <div class="section-header">
             <div class="section-title">
                 <h2>RÉALISATIONS</h2>
@@ -53,9 +53,7 @@
                 <button class="filter-btn" onclick="filterProjects('comm')">Communication</button>
             </div>
         </div>
-
         <div class="projects-grid" id="grid"></div>
-
     </section>
 
     <footer>
@@ -65,28 +63,21 @@
     <div class="modal-overlay" id="modal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-            
             <div class="modal-body">
                 <div class="modal-media">
                     <button class="carousel-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-                    <div class="carousel-track" id="modal-track">
-                        </div>
+                    <div class="carousel-track" id="modal-track"></div>
                     <button class="carousel-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></button>
                 </div>
-
                 <div class="modal-info">
                     <span class="modal-cat" id="m-cat">CATÉGORIE</span>
-                    <h2 class="modal-title" id="m-title">Titre du Projet</h2>
-                    <p class="modal-role" id="m-role">Mon Rôle</p>
-                    
-                    <div class="modal-desc" id="m-desc">
-                        Description longue du projet...
-                    </div>
-
+                    <h2 class="modal-title" id="m-title">Titre</h2>
+                    <p class="modal-role" id="m-role">Rôle</p>
+                    <div class="modal-desc" id="m-desc">Description</div>
                     <div class="modal-meta">
-                        <div class="meta-box"><h4>Client</h4><p id="m-client">Nom Client</p></div>
-                        <div class="meta-box"><h4>Année</h4><p id="m-year">2024</p></div>
-                        <div class="meta-box"><h4>Outils</h4><p id="m-tools">Adobe Suite</p></div>
+                        <div class="meta-box"><h4>Client</h4><p id="m-client">-</p></div>
+                        <div class="meta-box"><h4>Année</h4><p id="m-year">-</p></div>
+                        <div class="meta-box"><h4>Outils</h4><p id="m-tools">-</p></div>
                     </div>
                 </div>
             </div>
@@ -94,178 +85,58 @@
     </div>
 
     <script src="script.js"></script>
-
     <script>
-        // --- 1. CONFIGURATION DE TES PROJETS ICI ---
+        // --- TES PROJETS (Modifie les infos ici) ---
         const projects = [
             {
-                id: 1,
-                title: "Cesson Volley Club",
-                category: "comm",
-                role: "Graphiste & CM",
-                client: "Projet Fictif",
-                year: "2024",
-                tools: "Photoshop, Illustrator",
-                thumb: "assets/miniatures/projet1.png", // Image couverture grille
-                media: [ // Liste des images/vidéos du carrousel
-                    "assets/miniatures/projet1.png",
-                    "assets/miniatures/projet3.jpg"
-                ],
-                desc: "Création de l'identité visuelle pour le club de volley de Cesson. Réalisation des affiches de match et gestion des réseaux sociaux pour la saison."
+                id: 1, title: "Cesson Volley Club", category: "comm", role: "Graphiste & CM",
+                client: "Projet Fictif", year: "2024", tools: "Photoshop, Illustrator",
+                thumb: "assets/miniatures/projet1.png",
+                media: ["assets/miniatures/projet1.png", "assets/miniatures/projet3.jpg"],
+                desc: "Création de l'identité visuelle pour le club de volley de Cesson."
             },
             {
-                id: 2,
-                title: "La Photonique",
-                category: "video",
-                role: "Cadreur / Monteur",
-                client: "IUT Lannion",
-                year: "2023",
-                tools: "Premiere Pro, Sony A7",
+                id: 2, title: "La Photonique", category: "video", role: "Cadreur / Monteur",
+                client: "IUT Lannion", year: "2023", tools: "Premiere Pro",
                 thumb: "assets/miniatures/projet2.png",
-                media: [
-                    "https://www.youtube.com/watch?v=xvFZjo5PgG0", // Met ton lien YouTube ici
-                    "assets/miniatures/projet2.png"
-                ],
-                desc: "Reportage documentaire sur les métiers de la photonique. Interviews de professionnels et captation d'images en laboratoire."
+                media: ["https://www.youtube.com/watch?v=xvFZjo5PgG0", "assets/miniatures/projet2.png"],
+                desc: "Reportage documentaire sur les métiers de la photonique."
             },
-            {
-                id: 3,
-                title: "Kernae",
-                category: "comm",
-                role: "Stagiaire Com",
-                client: "Fonds Kernae",
-                year: "2023",
-                tools: "Indesign, Canva",
-                thumb: "assets/miniatures/projet6.png",
-                media: ["assets/miniatures/projet6.png"],
-                desc: "Stage de 4 mois. Création de supports de communication interne et externe (newsletters, posts LinkedIn, brochures)."
-            },
-            {
-                id: 4,
-                title: "Motion Design",
-                category: "graphisme",
-                role: "Motion Designer",
-                client: "Personnel",
-                year: "2024",
-                tools: "After Effects",
-                thumb: "assets/miniatures/projet4.png",
-                media: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
-                desc: "Explorations graphiques et animations de logos. Travail sur le rythme et la fluidité."
-            },
-            {
-                id: 5,
-                title: "Posters Créatifs",
-                category: "graphisme",
-                role: "Illustrateur",
-                client: "Personnel",
-                year: "2023",
-                tools: "Photoshop",
-                thumb: "assets/miniatures/projet3.jpg",
-                media: ["assets/miniatures/projet3.jpg"],
-                desc: "Série de posters minimalistes créés quotidiennement pour s'entraîner à la composition."
-            }
+            // Ajoute les autres projets ici...
         ];
 
-        // --- 2. LOGIQUE DU SITE (Ne pas toucher sauf si tu sais coder) ---
-        
-        const grid = document.getElementById('grid');
-        const modal = document.getElementById('modal');
-        const track = document.getElementById('modal-track');
-        let currentSlide = 0;
-        let totalSlides = 0;
-
-        // Utilitaires Youtube
+        // --- LOGIQUE SITE ---
+        const grid = document.getElementById('grid'); const modal = document.getElementById('modal'); const track = document.getElementById('modal-track');
+        let currentSlide = 0; let totalSlides = 0;
         const getYoutubeID = (url) => { const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; const m = url.match(reg); return (m && m[1]) ? m[1] : null; };
 
-        // Générer la grille
         function renderGrid(filter) {
             grid.innerHTML = '';
             projects.forEach(p => {
                 if (filter === 'all' || p.category === filter) {
-                    const card = document.createElement('div');
-                    card.className = 'project-card visible';
-                    card.innerHTML = `
-                        <img src="${p.thumb}" alt="${p.title}">
-                        <div class="card-overlay">
-                            <span class="card-cat">${p.category}</span>
-                            <div class="card-title">${p.title}</div>
-                        </div>
-                    `;
-                    card.onclick = () => openModal(p);
-                    grid.appendChild(card);
+                    const card = document.createElement('div'); card.className = 'project-card visible';
+                    card.innerHTML = `<img src="${p.thumb}" alt="${p.title}"><div class="card-overlay"><span class="card-cat">${p.category}</span><div class="card-title">${p.title}</div></div>`;
+                    card.onclick = () => openModal(p); grid.appendChild(card);
                 }
             });
         }
-
-        // Filtres
-        function filterProjects(cat) {
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            event.target.classList.add('active');
-            renderGrid(cat);
-        }
-
-        // Ouvrir Modale
+        function filterProjects(cat) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); }
         function openModal(p) {
-            // Remplir infos
-            document.getElementById('m-cat').innerText = p.category;
-            document.getElementById('m-title').innerText = p.title;
-            document.getElementById('m-role').innerText = p.role;
-            document.getElementById('m-desc').innerText = p.desc;
-            document.getElementById('m-client').innerText = p.client;
-            document.getElementById('m-year').innerText = p.year;
-            document.getElementById('m-tools').innerText = p.tools;
-
-            // Remplir Carrousel
-            track.innerHTML = '';
-            currentSlide = 0;
-            totalSlides = p.media.length;
-
+            document.getElementById('m-cat').innerText = p.category; document.getElementById('m-title').innerText = p.title; document.getElementById('m-role').innerText = p.role; document.getElementById('m-desc').innerText = p.desc; document.getElementById('m-client').innerText = p.client; document.getElementById('m-year').innerText = p.year; document.getElementById('m-tools').innerText = p.tools;
+            track.innerHTML = ''; currentSlide = 0; totalSlides = p.media.length;
             p.media.forEach(src => {
-                const slide = document.createElement('div');
-                slide.className = 'carousel-slide';
-                
+                const slide = document.createElement('div'); slide.className = 'carousel-slide';
                 const ytId = getYoutubeID(src);
-                if (ytId) {
-                    // C'est une vidéo Youtube
-                    slide.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?rel=0" allowfullscreen></iframe>`;
-                } else {
-                    // C'est une image
-                    slide.innerHTML = `<img src="${src}">`;
-                }
+                if (ytId) slide.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?rel=0" allowfullscreen></iframe>`;
+                else slide.innerHTML = `<img src="${src}">`;
                 track.appendChild(slide);
             });
-
-            modal.classList.add('open');
-            document.body.style.overflow = 'hidden'; // Bloque scroll arrière-plan
+            modal.classList.add('open'); document.body.style.overflow = 'hidden';
         }
-
-        // Fermer Modale
-        function closeModal() {
-            modal.classList.remove('open');
-            document.body.style.overflow = 'auto';
-            // Stop vidéos iframe
-            track.innerHTML = ''; 
-        }
-
-        // Carrousel Logic
-        function moveSlide(dir) {
-            currentSlide += dir;
-            if (currentSlide < 0) currentSlide = totalSlides - 1;
-            if (currentSlide >= totalSlides) currentSlide = 0;
-            track.scrollTo({
-                left: track.clientWidth * currentSlide,
-                behavior: 'smooth'
-            });
-        }
-
-        // Scroll Smooth Navigation
-        function scrollToSection(id) {
-            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
-        }
-
-        // Init
+        function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; track.innerHTML = ''; }
+        function moveSlide(dir) { currentSlide += dir; if (currentSlide < 0) currentSlide = totalSlides - 1; if (currentSlide >= totalSlides) currentSlide = 0; track.scrollTo({ left: track.clientWidth * currentSlide, behavior: 'smooth' }); }
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
         renderGrid('all');
-
     </script>
 </body>
 </html>
