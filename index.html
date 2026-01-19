@@ -191,16 +191,38 @@
         }
 
         function openModal(p) {
-            // Remplissage Textes
-            // Traduction automatique de "comm" -> "COMMUNICATION"
+            // Remplissage Textes de base
             document.getElementById('m-cat').innerText = categoryNames[p.category] || p.category.toUpperCase();
-            
             document.getElementById('m-title').innerText = p.title;
             document.getElementById('m-role').innerText = p.role;
             document.getElementById('m-client').innerText = p.client;
-            document.getElementById('m-year').innerText = p.year; // Année déplacée en haut
+            document.getElementById('m-year').innerText = p.year;
             document.getElementById('m-desc').innerText = p.desc;
-            document.getElementById('m-tools').innerText = p.tools;
+           
+            // --- CHANGEMENT ICI POUR LES ICÔNES ---
+            
+            // 1. On récupère le conteneur où on mettait le texte avant
+            const toolsContainer = document.getElementById('m-tools');
+            
+            // 2. On le vide
+            toolsContainer.innerHTML = '';
+
+            // 3. Si le projet a des icônes définies...
+            if (p.toolsIcons && p.toolsIcons.length > 0) {
+                // ... pour chaque icône de la liste ...
+                p.toolsIcons.forEach(iconClass => {
+                    // ... on crée une balise <i> avec la bonne classe Devicon
+                    // et on l'ajoute au conteneur.
+                    toolsContainer.innerHTML += `<i class="${iconClass} tool-icon"></i>`;
+                });
+            } else {
+                // Si pas d'icônes, on affiche un petit tiret
+                toolsContainer.innerHTML = '-';
+            }
+            // ---------------------------------------
+
+            // Reset des accordéons (fermeture)
+            // ... le reste de la fonction ne change pas ...
 
             // Reset des accordéons (fermeture)
             document.querySelectorAll('.accordion-content').forEach(el => el.style.maxHeight = null);
@@ -241,5 +263,6 @@
     </script>
 </body>
 </html>
+
 
 
