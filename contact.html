@@ -9,13 +9,14 @@
 </head>
 <body>
 
-    <div class="mouse-glow"></div> <header>
+    <div class="mouse-glow"></div>
+
+    <header>
         <nav class="nav-left">
             <ul>
-                <li><a href="index.html#realisations">Réalisations</a></li>
-                <li><a href="bio.html">Bio</a></li>
-                <li><a href="contact.html" class="active-link">Contact</a></li>
-                <li><a href="galerie.html">Galerie</a></li>
+                <li><a href="index.html#work">RÉALISATIONS</a></li>
+                <li><a href="contact.html" class="active-link">CONTACT</a></li>
+                <li><a href="galerie.html">GALERIE</a></li>
             </ul>
         </nav>
         <div class="logo-center">
@@ -23,9 +24,7 @@
         </div>
         <div class="nav-right">
             <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://www.behance.net" target="_blank"><i class="fab fa-behance"></i></a>
             <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
-            <a href="assets/mon-cv.pdf" target="_blank"><i class="fas fa-file-user"></i></a>
         </div>
     </header>
 
@@ -36,13 +35,33 @@
 
             <form action="https://formsubmit.co/boulairedylan@gmail.com" method="POST" class="contact-form">
                 <input type="hidden" name="_next" value="https://ton-site.com/merci.html">
-                <input type="hidden" name="_subject" value="Message Portfolio">
+                <input type="hidden" name="_subject" value="Nouveau message du Portfolio !">
                 <input type="hidden" name="_captcha" value="false">
-                <div class="input-group"><input type="text" name="name" placeholder="Votre Nom" required></div>
-                <div class="input-group"><input type="email" name="email" placeholder="Votre Email" required></div>
-                <div class="input-group"><textarea name="message" rows="6" placeholder="Votre Message" required></textarea></div>
+                
+                <div class="input-group">
+                    <input type="text" name="name" placeholder="Votre Nom" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" name="email" placeholder="Votre Email" required>
+                </div>
+                <div class="input-group">
+                    <textarea name="message" rows="6" placeholder="Votre Message" required></textarea>
+                </div>
+
                 <button type="submit" class="submit-btn">ENVOYER LE MESSAGE</button>
             </form>
+        </div>
+    </div>
+
+    <div class="bio-section">
+        <div class="bio-img-box" style="margin: 0 auto 30px auto; width: 200px;">
+            <img src="assets/photo-profil.jpg" alt="Dylan Boulaire">
+        </div>
+        <div class="bio-text">
+            <h2>À PROPOS DE MOI</h2>
+            <p>Étudiant en BUT MMI à l'IUT de Lannion, je suis passionné par la communication visuelle, le montage vidéo et la création numérique. J'aime explorer différents univers graphiques pour donner vie à des projets impactants.</p>
+            <br>
+            <a href="assets/mon-cv.pdf" target="_blank" class="submit-btn" style="text-decoration:none; font-size:0.8rem;">VOIR MON CV</a>
         </div>
     </div>
 
@@ -50,5 +69,6 @@
         <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
     </footer>
 
-    <script src="script.js"></script> </body>
+    <script src="script.js"></script>
+</body>
 </html>
