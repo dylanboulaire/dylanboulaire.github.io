@@ -10,7 +10,6 @@
 <body>
 
     <div class="mouse-glow"></div>
-
     <div class="video-background">
         <video autoplay muted loop playsinline>
             <source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4">
@@ -21,66 +20,252 @@
     <header>
         <nav class="nav-left">
             <ul>
-                <li><a href="#realisations" class="active-link">Réalisations</a></li>
-                <li><a href="bio.html">Bio</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="galerie.html">Galerie</a></li>
-            </ul>
+                <li><a onclick="scrollToSection('home')">ACCUEIL</a></li>
+                <li><a onclick="scrollToSection('work')" class="active-link">PROJETS</a></li>
+                <li><a onclick="scrollToSection('skills')">BIO</a></li> <li><a href="contact.html">CONTACT</a></li> </ul>
         </nav>
-
         <div class="logo-center">
-            <a href="index.html">
-                <img src="assets/logo.png" alt="Logo DB" class="logo-img">
-            </a>
+            <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
         </div>
-
         <div class="nav-right">
             <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
-            <a href="https://www.behance.net" target="_blank"><i class="fab fa-behance"></i></a>
             <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
-            <a href="assets/mon-cv.pdf" target="_blank"><i class="fas fa-file-user"></i></a>
         </div>
     </header>
 
-    <main>
-        <section class="hero-content">
-            <h1>DYLAN BOULAIRE</h1>
-            <div class="badge">ETUDIANT IUT LANNION</div>
-            
-            <a href="#realisations" class="scroll-down">
-                <span></span>
-            </a>
-        </section>
+    <section id="home" class="hero-content">
+        <div class="badge">ÉTUDIANT IUT LANNION</div>
+        <h1>DYLAN<br>BOULAIRE</h1>
+        <div class="scroll-down" onclick="scrollToSection('work')"><span></span></div>
+    </section>
 
-        <section id="realisations" class="gallery">
-            <a href="projet-detail.html" class="project-card">
-                <img src="assets/miniatures/projet1.png" alt="Cesson Volley Club">
-                <div class="overlay-text">
-                    <h3>Cesson Volley Club</h3>
-                    <p>Projet fictif</p>
-                </div>
-            </a>
-            <a href="projet-photonique.html" class="project-card">
-                <img src="assets/miniatures/projet2.png" alt="La Photonique">
-                <div class="overlay-text">
-                    <h3>La Photonique</h3>
-                    <p>Documentaire/Reportage</p>
-                </div>
-            </a>
-            <a href="projet-kernae.html" class="project-card">
-                <img src="assets/miniatures/projet6.png" alt="Kernae">
-                <div class="overlay-text">
-                    <h3>KERNAE</h3>
-                    <p>Stage communication</p>
-                </div>
-            </a>
-        </section>
-    </main>
+    <section id="work" class="projects-section">
+        
+        <div class="section-header">
+            <div class="section-title">
+                <h2>RÉALISATIONS</h2>
+                <p>Une sélection de mes travaux récents.</p>
+            </div>
+            <div class="filters">
+                <button class="filter-btn active" onclick="filterProjects('all')">Tout</button>
+                <button class="filter-btn" onclick="filterProjects('video')">Vidéo</button>
+                <button class="filter-btn" onclick="filterProjects('graphisme')">Graphisme</button>
+                <button class="filter-btn" onclick="filterProjects('comm')">Communication</button>
+            </div>
+        </div>
+
+        <div class="projects-grid" id="grid"></div>
+
+    </section>
 
     <footer>
         <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
     </footer>
 
+    <div class="modal-overlay" id="modal">
+        <div class="modal-container">
+            <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            
+            <div class="modal-body">
+                <div class="modal-media">
+                    <button class="carousel-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                    <div class="carousel-track" id="modal-track">
+                        </div>
+                    <button class="carousel-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></button>
+                </div>
+
+                <div class="modal-info">
+                    <span class="modal-cat" id="m-cat">CATÉGORIE</span>
+                    <h2 class="modal-title" id="m-title">Titre du Projet</h2>
+                    <p class="modal-role" id="m-role">Mon Rôle</p>
+                    
+                    <div class="modal-desc" id="m-desc">
+                        Description longue du projet...
+                    </div>
+
+                    <div class="modal-meta">
+                        <div class="meta-box"><h4>Client</h4><p id="m-client">Nom Client</p></div>
+                        <div class="meta-box"><h4>Année</h4><p id="m-year">2024</p></div>
+                        <div class="meta-box"><h4>Outils</h4><p id="m-tools">Adobe Suite</p></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
+
+    <script>
+        // --- 1. CONFIGURATION DE TES PROJETS ICI ---
+        const projects = [
+            {
+                id: 1,
+                title: "Cesson Volley Club",
+                category: "comm",
+                role: "Graphiste & CM",
+                client: "Projet Fictif",
+                year: "2024",
+                tools: "Photoshop, Illustrator",
+                thumb: "assets/miniatures/projet1.png", // Image couverture grille
+                media: [ // Liste des images/vidéos du carrousel
+                    "assets/miniatures/projet1.png",
+                    "assets/miniatures/projet3.jpg"
+                ],
+                desc: "Création de l'identité visuelle pour le club de volley de Cesson. Réalisation des affiches de match et gestion des réseaux sociaux pour la saison."
+            },
+            {
+                id: 2,
+                title: "La Photonique",
+                category: "video",
+                role: "Cadreur / Monteur",
+                client: "IUT Lannion",
+                year: "2023",
+                tools: "Premiere Pro, Sony A7",
+                thumb: "assets/miniatures/projet2.png",
+                media: [
+                    "https://www.youtube.com/watch?v=xvFZjo5PgG0", // Met ton lien YouTube ici
+                    "assets/miniatures/projet2.png"
+                ],
+                desc: "Reportage documentaire sur les métiers de la photonique. Interviews de professionnels et captation d'images en laboratoire."
+            },
+            {
+                id: 3,
+                title: "Kernae",
+                category: "comm",
+                role: "Stagiaire Com",
+                client: "Fonds Kernae",
+                year: "2023",
+                tools: "Indesign, Canva",
+                thumb: "assets/miniatures/projet6.png",
+                media: ["assets/miniatures/projet6.png"],
+                desc: "Stage de 4 mois. Création de supports de communication interne et externe (newsletters, posts LinkedIn, brochures)."
+            },
+            {
+                id: 4,
+                title: "Motion Design",
+                category: "graphisme",
+                role: "Motion Designer",
+                client: "Personnel",
+                year: "2024",
+                tools: "After Effects",
+                thumb: "assets/miniatures/projet4.png",
+                media: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
+                desc: "Explorations graphiques et animations de logos. Travail sur le rythme et la fluidité."
+            },
+            {
+                id: 5,
+                title: "Posters Créatifs",
+                category: "graphisme",
+                role: "Illustrateur",
+                client: "Personnel",
+                year: "2023",
+                tools: "Photoshop",
+                thumb: "assets/miniatures/projet3.jpg",
+                media: ["assets/miniatures/projet3.jpg"],
+                desc: "Série de posters minimalistes créés quotidiennement pour s'entraîner à la composition."
+            }
+        ];
+
+        // --- 2. LOGIQUE DU SITE (Ne pas toucher sauf si tu sais coder) ---
+        
+        const grid = document.getElementById('grid');
+        const modal = document.getElementById('modal');
+        const track = document.getElementById('modal-track');
+        let currentSlide = 0;
+        let totalSlides = 0;
+
+        // Utilitaires Youtube
+        const getYoutubeID = (url) => { const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; const m = url.match(reg); return (m && m[1]) ? m[1] : null; };
+
+        // Générer la grille
+        function renderGrid(filter) {
+            grid.innerHTML = '';
+            projects.forEach(p => {
+                if (filter === 'all' || p.category === filter) {
+                    const card = document.createElement('div');
+                    card.className = 'project-card visible';
+                    card.innerHTML = `
+                        <img src="${p.thumb}" alt="${p.title}">
+                        <div class="card-overlay">
+                            <span class="card-cat">${p.category}</span>
+                            <div class="card-title">${p.title}</div>
+                        </div>
+                    `;
+                    card.onclick = () => openModal(p);
+                    grid.appendChild(card);
+                }
+            });
+        }
+
+        // Filtres
+        function filterProjects(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderGrid(cat);
+        }
+
+        // Ouvrir Modale
+        function openModal(p) {
+            // Remplir infos
+            document.getElementById('m-cat').innerText = p.category;
+            document.getElementById('m-title').innerText = p.title;
+            document.getElementById('m-role').innerText = p.role;
+            document.getElementById('m-desc').innerText = p.desc;
+            document.getElementById('m-client').innerText = p.client;
+            document.getElementById('m-year').innerText = p.year;
+            document.getElementById('m-tools').innerText = p.tools;
+
+            // Remplir Carrousel
+            track.innerHTML = '';
+            currentSlide = 0;
+            totalSlides = p.media.length;
+
+            p.media.forEach(src => {
+                const slide = document.createElement('div');
+                slide.className = 'carousel-slide';
+                
+                const ytId = getYoutubeID(src);
+                if (ytId) {
+                    // C'est une vidéo Youtube
+                    slide.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?rel=0" allowfullscreen></iframe>`;
+                } else {
+                    // C'est une image
+                    slide.innerHTML = `<img src="${src}">`;
+                }
+                track.appendChild(slide);
+            });
+
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden'; // Bloque scroll arrière-plan
+        }
+
+        // Fermer Modale
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = 'auto';
+            // Stop vidéos iframe
+            track.innerHTML = ''; 
+        }
+
+        // Carrousel Logic
+        function moveSlide(dir) {
+            currentSlide += dir;
+            if (currentSlide < 0) currentSlide = totalSlides - 1;
+            if (currentSlide >= totalSlides) currentSlide = 0;
+            track.scrollTo({
+                left: track.clientWidth * currentSlide,
+                behavior: 'smooth'
+            });
+        }
+
+        // Scroll Smooth Navigation
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Init
+        renderGrid('all');
+
+    </script>
 </body>
 </html>
