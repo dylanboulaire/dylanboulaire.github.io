@@ -63,22 +63,54 @@
     <div class="modal-overlay" id="modal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
+            
             <div class="modal-body">
                 <div class="modal-media">
                     <button class="carousel-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></button>
                     <div class="carousel-track" id="modal-track"></div>
                     <button class="carousel-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></button>
                 </div>
+
                 <div class="modal-info">
-                    <span class="modal-cat" id="m-cat">CATÉGORIE</span>
-                    <h2 class="modal-title" id="m-title">Titre</h2>
-                    <p class="modal-role" id="m-role">Rôle</p>
-                    <div class="modal-desc" id="m-desc">Description</div>
-                    <div class="modal-meta">
-                        <div class="meta-box"><h4>Client</h4><p id="m-client">-</p></div>
-                        <div class="meta-box"><h4>Année</h4><p id="m-year">-</p></div>
-                        <div class="meta-box"><h4>Outils</h4><p id="m-tools">-</p></div>
+                    
+                    <div class="info-header">
+                        <div class="cat-year-row">
+                            <span class="modal-cat" id="m-cat">CATÉGORIE</span>
+                            <span class="modal-year" id="m-year">2024</span>
+                        </div>
+                        <h2 class="modal-title" id="m-title">Titre du Projet</h2>
+                        <p class="modal-role" id="m-role">Mon Rôle</p>
+                        <p class="modal-client">Client : <span id="m-client" style="color: white;">Nom</span></p>
                     </div>
+
+                    <div class="accordion-container">
+                        
+                        <div class="accordion-item">
+                            <button class="accordion-btn" onclick="toggleAccordion(this)">
+                                Contexte & Description
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="inner-content" id="m-desc">
+                                    Description détaillée ici...
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <button class="accordion-btn" onclick="toggleAccordion(this)">
+                                Logiciels Utilisés
+                                <i class="fas fa-chevron-down"></i>
+                            </button>
+                            <div class="accordion-content">
+                                <div class="inner-content" id="m-tools">
+                                    Liste des outils...
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -86,23 +118,30 @@
 
     <script src="script.js"></script>
     <script>
-        // --- TES PROJETS (Modifie les infos ici) ---
+        // --- TES PROJETS ---
         const projects = [
             {
                 id: 1, title: "Cesson Volley Club", category: "comm", role: "Graphiste & CM",
-                client: "Projet Fictif", year: "2024", tools: "Photoshop, Illustrator",
+                client: "Projet Fictif", year: "2024", tools: "Photoshop, Illustrator, Canva",
                 thumb: "assets/miniatures/projet1.png",
                 media: ["assets/miniatures/projet1.png", "assets/miniatures/projet3.jpg"],
-                desc: "Création de l'identité visuelle pour le club de volley de Cesson."
+                desc: "Création complète de l'identité visuelle pour le club de volley de Cesson. L'objectif était de moderniser l'image du club pour attirer un public plus jeune sur les réseaux sociaux. J'ai réalisé une charte graphique, des modèles de posts Instagram et les affiches de match pour toute la saison."
             },
             {
                 id: 2, title: "La Photonique", category: "video", role: "Cadreur / Monteur",
-                client: "IUT Lannion", year: "2023", tools: "Premiere Pro",
+                client: "IUT Lannion", year: "2023", tools: "Premiere Pro, Audition, Sony A7III",
                 thumb: "assets/miniatures/projet2.png",
                 media: ["https://www.youtube.com/watch?v=xvFZjo5PgG0", "assets/miniatures/projet2.png"],
-                desc: "Reportage documentaire sur les métiers de la photonique."
+                desc: "Reportage documentaire de 5 minutes sur les métiers de la photonique (sciences de la lumière). Le défi était de rendre un sujet technique accessible au grand public. J'ai géré le tournage en laboratoire (gestion de la lumière complexe) et le montage dynamique."
             },
-            // Ajoute les autres projets ici...
+            {
+                id: 3, title: "Kernae", category: "comm", role: "Stagiaire Com",
+                client: "Fonds Kernae", year: "2023", tools: "Indesign, Canva, Brevo",
+                thumb: "assets/miniatures/projet6.png",
+                media: ["assets/miniatures/projet6.png"],
+                desc: "Stage de 4 mois au sein du fonds de dotation. J'ai été chargé de la communication interne et externe : rédaction de newsletters, création de visuels pour LinkedIn et mise en page du rapport d'activité annuel."
+            },
+            // Ajoute les autres...
         ];
 
         // --- LOGIQUE SITE ---
@@ -110,19 +149,52 @@
         let currentSlide = 0; let totalSlides = 0;
         const getYoutubeID = (url) => { const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; const m = url.match(reg); return (m && m[1]) ? m[1] : null; };
 
+        // Dictionnaire pour renommer les catégories proprement
+        const categoryNames = {
+            "comm": "COMMUNICATION",
+            "video": "VIDÉO",
+            "graphisme": "GRAPHISME",
+            "all": "TOUT"
+        };
+
         function renderGrid(filter) {
             grid.innerHTML = '';
             projects.forEach(p => {
                 if (filter === 'all' || p.category === filter) {
+                    // On récupère le bon nom d'affichage
+                    const displayCat = categoryNames[p.category] || p.category.toUpperCase();
+                    
                     const card = document.createElement('div'); card.className = 'project-card visible';
-                    card.innerHTML = `<img src="${p.thumb}" alt="${p.title}"><div class="card-overlay"><span class="card-cat">${p.category}</span><div class="card-title">${p.title}</div></div>`;
+                    card.innerHTML = `<img src="${p.thumb}" alt="${p.title}"><div class="card-overlay"><span class="card-cat">${displayCat}</span><div class="card-title">${p.title}</div></div>`;
                     card.onclick = () => openModal(p); grid.appendChild(card);
                 }
             });
         }
-        function filterProjects(cat) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); }
+
+        function filterProjects(cat) { 
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); 
+        }
+
         function openModal(p) {
-            document.getElementById('m-cat').innerText = p.category; document.getElementById('m-title').innerText = p.title; document.getElementById('m-role').innerText = p.role; document.getElementById('m-desc').innerText = p.desc; document.getElementById('m-client').innerText = p.client; document.getElementById('m-year').innerText = p.year; document.getElementById('m-tools').innerText = p.tools;
+            // Remplissage Textes
+            // Traduction automatique de "comm" -> "COMMUNICATION"
+            document.getElementById('m-cat').innerText = categoryNames[p.category] || p.category.toUpperCase();
+            
+            document.getElementById('m-title').innerText = p.title;
+            document.getElementById('m-role').innerText = p.role;
+            document.getElementById('m-client').innerText = p.client;
+            document.getElementById('m-year').innerText = p.year; // Année déplacée en haut
+            document.getElementById('m-desc').innerText = p.desc;
+            document.getElementById('m-tools').innerText = p.tools;
+
+            // Reset des accordéons (fermeture)
+            document.querySelectorAll('.accordion-content').forEach(el => el.style.maxHeight = null);
+            document.querySelectorAll('.accordion-btn').forEach(btn => btn.classList.remove('active'));
+            // Ouvrir le premier par défaut (Contexte)
+            const firstBtn = document.querySelector('.accordion-btn');
+            if(firstBtn) toggleAccordion(firstBtn);
+
+            // Carrousel Média
             track.innerHTML = ''; currentSlide = 0; totalSlides = p.media.length;
             p.media.forEach(src => {
                 const slide = document.createElement('div'); slide.className = 'carousel-slide';
@@ -133,9 +205,23 @@
             });
             modal.classList.add('open'); document.body.style.overflow = 'hidden';
         }
+
         function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; track.innerHTML = ''; }
         function moveSlide(dir) { currentSlide += dir; if (currentSlide < 0) currentSlide = totalSlides - 1; if (currentSlide >= totalSlides) currentSlide = 0; track.scrollTo({ left: track.clientWidth * currentSlide, behavior: 'smooth' }); }
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+        // --- LOGIQUE ACCORDÉON ---
+        function toggleAccordion(btn) {
+            const content = btn.nextElementSibling;
+            btn.classList.toggle('active');
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null; // Fermer
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px"; // Ouvrir
+            }
+        }
+
         renderGrid('all');
     </script>
 </body>
