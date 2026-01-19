@@ -279,6 +279,29 @@ input:focus, textarea:focus {
     padding-bottom: 20px; color: #ccc; font-size: 0.9rem; line-height: 1.6; font-weight: 300;
 }
 
+/* --- STYLE DES NOUVELLES ICÔNES LOGICIELS --- */
+/* La classe .tool-icon est ajoutée par le Javascript */
+.tool-icon {
+    font-size: 2.5rem; /* Taille des logos */
+    color: white;      /* La couleur blanche demandée */
+    margin-right: 20px; /* Espace entre chaque logo */
+    transition: 0.3s;  /* Petit effet au survol */
+}
+
+/* Optionnel : petit effet quand on passe la souris dessus */
+.tool-icon:hover {
+    color: var(--text-accent); /* Devient couleur crème au survol */
+    transform: translateY(-3px);
+}
+
+/* On s'assure que le conteneur des outils dans l'accordéon est bien aligné */
+#m-tools {
+    display: flex;
+    flex-wrap: wrap; /* Permet de passer à la ligne si trop d'icônes */
+    align-items: center;
+    padding-top: 10px;
+}
+
 /* RESPONSIVE */
 @media (max-width: 1024px) {
     .modal-body { flex-direction: column; }
@@ -302,6 +325,7 @@ footer {
     .projects-grid { grid-template-columns: 1fr; }
     .modal-container { width: 100%; height: 100%; border-radius: 0; }
 }
+
 
 
 
