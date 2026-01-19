@@ -123,27 +123,40 @@
         // --- TES PROJETS ---
         const projects = [
             {
-                id: 1, title: "Cesson Volley Club", category: "comm", role: "Graphiste & CM",
-                client: "Projet Fictif", year: "2024", tools: "Photoshop, Illustrator, Canva",
+                id: 1, 
+                title: "Cesson Volley Club", 
+                // ... autres infos ...
+                
+                // MAINTENANT (Liste des icônes) :
+                toolsIcons: [
+                    'devicon-photoshop-plain', 
+                    'devicon-illustrator-plain', 
+                    'devicon-canva-original',
+                    'devicon-indesign-plain' // Exemple
+                ],
+
                 thumb: "assets/miniatures/projet1.png",
-                media: ["assets/miniatures/projet1.png", "assets/miniatures/projet3.jpg"],
-                desc: "Création complète de l'identité visuelle pour le club de volley de Cesson. L'objectif était de moderniser l'image du club pour attirer un public plus jeune sur les réseaux sociaux. J'ai réalisé une charte graphique, des modèles de posts Instagram et les affiches de match pour toute la saison."
+                // ... reste du projet ...
             },
             {
-                id: 2, title: "La Photonique", category: "video", role: "Cadreur / Monteur",
-                client: "IUT Lannion", year: "2023", tools: "Premiere Pro, Audition, Sony A7III",
+                id: 2, 
+                title: "La Photonique", 
+                // ... autres infos ...
+
+                // AVANT : tools: "Premiere Pro, Audition, Sony A7III",
+
+                // MAINTENANT :
+                toolsIcons: [
+                    'devicon-premierepro-plain', 
+                    'devicon-aftereffects-plain'
+                    // Note: Pour le matériel physique comme "Sony A7", 
+                    // on n'a pas d'icône simple, donc on met juste les logiciels.
+                ],
+
                 thumb: "assets/miniatures/projet2.png",
-                media: ["https://www.youtube.com/watch?v=xvFZjo5PgG0", "assets/miniatures/projet2.png"],
-                desc: "Reportage documentaire de 5 minutes sur les métiers de la photonique (sciences de la lumière). Le défi était de rendre un sujet technique accessible au grand public. J'ai géré le tournage en laboratoire (gestion de la lumière complexe) et le montage dynamique."
+                // ... reste du projet ...
             },
-            {
-                id: 3, title: "Kernae", category: "comm", role: "Stagiaire Com",
-                client: "Fonds Kernae", year: "2023", tools: "Indesign, Canva, Brevo",
-                thumb: "assets/miniatures/projet6.png",
-                media: ["assets/miniatures/projet6.png"],
-                desc: "Stage de 4 mois au sein du fonds de dotation. J'ai été chargé de la communication interne et externe : rédaction de newsletters, création de visuels pour LinkedIn et mise en page du rapport d'activité annuel."
-            },
-            // Ajoute les autres...
+            // ... Fais pareil pour les autres projets ...
         ];
 
         // --- LOGIQUE SITE ---
@@ -228,4 +241,5 @@
     </script>
 </body>
 </html>
+
 
