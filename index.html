@@ -6,7 +6,6 @@
     <title>Dylan Boulaire - Portfolio</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
 </head>
 <body>
@@ -55,6 +54,7 @@
                 <button class="filter-btn" onclick="filterProjects('comm')">Communication</button>
             </div>
         </div>
+        
         <div class="projects-grid" id="grid"></div>
     </section>
 
@@ -86,31 +86,24 @@
                     </div>
 
                     <div class="accordion-container">
-                        
                         <div class="accordion-item">
                             <button class="accordion-btn" onclick="toggleAccordion(this)">
                                 Contexte & Description
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="accordion-content">
-                                <div class="inner-content" id="m-desc">
-                                    Description détaillée ici...
-                                </div>
+                                <div class="inner-content" id="m-desc">Description...</div>
                             </div>
                         </div>
-
                         <div class="accordion-item">
                             <button class="accordion-btn" onclick="toggleAccordion(this)">
                                 Logiciels Utilisés
                                 <i class="fas fa-chevron-down"></i>
                             </button>
                             <div class="accordion-content">
-                                <div class="inner-content" id="m-tools">
-                                    Liste des outils...
-                                </div>
+                                <div class="inner-content" id="m-tools"></div>
                             </div>
                         </div>
-
                     </div>
 
                 </div>
@@ -120,118 +113,132 @@
 
     <script src="script.js"></script>
     <script>
-        // --- TES PROJETS ---
+        // --- 1. TES PROJETS (CONFIGURATION) ---
+        // ATTENTION AUX VIRGULES entre les accolades { }, sinon tout plante !
         const projects = [
             {
                 id: 1, 
                 title: "Cesson Volley Club", 
-                // ... autres infos ...
-                
-                // MAINTENANT (Liste des icônes) :
-                toolsIcons: [
-                    'devicon-photoshop-plain', 
-                    'devicon-illustrator-plain', 
-                    'devicon-canva-original',
-                    'devicon-indesign-plain' // Exemple
-                ],
-
-                thumb: "assets/miniatures/projet1.png",
-                // ... reste du projet ...
-            },
+                category: "comm", 
+                role: "Graphiste & CM",
+                client: "Projet Fictif", 
+                year: "2024",
+                thumb: "assets/miniatures/projet1.png", 
+                media: ["assets/miniatures/projet1.png", "assets/miniatures/projet3.jpg"],
+                desc: "Création complète de l'identité visuelle pour le club de volley de Cesson. Réalisation de la charte graphique et des supports de communication.",
+                toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain', 'devicon-canva-original']
+            }, // <-- Ne pas oublier cette virgule
             {
                 id: 2, 
                 title: "La Photonique", 
-                // ... autres infos ...
-
-                // AVANT : tools: "Premiere Pro, Audition, Sony A7III",
-
-                // MAINTENANT :
-                toolsIcons: [
-                    'devicon-premierepro-plain', 
-                    'devicon-aftereffects-plain'
-                    // Note: Pour le matériel physique comme "Sony A7", 
-                    // on n'a pas d'icône simple, donc on met juste les logiciels.
-                ],
-
+                category: "video", 
+                role: "Cadreur / Monteur",
+                client: "IUT Lannion", 
+                year: "2023",
                 thumb: "assets/miniatures/projet2.png",
-                // ... reste du projet ...
+                media: ["https://www.youtube.com/watch?v=xvFZjo5PgG0", "assets/miniatures/projet2.png"],
+                desc: "Reportage documentaire sur les métiers de la photonique. Interviews et captation en laboratoire.",
+                toolsIcons: ['devicon-premierepro-plain', 'devicon-aftereffects-plain']
             },
-            // ... Fais pareil pour les autres projets ...
+            {
+                id: 3, 
+                title: "Kernae", 
+                category: "comm", 
+                role: "Stagiaire Com",
+                client: "Fonds Kernae", 
+                year: "2023",
+                thumb: "assets/miniatures/projet6.png",
+                media: ["assets/miniatures/projet6.png"],
+                desc: "Stage de 4 mois. Création de supports de communication interne et externe.",
+                toolsIcons: ['devicon-indesign-plain', 'devicon-canva-original']
+            },
+            {
+                id: 4, 
+                title: "Motion Design", 
+                category: "graphisme", 
+                role: "Motion Designer",
+                client: "Personnel", 
+                year: "2024",
+                thumb: "assets/miniatures/projet4.png",
+                media: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
+                desc: "Explorations graphiques et animations de logos. Travail sur le rythme et la fluidité.",
+                toolsIcons: ['devicon-aftereffects-plain']
+            },
+            {
+                id: 5, 
+                title: "Posters Créatifs", 
+                category: "graphisme", 
+                role: "Illustrateur",
+                client: "Personnel", 
+                year: "2023",
+                thumb: "assets/miniatures/projet3.jpg",
+                media: ["assets/miniatures/projet3.jpg"],
+                desc: "Série de posters minimalistes créés quotidiennement pour s'entraîner à la composition.",
+                toolsIcons: ['devicon-photoshop-plain']
+            }
         ];
 
-        // --- LOGIQUE SITE ---
-        const grid = document.getElementById('grid'); const modal = document.getElementById('modal'); const track = document.getElementById('modal-track');
-        let currentSlide = 0; let totalSlides = 0;
+        // --- 2. LOGIQUE DU SITE ---
+        
+        const grid = document.getElementById('grid');
+        const modal = document.getElementById('modal');
+        const track = document.getElementById('modal-track');
+        let currentSlide = 0;
+        let totalSlides = 0;
+
+        const categoryNames = { "comm": "COMMUNICATION", "video": "VIDÉO", "graphisme": "GRAPHISME", "all": "TOUT" };
+        
         const getYoutubeID = (url) => { const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; const m = url.match(reg); return (m && m[1]) ? m[1] : null; };
 
-        // Dictionnaire pour renommer les catégories proprement
-        const categoryNames = {
-            "comm": "COMMUNICATION",
-            "video": "VIDÉO",
-            "graphisme": "GRAPHISME",
-            "all": "TOUT"
-        };
-
+        // Afficher la grille
         function renderGrid(filter) {
+            if(!grid) return; 
             grid.innerHTML = '';
             projects.forEach(p => {
                 if (filter === 'all' || p.category === filter) {
-                    // On récupère le bon nom d'affichage
                     const displayCat = categoryNames[p.category] || p.category.toUpperCase();
-                    
-                    const card = document.createElement('div'); card.className = 'project-card visible';
+                    const card = document.createElement('div');
+                    card.className = 'project-card visible';
                     card.innerHTML = `<img src="${p.thumb}" alt="${p.title}"><div class="card-overlay"><span class="card-cat">${displayCat}</span><div class="card-title">${p.title}</div></div>`;
-                    card.onclick = () => openModal(p); grid.appendChild(card);
+                    card.onclick = () => openModal(p);
+                    grid.appendChild(card);
                 }
             });
         }
 
         function filterProjects(cat) { 
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); 
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
+            if(event) event.target.classList.add('active'); 
+            renderGrid(cat); 
         }
 
+        // Ouvrir Modale
         function openModal(p) {
-            // Remplissage Textes de base
             document.getElementById('m-cat').innerText = categoryNames[p.category] || p.category.toUpperCase();
             document.getElementById('m-title').innerText = p.title;
             document.getElementById('m-role').innerText = p.role;
             document.getElementById('m-client').innerText = p.client;
             document.getElementById('m-year').innerText = p.year;
             document.getElementById('m-desc').innerText = p.desc;
-           
-            // --- CHANGEMENT ICI POUR LES ICÔNES ---
-            
-            // 1. On récupère le conteneur où on mettait le texte avant
-            const toolsContainer = document.getElementById('m-tools');
-            
-            // 2. On le vide
-            toolsContainer.innerHTML = '';
 
-            // 3. Si le projet a des icônes définies...
+            // Gestion Icônes Blanches
+            const toolsContainer = document.getElementById('m-tools');
+            toolsContainer.innerHTML = ''; 
             if (p.toolsIcons && p.toolsIcons.length > 0) {
-                // ... pour chaque icône de la liste ...
                 p.toolsIcons.forEach(iconClass => {
-                    // ... on crée une balise <i> avec la bonne classe Devicon
-                    // et on l'ajoute au conteneur.
                     toolsContainer.innerHTML += `<i class="${iconClass} tool-icon"></i>`;
                 });
             } else {
-                // Si pas d'icônes, on affiche un petit tiret
-                toolsContainer.innerHTML = '-';
+                toolsContainer.innerHTML = '<span style="color:#888;">-</span>';
             }
-            // ---------------------------------------
 
-            // Reset des accordéons (fermeture)
-            // ... le reste de la fonction ne change pas ...
-
-            // Reset des accordéons (fermeture)
+            // Reset Accordéons (Fermés sauf le premier)
             document.querySelectorAll('.accordion-content').forEach(el => el.style.maxHeight = null);
             document.querySelectorAll('.accordion-btn').forEach(btn => btn.classList.remove('active'));
-            // Ouvrir le premier par défaut (Contexte)
             const firstBtn = document.querySelector('.accordion-btn');
             if(firstBtn) toggleAccordion(firstBtn);
 
-            // Carrousel Média
+            // Carrousel
             track.innerHTML = ''; currentSlide = 0; totalSlides = p.media.length;
             p.media.forEach(src => {
                 const slide = document.createElement('div'); slide.className = 'carousel-slide';
@@ -240,29 +247,24 @@
                 else slide.innerHTML = `<img src="${src}">`;
                 track.appendChild(slide);
             });
+
             modal.classList.add('open'); document.body.style.overflow = 'hidden';
         }
 
         function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; track.innerHTML = ''; }
         function moveSlide(dir) { currentSlide += dir; if (currentSlide < 0) currentSlide = totalSlides - 1; if (currentSlide >= totalSlides) currentSlide = 0; track.scrollTo({ left: track.clientWidth * currentSlide, behavior: 'smooth' }); }
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
-
-        // --- LOGIQUE ACCORDÉON ---
+        
         function toggleAccordion(btn) {
             const content = btn.nextElementSibling;
             btn.classList.toggle('active');
-            
-            if (content.style.maxHeight) {
-                content.style.maxHeight = null; // Fermer
-            } else {
-                content.style.maxHeight = content.scrollHeight + "px"; // Ouvrir
-            }
+            if (content.style.maxHeight) { content.style.maxHeight = null; } 
+            else { content.style.maxHeight = content.scrollHeight + "px"; }
         }
 
+        // Lancement
         renderGrid('all');
+
     </script>
 </body>
 </html>
-
-
-
