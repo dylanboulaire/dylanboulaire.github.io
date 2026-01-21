@@ -74,7 +74,7 @@ header { display: flex; justify-content: space-between; align-items: center; pad
 
 /* ACCORDÉONS */
 .accordion-container { margin-top: 10px; }
-.accordion-btn { width: 100%; padding: 15px 0; background: none; border: none; border-top: 1px solid rgba(255,255,255,0.1); color: white; font-size: 0.9rem; font-weight: 700; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 1px; }
+.accordion-btn { width: 100%; padding: 15px 0; background: none; border: none; border-top: 1px solid rgba(255,255,255,0.1); color: white; font-size: 0.9rem; font-weight: 700; text-align: left; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 1px; font-family: 'Gopher', sans-serif !important; }
 .accordion-btn:hover { color: var(--text-accent); }
 .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
 .inner-content { padding-bottom: 20px; color: #ccc; font-size: 0.85rem; line-height: 1.6; }
