@@ -185,7 +185,7 @@ input:focus, textarea:focus {
 .project-card.visible { animation: fadeIn 0.5s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- 9. MODALE PROJET (CORRIGÉ : ANNÉE & POLICE) --- */
+/* --- 9. MODALE PROJET (VERSION EXPLORATEUR) --- */
 .modal-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.95); z-index: 2000;
@@ -195,118 +195,110 @@ input:focus, textarea:focus {
 .modal-overlay.open { opacity: 1; pointer-events: auto; }
 
 .modal-container {
-    width: 90%; max-width: 1200px; height: 85vh;
-    background: #1a1a1a; border: 1px solid rgba(255,255,255,0.1);
-    display: flex; flex-direction: column; overflow: hidden;
-    border-radius: 10px; position: relative;
+    width: 95%; max-width: 1400px; height: 90vh;
+    background: #121212; border: 1px solid rgba(255,255,255,0.1);
+    display: flex; overflow: hidden; border-radius: 8px;
     transform: translateY(50px); transition: 0.4s;
-    
-    /* FORCE LA POLICE GOPHER PARTOUT DANS LA MODALE */
-    font-family: 'Gopher', sans-serif !important; 
+    font-family: 'Gopher', sans-serif !important;
 }
 .modal-overlay.open .modal-container { transform: translateY(0); }
 
+/* --- GAUCHE : VIEWER PRINCIPAL --- */
+.modal-viewer {
+    flex: 3; /* Prend plus de place */
+    background: #000;
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+}
+.modal-viewer img, .modal-viewer video, .modal-viewer iframe {
+    max-width: 100%; max-height: 100%; width: 100%; height: 100%;
+    object-fit: contain; border: none;
+}
 .modal-close {
-    position: absolute; top: 20px; right: 20px; z-index: 50;
+    position: absolute; top: 20px; left: 20px; z-index: 50; /* Croix à gauche maintenant */
     background: rgba(0,0,0,0.5); color: white; border: none;
     width: 40px; height: 40px; border-radius: 50%; cursor: pointer;
     font-size: 1.2rem; transition: 0.3s; display: flex; justify-content: center; align-items: center;
 }
 .modal-close:hover { background: var(--text-accent); color: black; }
 
-.modal-body { display: flex; height: 100%; flex-direction: row; }
-
-/* ZONE GAUCHE (Média) */
-.modal-media { flex: 2; background: black; position: relative; display: flex; align-items: center; justify-content: center; }
-.carousel-track { width: 100%; height: 100%; display: flex; overflow: hidden; scroll-behavior: smooth; }
-.carousel-slide { min-width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-.carousel-slide img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.carousel-slide iframe { width: 100%; height: 100%; border: none; }
-.carousel-btn {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    background: rgba(0,0,0,0.5); color: white; border: none;
-    padding: 15px; cursor: pointer; font-size: 1.2rem; transition: 0.3s;
-}
-.carousel-btn:hover { background: white; color: black; }
-.prev-btn { left: 10px; } .next-btn { right: 10px; }
-
-/* ZONE DROITE (Infos) */
-.modal-info {
-    flex: 1; padding: 40px; overflow-y: auto;
-    border-left: 1px solid rgba(255,255,255,0.1); background: #1a1a1a;
+/* --- DROITE : SIDEBAR (Infos + Explorateur) --- */
+.modal-sidebar {
+    flex: 1; min-width: 350px; max-width: 450px;
+    background: #1a1a1a; border-left: 1px solid rgba(255,255,255,0.1);
     display: flex; flex-direction: column;
 }
 
-/* En-tête Info (CORRIGÉ) */
-.info-header { margin-bottom: 30px; }
+/* En-tête Sidebar (Titre + Accordéon Détails) */
+.sidebar-header {
+    padding: 30px; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.modal-cat { color: var(--btn-color); font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
+.modal-title { font-size: 2rem; color: var(--text-accent); margin: 5px 0; line-height: 1.1; font-weight: 700; }
+.modal-role { color: #888; font-style: italic; font-size: 0.9rem; margin-bottom: 20px; }
 
-/* Changement ici : justify-content: flex-start pour mettre l'année à gauche */
-.cat-year-row { 
-    display: flex; 
-    justify-content: flex-start; /* Au lieu de space-between */
-    align-items: center; 
-    gap: 20px; /* Espace entre Categorie et Année */
-    margin-bottom: 5px; 
+/* Accordéon Détails */
+.details-toggle {
+    background: none; border: none; color: white; font-size: 0.9rem; font-weight: 700;
+    cursor: pointer; display: flex; align-items: center; gap: 10px;
+    text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;
+}
+.details-toggle:hover { color: var(--text-accent); }
+.details-content {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
+    margin-top: 10px;
+}
+.details-inner { font-size: 0.85rem; color: #ccc; line-height: 1.6; padding-left: 10px; border-left: 2px solid var(--btn-color); }
+.tools-row { display: flex; flex-wrap: wrap; margin-top: 10px; } /* Pour les icones */
+
+/* Explorateur de Fichiers (Tree View) */
+.file-explorer {
+    flex-grow: 1; overflow-y: auto; padding: 20px 0;
+}
+.explorer-title {
+    padding: 0 30px 15px 30px; font-size: 0.8rem; color: #666;
+    text-transform: uppercase; letter-spacing: 1px; font-weight: 700;
 }
 
-.modal-cat { color: var(--btn-color); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; }
-.modal-year { color: #666; font-size: 0.8rem; font-weight: 700; } /* L'année n'est plus cachée */
-
-.modal-title { font-size: 2.2rem; color: var(--text-accent); margin: 0 0 5px 0; line-height: 1.1; font-weight: 700; }
-.modal-role { color: #aaa; font-style: italic; font-size: 0.95rem; margin-bottom: 5px; font-weight: 300; }
-.modal-client { color: #666; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
-
-/* STYLE DES ACCORDÉONS */
-.accordion-container { border-top: 1px solid rgba(255,255,255,0.1); }
-.accordion-item { border-bottom: 1px solid rgba(255,255,255,0.1); }
-
-.accordion-btn {
-    width: 100%; padding: 20px 0; background: none; border: none;
-    color: white; font-size: 1rem; font-weight: 700; text-align: left;
-    cursor: pointer; display: flex; justify-content: space-between; align-items: center;
-    transition: color 0.3s; text-transform: uppercase; letter-spacing: 1px;
-    
-    font-family: 'Gopher', sans-serif !important; /* Force la police ici aussi */
+/* Dossier */
+.folder-group { margin-bottom: 5px; }
+.folder-header {
+    padding: 12px 30px; cursor: pointer; display: flex; justify-content: space-between; align-items: center;
+    color: #eee; font-weight: 700; transition: 0.2s; background: rgba(255,255,255,0.02);
 }
-.accordion-btn:hover { color: var(--text-accent); }
-.accordion-btn i { font-size: 0.8rem; transition: transform 0.3s; }
-.accordion-btn.active i { transform: rotate(180deg); }
+.folder-header:hover { background: rgba(255,255,255,0.05); }
+.folder-header i { color: var(--btn-color); margin-right: 10px; }
+.folder-arrow { font-size: 0.8rem; transition: transform 0.3s; color: #666; }
+.folder-group.open .folder-arrow { transform: rotate(180deg); }
 
-.accordion-content {
-    max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out;
+/* Contenu du dossier (Liste fichiers) */
+.folder-content {
+    max-height: 0; overflow: hidden; transition: max-height 0.4s ease;
 }
-.inner-content {
-    padding-bottom: 20px; color: #ccc; font-size: 0.9rem; line-height: 1.6; font-weight: 300;
-}
+.folder-group.open .folder-content { max-height: 1000px; /* Valeur arbitraire haute */ }
 
-/* --- STYLE DES NOUVELLES ICÔNES LOGICIELS --- */
-/* La classe .tool-icon est ajoutée par le Javascript */
-.tool-icon {
-    font-size: 2.5rem; /* Taille des logos */
-    color: white;      /* La couleur blanche demandée */
-    margin-right: 20px; /* Espace entre chaque logo */
-    transition: 0.3s;  /* Petit effet au survol */
+/* Fichier (Item) */
+.file-item {
+    padding: 12px 30px 12px 50px; /* Indentation */
+    cursor: pointer; display: flex; align-items: center; gap: 12px;
+    color: #aaa; transition: 0.2s; border-left: 3px solid transparent;
 }
-
-/* Optionnel : petit effet quand on passe la souris dessus */
-.tool-icon:hover {
-    color: var(--text-accent); /* Devient couleur crème au survol */
-    transform: translateY(-3px);
+.file-item:hover { color: white; background: rgba(255,255,255,0.02); }
+.file-item.active {
+    color: var(--text-accent); background: rgba(46, 113, 134, 0.1);
+    border-left-color: var(--text-accent);
 }
+.file-icon { font-size: 0.9rem; }
+.file-meta { display: flex; flex-direction: column; }
+.file-name { font-weight: 500; font-size: 0.9rem; }
+.file-desc { font-size: 0.7rem; opacity: 0.6; }
 
-/* On s'assure que le conteneur des outils dans l'accordéon est bien aligné */
-#m-tools {
-    display: flex;
-    flex-wrap: wrap; /* Permet de passer à la ligne si trop d'icônes */
-    align-items: center;
-    padding-top: 10px;
-}
-
-/* RESPONSIVE */
+/* Responsive */
 @media (max-width: 1024px) {
-    .modal-body { flex-direction: column; }
-    .modal-media { height: 50vh; flex: none; }
-    .modal-info { height: auto; border-left: none; border-top: 1px solid rgba(255,255,255,0.1); }
+    .modal-container { flex-direction: column; height: 100%; width: 100%; border-radius: 0; }
+    .modal-viewer { height: 40vh; flex: none; }
+    .modal-sidebar { height: 60vh; min-width: 100%; max-width: 100%; }
+    .modal-close { top: 10px; left: auto; right: 10px; background: rgba(0,0,0,0.8); }
 }
 
 /* --- 10. FOOTER --- */
@@ -325,6 +317,7 @@ footer {
     .projects-grid { grid-template-columns: 1fr; }
     .modal-container { width: 100%; height: 100%; border-radius: 0; }
 }
+
 
 
 
