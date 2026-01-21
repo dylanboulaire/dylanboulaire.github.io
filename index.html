@@ -12,7 +12,9 @@
 
     <div class="mouse-glow"></div>
     <div class="video-background">
-        <video autoplay muted loop playsinline><source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4"></video>
+        <video autoplay muted loop playsinline>
+            <source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4">
+        </video>
         <div class="video-overlay"></div>
     </div>
 
@@ -58,7 +60,12 @@
         <div class="modal-container">
             <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
             
-            <div class="modal-viewer" id="main-viewer"></div>
+            <div class="modal-viewer">
+                <button class="carousel-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></button>
+                <button class="carousel-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></button>
+                
+                <div id="main-viewer" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
+            </div>
 
             <div class="modal-sidebar">
                 <div class="sidebar-header">
@@ -100,87 +107,190 @@
     <script src="script.js"></script>
     <script>
         // --- 1. CONFIGURATION PROJETS ---
+        // Liste complète basée sur ta demande
         const projects = [
-            // PROJET 1 : CESSON
+            
+            // --- 1. KERNAE (Le plus gros) ---
             {
-                id: 1, 
-                title: "Cesson Volley Club", category: "comm", role: "Graphiste & CM",
-                client: "Projet Fictif", year: "2024",
-                thumb: "assets/miniatures/projet1.png",
-                desc: "Création complète de l'identité visuelle pour le club de volley de Cesson. Réalisation de la charte graphique et des supports de communication.",
-                toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain', 'devicon-canva-original'],
-                content: {
-                    "Graphisme": [
-                        { type: "image", src: "assets/miniatures/projet1.png", title: "Affiche Principale", info: "Format A3" },
-                        { type: "image", src: "assets/miniatures/projet3.jpg", title: "Déclinaison RS", info: "Story Instagram" }
-                    ],
-                    "Documents": [
-                        { type: "image", src: "assets/miniatures/projet7.png", title: "Charte Graphique", info: "Aperçu PDF" }
-                    ]
-                }
-            },
-
-            // PROJET 2 : PHOTONIQUE
-            {
-                id: 2, 
-                title: "La Photonique", category: "video", role: "Cadreur / Monteur",
-                client: "IUT Lannion", year: "2023",
-                thumb: "assets/miniatures/projet2.png",
-                desc: "Reportage documentaire sur les métiers de la photonique. Interviews et captation en laboratoire.",
-                toolsIcons: ['devicon-premierepro-plain', 'devicon-aftereffects-plain'],
-                content: {
-                    "Le Film": [
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=xvFZjo5PgG0", title: "Reportage Complet", info: "05:30 min" }
-                    ],
-                    "Backstage": [
-                        { type: "image", src: "assets/miniatures/projet2.png", title: "Tournage Labo", info: "Photo de plateau" }
-                    ]
-                }
-            },
-
-            // PROJET 3 : KERNAE (Avec tes liens YouTube)
-            {
-                id: 3, 
-                title: "Kernae", category: "comm", role: "Stagiaire",
+                id: 1, title: "Kernae", category: "comm", role: "Stagiaire Communication",
                 client: "Fonds Kernae", year: "2023",
                 thumb: "assets/miniatures/projet6.png",
-                desc: "Stage de 4 mois. Création de supports de communication interne et externe, dont une série vidéo et des visuels réseaux sociaux.",
-                toolsIcons: ['devicon-indesign-plain', 'devicon-canva-original', 'devicon-premierepro-plain'],
+                desc: "Stage de 4 mois. Création de contenus variés : vidéos, visuels, print.",
+                toolsIcons: ['devicon-premierepro-plain', 'devicon-indesign-plain', 'devicon-canva-original', 'devicon-aftereffects-plain'],
                 content: {
-                    "Série L'Instant Mécénat": [
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=6LOC3zduma8", title: "Épisode 1", info: "Interview" },
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=uwLIlUE2p00", title: "Épisode 2", info: "Interview" },
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=Ds9CT0xIbic", title: "Épisode 3", info: "Interview" },
+                    "Reportages Vidéo": [
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=6LOC3zduma8", title: "Épisode 1", info: "Le Refuge" },
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=uwLIlUE2p00", title: "Épisode 2", info: "Campus Vert" },
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=Ds9CT0xIbic", title: "Épisode 3", info: "Familles Solidaires" },
                         { type: "youtube", src: "https://www.youtube.com/watch?v=jgEu86FEMS4", title: "Épisode 4", info: "Interview" },
                         { type: "youtube", src: "https://www.youtube.com/watch?v=VpPzsADjFzE", title: "Épisode 5", info: "Interview" },
                         { type: "youtube", src: "https://www.youtube.com/watch?v=fFYbpAwcI0M", title: "Épisode 6", info: "Interview" },
                         { type: "youtube", src: "https://www.youtube.com/watch?v=75b7hG7OIx8", title: "Épisode 7", info: "Interview" }
                     ],
+                    "Podcasts Vidéo": [
+                        { type: "video", src: "LIEN_VIDEO_PODCAST_1.mp4", title: "Podcast 1", info: "Format Reel" }
+                    ],
+                    "Motion Web": [
+                        { type: "video", src: "LIEN_VIDEO_MOTION_WEB.mp4", title: "Animation Site", info: "Bannière" }
+                    ],
+                    "Newsletter": [
+                        { type: "image", src: "LIEN_IMG_HEADER.jpg", title: "Header", info: "Graphisme" },
+                        { type: "image", src: "LIEN_IMG_FOOTER.jpg", title: "Footer", info: "Graphisme" }
+                    ],
                     "Réseaux Sociaux": [
-                        { type: "image", src: "assets/miniatures/projet6.png", title: "Post LinkedIn", info: "Carrousel" },
-                        { type: "image", src: "assets/miniatures/projet7.png", title: "Newsletter", info: "Mars 2023" }
+                        { type: "image", src: "assets/miniatures/projet6.png", title: "Post LinkedIn", info: "Visuel 1" }
+                    ],
+                    "Print & Rapport": [
+                        { type: "image", src: "LIEN_IMG_RAPPORT.jpg", title: "Rapport d'activité", info: "Couverture" }
+                    ],
+                    "Miniatures Podcast": [
+                        { type: "image", src: "LIEN_MINIATURE_1.jpg", title: "V1", info: "Proposition" },
+                        { type: "image", src: "LIEN_MINIATURE_2.jpg", title: "V2", info: "Proposition" },
+                        { type: "image", src: "LIEN_MINIATURE_3.jpg", title: "V3", info: "Proposition" },
+                        { type: "image", src: "LIEN_MINIATURE_4.jpg", title: "V4", info: "Proposition" }
                     ]
                 }
             },
 
-            // PROJET 4 : MOTION
+            // --- 2. SCOBAT (Stage 2) ---
             {
-                id: 4, 
-                title: "Motion Design", category: "graphisme", role: "Motion Designer",
+                id: 2, title: "Scobat", category: "comm", role: "Stagiaire Communication",
+                client: "Scobat", year: "2024",
+                thumb: "assets/miniatures/projet7.png", // Remplacer par miniature Scobat
+                desc: "Deuxième stage en BUT MMI. Réalisation de contenus de communication.",
+                toolsIcons: ['devicon-premierepro-plain', 'devicon-illustrator-plain'],
+                content: {
+                    "Vidéos Chantier": [
+                        { type: "video", src: "LIEN_VIDEO_SCOBAT_1.mp4", title: "Suivi Chantier", info: "Drone" }
+                    ],
+                    "Communication Visuelle": [
+                        { type: "image", src: "LIEN_IMG_SCOBAT_1.jpg", title: "Affiche", info: "Interne" }
+                    ]
+                }
+            },
+
+            // --- 3. CHECK-ID (Onfido) ---
+            {
+                id: 3, title: "Check-ID (Onfido)", category: "video", role: "Réalisateur",
+                client: "Projet BUT MMI", year: "2023",
+                thumb: "assets/miniatures/projet1.png", // Mettre bonne miniature
+                desc: "Projet vidéo mettant en valeur la solution Onfido via une fausse application créée pour l'occasion.",
+                toolsIcons: ['devicon-premierepro-plain', 'devicon-aftereffects-plain', 'devicon-figma-plain'],
+                content: {
+                    "Campagne Vidéo": [
+                        { type: "video", src: "LIEN_VIDEO_ONFIDO.mp4", title: "Spot Publicitaire", info: "1min" }
+                    ],
+                    "Prototype App": [
+                        { type: "image", src: "LIEN_IMG_APP_1.jpg", title: "Interface App", info: "UI Design" }
+                    ]
+                }
+            },
+
+            // --- 4. LA PHOTONIQUE ---
+            {
+                id: 4, title: "La Photonique", category: "video", role: "Cadreur / Monteur",
+                client: "IUT Lannion", year: "2023",
+                thumb: "assets/miniatures/projet2.png",
+                desc: "Reportage documentaire sur les métiers de la photonique.",
+                toolsIcons: ['devicon-premierepro-plain'],
+                content: {
+                    "Le Film": [
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=xvFZjo5PgG0", title: "Reportage Complet", info: "05:30 min" }
+                    ],
+                    "Captures": [
+                        { type: "image", src: "assets/miniatures/projet2.png", title: "Laboratoire", info: "Screen" },
+                        { type: "image", src: "LIEN_SCREEN_2.jpg", title: "Interview", info: "Screen" }
+                    ]
+                }
+            },
+
+            // --- 5. CESSON VOLLEY ---
+            {
+                id: 5, title: "Cesson Volley Club", category: "comm", role: "Graphiste",
+                client: "Projet Fictif", year: "2024",
+                thumb: "assets/miniatures/projet1.png",
+                desc: "Création d'identité visuelle fictive.",
+                toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain'],
+                content: {
+                    "Presse": [
+                        { type: "image", src: "assets/miniatures/projet1.png", title: "Communiqué 1", info: "A4" },
+                        { type: "image", src: "LIEN_PRESSE_2.jpg", title: "Communiqué 2", info: "A4" },
+                        { type: "image", src: "LIEN_PRESSE_3.jpg", title: "Communiqué 3", info: "A4" },
+                        { type: "image", src: "LIEN_PRESSE_4.jpg", title: "Communiqué 4", info: "A4" }
+                    ],
+                    "Vidéos Promo": [
+                        { type: "video", src: "LIEN_VIDEO_VOLLEY.mp4", title: "Teaser Saison", info: "30s" }
+                    ]
+                }
+            },
+
+            // --- 6. MOTION DESIGN ---
+            {
+                id: 6, title: "Motion Design", category: "graphisme", role: "Motion Designer",
                 client: "Personnel", year: "2024",
                 thumb: "assets/miniatures/projet4.png",
-                desc: "Explorations graphiques et animations de logos. Travail sur le rythme et la fluidité.",
+                desc: "Explorations graphiques.",
                 toolsIcons: ['devicon-aftereffects-plain'],
                 content: {
                     "Animations": [
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Showreel 2024", info: "Compilation" }
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=dQw4w9WgXcQ", title: "Showreel", info: "Compilation" }
+                    ]
+                }
+            },
+
+            // --- 7. BLENDER 3D ---
+            {
+                id: 7, title: "Animation 3D", category: "graphisme", role: "3D Artist",
+                client: "Personnel", year: "2023",
+                thumb: "assets/miniatures/projet3.jpg", // Mettre miniature 3D
+                desc: "Animation réalisée sous Blender.",
+                toolsIcons: ['devicon-blender-original'],
+                content: {
+                    "Rendus 3D": [
+                        { type: "video", src: "LIEN_VIDEO_BLENDER.mp4", title: "Animation Finale", info: "Render" }
+                    ]
+                }
+            },
+
+            // --- 8. POSTERS & INFOGRAPHIES ---
+            {
+                id: 8, title: "Posters & Infos", category: "graphisme", role: "Graphiste",
+                client: "Personnel", year: "2023",
+                thumb: "assets/miniatures/projet3.jpg",
+                desc: "Série de créations graphiques.",
+                toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain'],
+                content: {
+                    "Affiches": [
+                        { type: "image", src: "assets/miniatures/projet3.jpg", title: "Poster 1", info: "Art" },
+                        { type: "image", src: "LIEN_POSTER_2.jpg", title: "Poster 2", info: "Art" }
+                    ]
+                }
+            },
+
+            // --- 9. PHOTOS ---
+            {
+                id: 9, title: "Photographie", category: "graphisme", role: "Photographe",
+                client: "Personnel", year: "2023",
+                thumb: "assets/miniatures/projet5.jpg",
+                desc: "Clichés personnels.",
+                toolsIcons: ['devicon-photoshop-plain'],
+                content: {
+                    "Galerie": [
+                        { type: "image", src: "assets/miniatures/projet5.jpg", title: "Photo 1", info: "Sony A7" }
                     ]
                 }
             }
         ];
 
-        // --- 2. LOGIQUE ---
-        const grid = document.getElementById('grid'); const modal = document.getElementById('modal'); const viewer = document.getElementById('main-viewer'); const fileTree = document.getElementById('file-tree');
+        // --- 2. LOGIQUE NAVIGATION HYBRIDE (TREE + CAROUSEL) ---
+        const grid = document.getElementById('grid');
+        const modal = document.getElementById('modal');
+        const viewer = document.getElementById('main-viewer');
+        const fileTree = document.getElementById('file-tree');
+        
+        let allFiles = []; // Liste plate pour le carrousel
+        let currentFileIndex = 0;
+
         const categoryNames = { "comm": "COMMUNICATION", "video": "VIDÉO", "graphisme": "GRAPHISME", "all": "TOUT" };
         const getYoutubeID = (url) => { const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; const m = url.match(reg); return (m && m[1]) ? m[1] : null; };
 
@@ -208,22 +318,35 @@
             if(p.toolsIcons) p.toolsIcons.forEach(c => tCont.innerHTML += `<i class="${c} tool-icon"></i>`);
             else tCont.innerHTML = "-";
 
-            renderFileExplorer(p.content, p.title);
-            const firstKey = Object.keys(p.content)[0];
-            if(firstKey && p.content[firstKey].length > 0) { loadMedia(p.content[firstKey][0]); }
+            // 1. APLATIR LA LISTE POUR LE CARROUSEL
+            allFiles = [];
+            Object.keys(p.content).forEach(folder => {
+                p.content[folder].forEach((file, index) => {
+                    // On ajoute des métadonnées pour retrouver l'élément dans l'arbre
+                    allFiles.push({ ...file, folder: folder, originalIndex: index });
+                });
+            });
+
+            // 2. GÉNÉRER L'ARBRE
+            renderFileExplorer(p.content);
+
+            // 3. CHARGER LE PREMIER FICHIER
+            currentFileIndex = 0;
+            if(allFiles.length > 0) loadMediaFromIndex(0);
 
             modal.classList.add('open'); document.body.style.overflow = 'hidden';
         }
 
-        function renderFileExplorer(content, projectTitle) {
+        function renderFileExplorer(content) {
             fileTree.innerHTML = '<div class="explorer-title">Contenu du Projet</div>';
             Object.keys(content).forEach((folderName, index) => {
                 const files = content[folderName];
                 const isOpen = index === 0 ? 'open' : '';
                 let fileHTML = '';
                 files.forEach((f, i) => {
+                    // L'ID unique permet de retrouver l'élément HTML pour le surligner
                     fileHTML += `
-                        <div class="file-item" onclick="handleFileClick(this, '${projectTitle}', '${folderName}', ${i})">
+                        <div class="file-item" id="file-${folderName}-${i}" onclick="handleTreeClick('${folderName}', ${i})">
                             <i class="fas ${getFileIcon(f.type)} file-icon"></i>
                             <div class="file-meta"><span class="file-name">${f.title}</span><span class="file-desc">${f.info || ''}</span></div>
                         </div>
@@ -240,27 +363,56 @@
             });
         }
 
-        function handleFileClick(el, pTitle, folder, index) {
-            document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
-            el.classList.add('active');
-            const project = projects.find(p => p.title === pTitle);
-            if(project) loadMedia(project.content[folder][index]);
+        // Clic sur un fichier dans l'arbre
+        function handleTreeClick(folder, index) {
+            // Trouver l'index dans la liste plate (allFiles)
+            const flatIndex = allFiles.findIndex(f => f.folder === folder && f.originalIndex === index);
+            if (flatIndex !== -1) {
+                currentFileIndex = flatIndex;
+                loadMediaFromIndex(currentFileIndex);
+            }
         }
 
-        function loadMedia(file) {
+        // Clic sur les flèches (Carrousel)
+        function moveSlide(dir) {
+            currentFileIndex += dir;
+            if (currentFileIndex >= allFiles.length) currentFileIndex = 0; // Boucle
+            if (currentFileIndex < 0) currentFileIndex = allFiles.length - 1;
+            loadMediaFromIndex(currentFileIndex);
+        }
+
+        function loadMediaFromIndex(index) {
+            const file = allFiles[index];
+            const viewer = document.getElementById('main-viewer');
+            
+            // 1. Charger le média
             viewer.innerHTML = '';
             if (file.type === 'video') viewer.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
             else if (file.type === 'youtube') {
                 const id = getYoutubeID(file.src);
                 if(id) viewer.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen class="fade-in"></iframe>`;
-                else viewer.innerHTML = `<div style="color:white; text-align:center;">Lien vidéo invalide ou manquant</div>`;
+                else viewer.innerHTML = `<div style="color:white;">Lien invalide</div>`;
             } else viewer.innerHTML = `<img src="${file.src}" class="fade-in">`;
+
+            // 2. Mettre à jour l'arbre (Surlignage)
+            document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
+            const activeItem = document.getElementById(`file-${file.folder}-${file.originalIndex}`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+                // Optionnel : Ouvrir le dossier si fermé
+                const folderContent = activeItem.closest('.folder-content');
+                if(folderContent && !folderContent.parentElement.classList.contains('open')) {
+                    folderContent.parentElement.classList.add('open');
+                }
+                // Scroll automatique vers l'élément dans la sidebar
+                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
         }
 
         function getFileIcon(type) { if(type === 'video' || type === 'youtube') return 'fa-play-circle'; if(type === 'image') return 'fa-image'; return 'fa-file'; }
         function toggleFolder(header) { header.parentElement.classList.toggle('open'); }
         function toggleAccordion(btn) { const content = btn.nextElementSibling; btn.classList.toggle('active'); if (content.style.maxHeight) { content.style.maxHeight = null; } else { content.style.maxHeight = content.scrollHeight + "px"; } }
-        function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; viewer.innerHTML = ''; }
+        function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; document.getElementById('main-viewer').innerHTML = ''; }
         function filterProjects(cat) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); }
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
 
