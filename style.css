@@ -51,7 +51,7 @@ header { display: flex; justify-content: space-between; align-items: center; pad
 .project-card.visible { animation: fadeIn 0.5s ease forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-/* --- MODALE EXPLORATEUR (V3) --- */
+/* --- MODALE EXPLORATEUR (V4 - CROIX DROITE & FLECHES) --- */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: 0.4s; backdrop-filter: blur(5px); }
 .modal-overlay.open { opacity: 1; pointer-events: auto; }
 .modal-container { width: 95%; max-width: 1400px; height: 90vh; background: #121212; border: 1px solid rgba(255,255,255,0.1); display: flex; overflow: hidden; border-radius: 8px; transform: translateY(50px); transition: 0.4s; font-family: 'Gopher', sans-serif !important; }
@@ -60,8 +60,25 @@ header { display: flex; justify-content: space-between; align-items: center; pad
 /* GAUCHE : VIEWER */
 .modal-viewer { flex: 3; background: #000; position: relative; display: flex; align-items: center; justify-content: center; }
 .modal-viewer img, .modal-viewer video, .modal-viewer iframe { max-width: 100%; max-height: 100%; width: 100%; height: 100%; object-fit: contain; border: none; }
-.modal-close { position: absolute; top: 20px; left: 20px; z-index: 50; background: rgba(0,0,0,0.5); color: white; border: none; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; font-size: 1.2rem; transition: 0.3s; display: flex; justify-content: center; align-items: center; }
+
+/* MODIF : Croix à Droite */
+.modal-close { 
+    position: absolute; top: 20px; right: 20px; left: auto; /* Force droite */
+    z-index: 50; background: rgba(0,0,0,0.5); color: white; border: none; 
+    width: 40px; height: 40px; border-radius: 50%; cursor: pointer; 
+    font-size: 1.2rem; transition: 0.3s; display: flex; justify-content: center; align-items: center; 
+}
 .modal-close:hover { background: var(--text-accent); color: black; }
+
+/* Flèches de navigation (Viewer) */
+.carousel-btn {
+    position: absolute; top: 50%; transform: translateY(-50%); z-index: 20;
+    background: rgba(0,0,0,0.3); color: white; border: none;
+    padding: 20px; cursor: pointer; font-size: 1.5rem; transition: 0.3s; border-radius: 5px;
+}
+.carousel-btn:hover { background: rgba(255,255,255,0.2); color: var(--text-accent); }
+.prev-btn { left: 10px; }
+.next-btn { right: 10px; }
 
 /* DROITE : SIDEBAR */
 .modal-sidebar { flex: 1; min-width: 350px; max-width: 450px; background: #1a1a1a; border-left: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; }
