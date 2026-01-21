@@ -12,9 +12,7 @@
 
     <div class="mouse-glow"></div>
     <div class="video-background">
-        <video autoplay muted loop playsinline>
-            <source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4">
-        </video>
+        <video autoplay muted loop playsinline><source src="assets/FOND_PORTFOLIO.mp4" type="video/mp4"></video>
         <div class="video-overlay"></div>
     </div>
 
@@ -43,10 +41,7 @@
 
     <section id="work" class="projects-section">
         <div class="section-header">
-            <div class="section-title">
-                <h2>RÉALISATIONS</h2>
-                <p>Une sélection de mes travaux récents.</p>
-            </div>
+            <div class="section-title"><h2>RÉALISATIONS</h2><p>Une sélection de mes travaux récents.</p></div>
             <div class="filters">
                 <button class="filter-btn active" onclick="filterProjects('all')">Tout</button>
                 <button class="filter-btn" onclick="filterProjects('video')">Vidéo</button>
@@ -54,218 +49,236 @@
                 <button class="filter-btn" onclick="filterProjects('comm')">Communication</button>
             </div>
         </div>
-        
         <div class="projects-grid" id="grid"></div>
     </section>
 
-    <footer>
-        <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
-    </footer>
+    <footer><p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p></footer>
 
     <div class="modal-overlay" id="modal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
             
-            <div class="modal-body">
-                <div class="modal-media">
-                    <button class="carousel-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></button>
-                    <div class="carousel-track" id="modal-track"></div>
-                    <button class="carousel-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></button>
+            <div class="modal-viewer" id="main-viewer">
                 </div>
 
-                <div class="modal-info">
-                    
-                    <div class="info-header">
-                        <div class="cat-year-row">
-                            <span class="modal-cat" id="m-cat">CATÉGORIE</span>
-                            <span class="modal-year" id="m-year">2024</span>
-                        </div>
-                        <h2 class="modal-title" id="m-title">Titre du Projet</h2>
-                        <p class="modal-role" id="m-role">Mon Rôle</p>
-                        <p class="modal-client">Client : <span id="m-client" style="color: white;">Nom</span></p>
-                    </div>
+            <div class="modal-sidebar">
+                
+                <div class="sidebar-header">
+                    <span class="modal-cat" id="m-cat">CATÉGORIE</span>
+                    <h2 class="modal-title" id="m-title">Titre Projet</h2>
+                    <p class="modal-role" id="m-role">Mon Rôle</p>
 
-                    <div class="accordion-container">
-                        <div class="accordion-item">
-                            <button class="accordion-btn" onclick="toggleAccordion(this)">
-                                Contexte & Description
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="accordion-content">
-                                <div class="inner-content" id="m-desc">Description...</div>
-                            </div>
-                        </div>
-                        <div class="accordion-item">
-                            <button class="accordion-btn" onclick="toggleAccordion(this)">
-                                Logiciels Utilisés
-                                <i class="fas fa-chevron-down"></i>
-                            </button>
-                            <div class="accordion-content">
-                                <div class="inner-content" id="m-tools"></div>
-                            </div>
+                    <button class="details-toggle" onclick="toggleDetails()">
+                        <i class="fas fa-info-circle"></i> + DE DÉTAILS
+                    </button>
+                    <div class="details-content" id="details-box">
+                        <div class="details-inner">
+                            <p id="m-desc" style="margin-bottom:10px;">Description...</p>
+                            <p><strong>CLIENT :</strong> <span id="m-client">Nom</span></p>
+                            <p><strong>ANNÉE :</strong> <span id="m-year">2024</span></p>
+                            <div class="tools-row" id="m-tools"></div>
                         </div>
                     </div>
-
                 </div>
+
+                <div class="file-explorer" id="file-tree">
+                    </div>
+
             </div>
         </div>
     </div>
 
     <script src="script.js"></script>
     <script>
-        // --- 1. TES PROJETS (CONFIGURATION) ---
-        // ATTENTION AUX VIRGULES entre les accolades { }, sinon tout plante !
+        // --- 1. CONFIGURATION NOUVELLE STRUCTURE ---
+        // 'content' est un objet : "Nom du Dossier" : [Liste des fichiers]
+        // types possibles: 'video' (mp4 local), 'youtube', 'image', 'pdf'
         const projects = [
             {
                 id: 1, 
-                title: "Cesson Volley Club", 
-                category: "comm", 
-                role: "Graphiste & CM",
-                client: "Projet Fictif", 
-                year: "2024",
-                thumb: "assets/miniatures/projet1.png", 
-                media: ["assets/miniatures/projet1.png", "assets/miniatures/projet3.jpg"],
-                desc: "Création complète de l'identité visuelle pour le club de volley de Cesson. Réalisation de la charte graphique et des supports de communication.",
-                toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain', 'devicon-canva-original']
-            }, // <-- Ne pas oublier cette virgule
+                title: "Cesson Volley Club", category: "comm", role: "Graphiste & CM",
+                client: "Projet Fictif", year: "2024", toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain'],
+                thumb: "assets/miniatures/projet1.png",
+                desc: "Création de l'identité visuelle du club.",
+                // NOUVELLE STRUCTURE : DOSSIERS
+                content: {
+                    "Graphisme": [
+                        { type: "image", src: "assets/miniatures/projet1.png", title: "Affiche Principale", info: "Format A3" },
+                        { type: "image", src: "assets/miniatures/projet3.jpg", title: "Déclinaison RS", info: "Story Instagram" }
+                    ],
+                    "Documents": [
+                        { type: "image", src: "assets/miniatures/projet7.png", title: "Charte Graphique", info: "Aperçu PDF" }
+                    ]
+                }
+            },
             {
                 id: 2, 
-                title: "La Photonique", 
-                category: "video", 
-                role: "Cadreur / Monteur",
-                client: "IUT Lannion", 
-                year: "2023",
+                title: "La Photonique", category: "video", role: "Cadreur",
+                client: "IUT Lannion", year: "2023", toolsIcons: ['devicon-premierepro-plain'],
                 thumb: "assets/miniatures/projet2.png",
-                media: ["https://www.youtube.com/watch?v=xvFZjo5PgG0", "assets/miniatures/projet2.png"],
-                desc: "Reportage documentaire sur les métiers de la photonique. Interviews et captation en laboratoire.",
-                toolsIcons: ['devicon-premierepro-plain', 'devicon-aftereffects-plain']
+                desc: "Reportage sur la photonique.",
+                content: {
+                    "Le Film": [
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=xvFZjo5PgG0", title: "Reportage Complet", info: "05:30 min" }
+                    ],
+                    "Backstage": [
+                        { type: "image", src: "assets/miniatures/projet2.png", title: "Tournage Labo", info: "Photo de plateau" }
+                    ]
+                }
             },
             {
                 id: 3, 
-                title: "Kernae", 
-                category: "comm", 
-                role: "Stagiaire Com",
-                client: "Fonds Kernae", 
-                year: "2023",
+                title: "Kernae", category: "comm", role: "Stagiaire",
+                client: "Fonds Kernae", year: "2023", toolsIcons: ['devicon-indesign-plain'],
                 thumb: "assets/miniatures/projet6.png",
-                media: ["https://www.youtube.com/watch?v=6LOC3zduma8","https://www.youtube.com/watch?v=uwLIlUE2p00","https://www.youtube.com/watch?v=Ds9CT0xIbic","https://www.youtube.com/watch?v=jgEu86FEMS4","https://www.youtube.com/watch?v=VpPzsADjFzE","https://www.youtube.com/watch?v=fFYbpAwcI0M","https://www.youtube.com/watch?v=75b7hG7OIx8","",""],
-                desc: "Stage de 4 mois. Création de supports de communication interne et externe.",
-                toolsIcons: ['devicon-indesign-plain', 'devicon-canva-original']
-            },
-            {
-                id: 4, 
-                title: "Motion Design", 
-                category: "graphisme", 
-                role: "Motion Designer",
-                client: "Personnel", 
-                year: "2024",
-                thumb: "assets/miniatures/projet4.png",
-                media: ["https://www.youtube.com/watch?v=dQw4w9WgXcQ"],
-                desc: "Explorations graphiques et animations de logos. Travail sur le rythme et la fluidité.",
-                toolsIcons: ['devicon-aftereffects-plain']
-            },
-            {
-                id: 5, 
-                title: "Posters Créatifs", 
-                category: "graphisme", 
-                role: "Illustrateur",
-                client: "Personnel", 
-                year: "2023",
-                thumb: "assets/miniatures/projet3.jpg",
-                media: ["assets/miniatures/projet3.jpg"],
-                desc: "Série de posters minimalistes créés quotidiennement pour s'entraîner à la composition.",
-                toolsIcons: ['devicon-photoshop-plain']
+                desc: "Communication interne et externe.",
+                content: {
+                    "Vidéos": [
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=6LOC3zduma8","https://www.youtube.com/watch?v=uwLIlUE2p00","https://www.youtube.com/watch?v=Ds9CT0xIbic","https://www.youtube.com/watch?v=jgEu86FEMS4","https://www.youtube.com/watch?v=VpPzsADjFzE","https://www.youtube.com/watch?v=fFYbpAwcI0M","https://www.youtube.com/watch?v=75b7hG7OIx8", title: "Vidéos", info: "Carrousel" }
+                    ],
+                    "Images": [
+                        { type: "image", src: "assets/miniatures/projet6.png", title: "Images", info: "Carrousel" }
+                    ],
+                    "PDF": [
+                        { type: "image", src: "assets/miniatures/projet6.png", title: "PDF", info: "Carrousel" }
+                    ]
+                }
             }
         ];
 
-        // --- 2. LOGIQUE DU SITE ---
-        
+        // --- LOGIQUE ---
         const grid = document.getElementById('grid');
         const modal = document.getElementById('modal');
-        const track = document.getElementById('modal-track');
-        let currentSlide = 0;
-        let totalSlides = 0;
-
+        const viewer = document.getElementById('main-viewer');
+        const fileTree = document.getElementById('file-tree');
         const categoryNames = { "comm": "COMMUNICATION", "video": "VIDÉO", "graphisme": "GRAPHISME", "all": "TOUT" };
-        
         const getYoutubeID = (url) => { const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; const m = url.match(reg); return (m && m[1]) ? m[1] : null; };
 
-        // Afficher la grille
         function renderGrid(filter) {
-            if(!grid) return; 
             grid.innerHTML = '';
             projects.forEach(p => {
                 if (filter === 'all' || p.category === filter) {
-                    const displayCat = categoryNames[p.category] || p.category.toUpperCase();
-                    const card = document.createElement('div');
-                    card.className = 'project-card visible';
-                    card.innerHTML = `<img src="${p.thumb}" alt="${p.title}"><div class="card-overlay"><span class="card-cat">${displayCat}</span><div class="card-title">${p.title}</div></div>`;
-                    card.onclick = () => openModal(p);
-                    grid.appendChild(card);
+                    const dCat = categoryNames[p.category] || p.category.toUpperCase();
+                    const card = document.createElement('div'); card.className = 'project-card visible';
+                    card.innerHTML = `<img src="${p.thumb}"><div class="card-overlay"><span class="card-cat">${dCat}</span><div class="card-title">${p.title}</div></div>`;
+                    card.onclick = () => openModal(p); grid.appendChild(card);
                 }
             });
         }
 
-        function filterProjects(cat) { 
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); 
-            if(event) event.target.classList.add('active'); 
-            renderGrid(cat); 
-        }
-
-        // Ouvrir Modale
         function openModal(p) {
-            document.getElementById('m-cat').innerText = categoryNames[p.category] || p.category.toUpperCase();
+            // Infos
+            document.getElementById('m-cat').innerText = categoryNames[p.category] || p.category;
             document.getElementById('m-title').innerText = p.title;
             document.getElementById('m-role').innerText = p.role;
             document.getElementById('m-client').innerText = p.client;
             document.getElementById('m-year').innerText = p.year;
             document.getElementById('m-desc').innerText = p.desc;
+            
+            // Outils
+            const tCont = document.getElementById('m-tools'); tCont.innerHTML = '';
+            if(p.toolsIcons) p.toolsIcons.forEach(c => tCont.innerHTML += `<i class="${c} tool-icon"></i>`);
 
-            // Gestion Icônes Blanches
-            const toolsContainer = document.getElementById('m-tools');
-            toolsContainer.innerHTML = ''; 
-            if (p.toolsIcons && p.toolsIcons.length > 0) {
-                p.toolsIcons.forEach(iconClass => {
-                    toolsContainer.innerHTML += `<i class="${iconClass} tool-icon"></i>`;
-                });
-            } else {
-                toolsContainer.innerHTML = '<span style="color:#888;">-</span>';
+            // Générer l'explorateur
+            renderFileExplorer(p.content);
+
+            // Ouvrir le premier fichier par défaut
+            const firstKey = Object.keys(p.content)[0];
+            if(firstKey && p.content[firstKey].length > 0) {
+                loadMedia(p.content[firstKey][0]);
             }
-
-            // Reset Accordéons (Fermés sauf le premier)
-            document.querySelectorAll('.accordion-content').forEach(el => el.style.maxHeight = null);
-            document.querySelectorAll('.accordion-btn').forEach(btn => btn.classList.remove('active'));
-            const firstBtn = document.querySelector('.accordion-btn');
-            if(firstBtn) toggleAccordion(firstBtn);
-
-            // Carrousel
-            track.innerHTML = ''; currentSlide = 0; totalSlides = p.media.length;
-            p.media.forEach(src => {
-                const slide = document.createElement('div'); slide.className = 'carousel-slide';
-                const ytId = getYoutubeID(src);
-                if (ytId) slide.innerHTML = `<iframe src="https://www.youtube.com/embed/${ytId}?rel=0" allowfullscreen></iframe>`;
-                else slide.innerHTML = `<img src="${src}">`;
-                track.appendChild(slide);
-            });
 
             modal.classList.add('open'); document.body.style.overflow = 'hidden';
         }
 
-        function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; track.innerHTML = ''; }
-        function moveSlide(dir) { currentSlide += dir; if (currentSlide < 0) currentSlide = totalSlides - 1; if (currentSlide >= totalSlides) currentSlide = 0; track.scrollTo({ left: track.clientWidth * currentSlide, behavior: 'smooth' }); }
-        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
-        
-        function toggleAccordion(btn) {
-            const content = btn.nextElementSibling;
-            btn.classList.toggle('active');
-            if (content.style.maxHeight) { content.style.maxHeight = null; } 
-            else { content.style.maxHeight = content.scrollHeight + "px"; }
+        function renderFileExplorer(content) {
+            fileTree.innerHTML = '<div class="explorer-title">Contenu du Projet</div>';
+            
+            // Pour chaque "Dossier"
+            Object.keys(content).forEach((folderName, index) => {
+                const files = content[folderName];
+                const isOpen = index === 0 ? 'open' : ''; // Ouvre le premier dossier par défaut
+                
+                let fileHTML = '';
+                files.forEach((f, i) => {
+                    // On stringify l'objet f pour le passer dans le onclick (attention aux quotes)
+                    // Astuce: on stocke l'index et le dossier pour retrouver l'objet plus tard
+                    fileHTML += `
+                        <div class="file-item" onclick="handleFileClick(this, '${folderName}', ${i})">
+                            <i class="fas ${getFileIcon(f.type)} file-icon"></i>
+                            <div class="file-meta">
+                                <span class="file-name">${f.title}</span>
+                                <span class="file-desc">${f.info || ''}</span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                fileTree.innerHTML += `
+                    <div class="folder-group ${isOpen}">
+                        <div class="folder-header" onclick="toggleFolder(this)">
+                            <div><i class="fas fa-folder"></i> ${folderName}</div>
+                            <i class="fas fa-chevron-down folder-arrow"></i>
+                        </div>
+                        <div class="folder-content">
+                            ${fileHTML}
+                        </div>
+                    </div>
+                `;
+            });
         }
 
-        // Lancement
-        renderGrid('all');
+        // Variable globale temporaire pour retrouver le contenu courant
+        let currentContentObj = null;
 
+        function handleFileClick(el, folder, index) {
+            // Gestion classe active
+            document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
+            el.classList.add('active');
+
+            // Retrouver l'objet fichier
+            // Il faut chercher dans le projet qui est actuellement ouvert... 
+            // Astuce simple : on regarde le titre de la modale pour retrouver le projet ID (ou on stocke l'ID en global)
+            const title = document.getElementById('m-title').innerText;
+            const project = projects.find(p => p.title === title); 
+            if(project && project.content[folder]) {
+                loadMedia(project.content[folder][index]);
+            }
+        }
+
+        function loadMedia(file) {
+            viewer.innerHTML = '';
+            if (file.type === 'video') {
+                viewer.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
+            } else if (file.type === 'youtube') {
+                const id = getYoutubeID(file.src);
+                viewer.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen class="fade-in"></iframe>`;
+            } else {
+                viewer.innerHTML = `<img src="${file.src}" class="fade-in">`;
+            }
+        }
+
+        function getFileIcon(type) {
+            if(type === 'video' || type === 'youtube') return 'fa-play-circle';
+            if(type === 'image') return 'fa-image';
+            return 'fa-file';
+        }
+
+        function toggleFolder(header) {
+            header.parentElement.classList.toggle('open');
+        }
+
+        function toggleDetails() {
+            const box = document.getElementById('details-box');
+            if(box.style.maxHeight) { box.style.maxHeight = null; }
+            else { box.style.maxHeight = box.scrollHeight + "px"; }
+        }
+
+        function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; viewer.innerHTML = ''; }
+        function filterProjects(cat) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); }
+        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+
+        renderGrid('all');
     </script>
 </body>
 </html>
-
