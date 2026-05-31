@@ -328,7 +328,12 @@
         let currentFileIndex = 0;
 
         const categoryNames = { "comm": "COMMUNICATION", "video": "VIDÉO", "graphisme": "GRAPHISME", "all": "TOUT" };
-        const getYoutubeID = (url) => { const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; const m = url.match(reg); return (m && m[1]) ? m[1] : null; };
+        
+        const getYoutubeID = (url) => { 
+            const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; 
+            const m = url.match(reg); 
+            return (m && m[1]) || null;
+        };
 
         function renderGrid(filter) {
             grid.innerHTML = '';
@@ -444,7 +449,31 @@
                 activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
-
+        
+        function loadMediaFromIndex(index) {
+            if (index < 0 || index >= allFiles.length) return;
+            
+            const file = allFiles[index];
+            
+            // 1. Load the media
+            loadMedia(file);
+            
+            // 2. Update the tree highlighting
+            document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
+            const activeItem = document.getElementById(`file-${file.folder}-${file.originalIndex}`);
+            if (activeItem) {
+                activeItem.classList.add('active');
+                // Open folder if closed
+                const folderContent = activeItem.closest('.folder-content');
+                if(folderContent && !folderContent.parentElement.classList.contains('open')) {
+                    folderContent.parentElement.classList.add('open');
+                }
+                // Auto-scroll to element in sidebar
+                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+        
+        
         function getFileIcon(type) { if(type === 'video' || type === 'youtube') return 'fa-play-circle'; if(type === 'image') return 'fa-image'; return 'fa-file'; }
         function toggleFolder(header) { header.parentElement.classList.toggle('open'); }
         function toggleAccordion(btn) { const content = btn.nextElementSibling; btn.classList.toggle('active'); if (content.style.maxHeight) { content.style.maxHeight = null; } else { content.style.maxHeight = content.scrollHeight + "px"; } }
