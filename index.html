@@ -414,7 +414,7 @@
             }
         }
 
-       // Clic sur les flèches (Carrousel)
+        // Clic sur les flèches (Carrousel)
         function moveSlide(dir) {
             currentFileIndex += dir;
             if (currentFileIndex >= allFiles.length) currentFileIndex = 0; // Boucle
@@ -422,19 +422,31 @@
             loadMediaFromIndex(currentFileIndex);
         }
 
-        function loadMediaFromIndex(index) {
-            const file = allFiles[index];
+        function loadMedia(file) {
             const viewer = document.getElementById('main-viewer');
-            
-            // 1. Charger le média
             viewer.innerHTML = '';
-            if (file.type === 'video') viewer.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
-            else if (file.type === 'youtube') {
+            if (file.type === 'video') {
+                viewer.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
+            } else if (file.type === 'youtube') {
                 const id = getYoutubeID(file.src);
                 if(id) viewer.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen class="fade-in"></iframe>`;
-                else viewer.innerHTML = `<div style="color:white;">Lien invalide</div>`;
-            } else viewer.innerHTML = `<img src="${file.src}" class="fade-in">`;
+                else viewer.innerHTML = `<div style="color:white; text-align:center;">Lien vidéo invalide ou manquant</div>`;
+            } else if (file.type === 'pdf') {
+                // Gère l'affichage des PDF
+                viewer.innerHTML = `<iframe src="${file.src}" class="fade-in" style="width:100%; height:100%; border:none; background:white;"></iframe>`;
+            } else {
+                viewer.innerHTML = `<img src="${file.src}" class="fade-in">`;
+            }
+        }
 
+        function loadMediaFromIndex(index) {
+            if (index < 0 || index >= allFiles.length) return;
+            
+            const file = allFiles[index];
+            
+            // 1. Charger le média
+            loadMedia(file);
+            
             // 2. Mettre à jour l'arbre (Surlignage)
             document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
             const activeItem = document.getElementById(`file-${file.folder}-${file.originalIndex}`);
@@ -449,34 +461,10 @@
                 activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
-        
-        function loadMediaFromIndex(index) {
-            if (index < 0 || index >= allFiles.length) return;
-            
-            const file = allFiles[index];
-            
-            // 1. Load the media
-            loadMedia(file);
-            
-            // 2. Update the tree highlighting
-            document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
-            const activeItem = document.getElementById(`file-${file.folder}-${file.originalIndex}`);
-            if (activeItem) {
-                activeItem.classList.add('active');
-                // Open folder if closed
-                const folderContent = activeItem.closest('.folder-content');
-                if(folderContent && !folderContent.parentElement.classList.contains('open')) {
-                    folderContent.parentElement.classList.add('open');
-                }
-                // Auto-scroll to element in sidebar
-                activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-            }
-        }
-        
-        
+
         function getFileIcon(type) { if(type === 'video' || type === 'youtube') return 'fa-play-circle'; if(type === 'image') return 'fa-image'; return 'fa-file'; }
         function toggleFolder(header) { header.parentElement.classList.toggle('open'); }
-        function toggleAccordion(btn) { const content = btn.nextElementSibling; btn.classList.toggle('active'); if (content.style.maxHeight) { content.style.maxHeight = null; } else { content.style.maxHeight = content.scrollHeight + "px"; } }
+        function toggleAccordion(btn) { const content = btn.nextElementSibling; btn.classList.toggle('active'); if (content.style.maxHeight) { content.style.maxHeight = null; } else { content.style.maxHeight = content.scrollHeight + 'px'; } }
         function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; document.getElementById('main-viewer').innerHTML = ''; }
         function filterProjects(cat) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); }
         function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
@@ -485,7 +473,3 @@
     </script>
 </body>
 </html>
-
-
-
-
