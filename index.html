@@ -417,19 +417,21 @@
             loadMediaFromIndex(currentFileIndex);
         }
 
-        function loadMediaFromIndex(index) {
-            const file = allFiles[index];
-            const viewer = document.getElementById('main-viewer');
-            
-            // 1. Charger le média
+        function loadMedia(file) {
             viewer.innerHTML = '';
-            if (file.type === 'video') viewer.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
-            else if (file.type === 'youtube') {
+            if (file.type === 'video') {
+                viewer.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
+            } else if (file.type === 'youtube') {
                 const id = getYoutubeID(file.src);
                 if(id) viewer.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen class="fade-in"></iframe>`;
-                else viewer.innerHTML = `<div style="color:white;">Lien invalide</div>`;
-            } else viewer.innerHTML = `<img src="${file.src}" class="fade-in">`;
-
+                else viewer.innerHTML = `<div style="color:white; text-align:center;">Lien vidéo invalide ou manquant</div>`;
+            } else if (file.type === 'pdf') {
+                // NOUVEAU : Gère l'affichage des PDF
+                viewer.innerHTML = `<iframe src="${file.src}" class="fade-in" style="width:100%; height:100%; border:none; background:white;"></iframe>`;
+            } else {
+                viewer.innerHTML = `<img src="${file.src}" class="fade-in">`;
+            }
+        }
             // 2. Mettre à jour l'arbre (Surlignage)
             document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
             const activeItem = document.getElementById(`file-${file.folder}-${file.originalIndex}`);
