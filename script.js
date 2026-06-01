@@ -9,8 +9,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme') || 'dark';
     if (savedTheme === 'light') {
         body.classList.add('light-mode');
-        updateThemeIcon();
     }
+    updateThemeIcon();
 
     // Gestion du clic sur le bouton de basculement
     if (themeToggle) {
@@ -27,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateThemeIcon() {
+        if (!themeToggle) return;
         const isLightMode = body.classList.contains('light-mode');
         themeToggle.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     }
