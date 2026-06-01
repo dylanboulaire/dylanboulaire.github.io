@@ -2,7 +2,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const body = document.body;
     const glowContainer = document.querySelector('.mouse-glow');
     const videoBg = document.querySelector('.video-background');
+    const themeToggle = document.querySelector('.theme-toggle');
 
+    // --- THEME TOGGLE ---
+    // Récupérer le mode sauvegardé ou utiliser 'dark' par défaut
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'light') {
+        body.classList.add('light-mode');
+        updateThemeIcon();
+    }
+
+    // Gestion du clic sur le bouton de basculement
+    if (themeToggle) {
+        themeToggle.addEventListener('click', () => {
+            body.classList.toggle('light-mode');
+            
+            // Sauvegarder le préférence
+            const isLightMode = body.classList.contains('light-mode');
+            localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+            
+            // Mettre à jour l'icône
+            updateThemeIcon();
+        });
+    }
+
+    function updateThemeIcon() {
+        const isLightMode = body.classList.contains('light-mode');
+        themeToggle.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    }
+
+    // --- MOUSE GLOW EFFECT ---
     if (glowContainer) {
         document.addEventListener('mousemove', (e) => {
             const x = e.clientX;
