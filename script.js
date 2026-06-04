@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const glowContainer = document.querySelector('.mouse-glow');
     const videoBg = document.querySelector('.video-background');
 
-    // --- THEME TOGGLE (handles multiple buttons) ---
+    // ── THEME TOGGLE (handles multiple buttons) ──────────────────────
     const savedTheme = localStorage.getItem('theme') || 'dark';
     if (savedTheme === 'light') body.classList.add('light-mode');
     updateAllThemeIcons();
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- MOUSE GLOW ---
+    // ── MOUSE GLOW ───────────────────────────────────────────────────
     if (glowContainer) {
         document.addEventListener('mousemove', (e) => {
             body.style.setProperty('--mouse-x', `${e.clientX}px`);
@@ -36,33 +36,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- BURGER MENU ---
+    // ── BURGER MENU ──────────────────────────────────────────────────
     const burger = document.querySelector('.burger-menu');
     const navOverlay = document.querySelector('.nav-overlay');
 
     if (burger && navOverlay) {
         burger.addEventListener('click', () => {
-            burger.classList.toggle('active');
-            navOverlay.classList.toggle('open');
-            body.classList.toggle('nav-open');
+            const isOpen = navOverlay.classList.toggle('open');
+            burger.classList.toggle('active', isOpen);
         });
-        document.querySelectorAll('.nav-overlay a, .nav-overlay .nav-link-btn').forEach(link => {
-            link.addEventListener('click', () => {
-                burger.classList.remove('active');
-                navOverlay.classList.remove('open');
-                body.classList.remove('nav-open');
-            });
+
+        // Close on link click
+        navOverlay.querySelectorAll('a, .nav-link-btn').forEach(link => {
+            link.addEventListener('click', closeNav);
         });
+
+        // Close on background click
         navOverlay.addEventListener('click', (e) => {
-            if (e.target === navOverlay) {
-                burger.classList.remove('active');
-                navOverlay.classList.remove('open');
-                body.classList.remove('nav-open');
-            }
+            if (e.target === navOverlay) closeNav();
+        });
+
+        // Close on Escape
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && navOverlay.classList.contains('open')) closeNav();
         });
     }
 
-    // --- SCROLL REVEAL ---
+    function closeNav() {
+        const burger = document.querySelector('.burger-menu');
+        const navOverlay = document.querySelector('.nav-overlay');
+        if (burger) burger.classList.remove('active');
+        if (navOverlay) navOverlay.classList.remove('open');
+    }
+
+    // ── SCROLL REVEAL ────────────────────────────────────────────────
     const revealObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -74,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelectorAll('.reveal-on-scroll').forEach(el => revealObserver.observe(el));
 
-    // --- GEAR ITEMS STAGGER ---
+    // ── GEAR STAGGER ─────────────────────────────────────────────────
     const gearObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -84,50 +91,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 gearObserver.unobserve(entry.target);
             }
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.05 });
     document.querySelectorAll('.gear-items, .software-grid').forEach(el => gearObserver.observe(el));
 
-    // --- HEADER SHRINK ---
+    // ── HEADER SHRINK ON SCROLL ──────────────────────────────────────
     const header = document.querySelector('header');
     if (header) {
         window.addEventListener('scroll', () => {
             header.classList.toggle('scrolled', window.scrollY > 80);
         });
     }
-
-    // --- SECRET QUIZ: click logo 5x quickly ---
-    const logoImg = document.querySelector('.logo-center img');
-    let logoClicks = 0, logoTimer;
-
-    if (logoImg) {
-        logoImg.style.cursor = 'pointer';
-        logoImg.addEventListener('click', (e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            logoClicks++;
-            clearTimeout(logoTimer);
-            // Visual feedback: small pulse
-            logoImg.style.transform = 'scale(1.15)';
-            setTimeout(() => logoImg.style.transform = '', 150);
-            logoTimer = setTimeout(() => { logoClicks = 0; }, 2500);
-            if (logoClicks >= 5) {
-                logoClicks = 0;
-                openCinemaQuiz();
-            }
-        });
-    }
-
-    // Also keep the link working normally when not triggering quiz
-    const logoLink = document.querySelector('.logo-center a');
-    if (logoLink) {
-        logoLink.addEventListener('click', (e) => {
-            // Only navigate if not on the quiz trigger path
-            // (the img click handler already prevents default)
-        });
-    }
 });
 
-// --- MODAL KEYBOARD & TOUCH ---
+// ── MODAL KEYBOARD & TOUCH ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('modal');
     document.addEventListener('keydown', (e) => {
@@ -148,9 +124,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// =============================================
-// CINEMA QUIZ
-// =============================================
+// =====================================================================
+// CINEMA QUIZ — two modes:
+//   openCinemaQuiz()       → classic easter egg (no CV reward wording)
+//   openCinemaQuizForCV()  → triggered from CV button with "mérite" intro
+// =====================================================================
 const cinemaQuizData = [
     {
         question: "Quel film a popularisé le 'jump cut' grâce à sa révolution du montage ?",
@@ -160,7 +138,7 @@ const cinemaQuizData = [
     },
     {
         question: "La règle des 180° au cinéma sert à...",
-        answers: ["Conserver la cohérence spatiale", "Limiter les mouvements de caméra", "Définir la focale idéale", "Cadrer le sujet au centre"],
+        answers: ["Conserver la cohérence spatiale entre les personnages", "Limiter les mouvements de caméra", "Définir la focale idéale", "Cadrer le sujet au centre"],
         correct: 0,
         fact: "La règle des 180° garantit que les personnages restent du même côté de l'écran, évitant la désorientation spatiale du spectateur."
     },
@@ -168,25 +146,25 @@ const cinemaQuizData = [
         question: "Quel format d'aspect est typique du cinéma 'scope' anamorphique ?",
         answers: ["2.39:1", "16:9", "4:3", "1.85:1"],
         correct: 0,
-        fact: "Le format 2.39:1 (CinemaScope) donne cet aspect ultra-panoramique reconnaissable dans les grands films hollywoodiens."
+        fact: "Le format 2.39:1 (CinemaScope) donne cet aspect ultra-panoramique si reconnaissable dans les grands films hollywoodiens."
     },
     {
         question: "Quelle ouverture (f-stop) donne la plus faible profondeur de champ ?",
         answers: ["f/1.4", "f/8", "f/11", "f/22"],
         correct: 0,
-        fact: "Plus le f-stop est bas, plus la profondeur de champ est réduite — idéal pour le bokeh et isoler un sujet du fond."
+        fact: "Plus le f-stop est bas (grande ouverture), plus la profondeur de champ est réduite — idéal pour le bokeh et isoler un sujet."
     },
     {
         question: "Le 'LUT' en post-production signifie...",
         answers: ["Look-Up Table", "Light Unification Tool", "Layered Under Tone", "Luminance Unit Track"],
         correct: 0,
-        fact: "Un LUT (Look-Up Table) transforme mathématiquement les couleurs d'une image — indispensable pour l'étalonnage cinématique."
+        fact: "Un LUT (Look-Up Table) transforme mathématiquement les couleurs d'une image — outil central de l'étalonnage cinématique."
     },
     {
-        question: "Dans Premiere Pro, quel raccourci coupe un clip à la position de la tête de lecture ?",
+        question: "Dans Premiere Pro, quel raccourci coupe un clip à la tête de lecture ?",
         answers: ["Ctrl+K / Cmd+K", "C puis Entrée", "X", "Alt+Suppr"],
         correct: 0,
-        fact: "Ctrl+K (PC) ou Cmd+K (Mac) est le raccourci 'Add Edit' de Premiere Pro, essentiel pour un montage rapide."
+        fact: "Ctrl+K (PC) ou Cmd+K (Mac) est le raccourci 'Add Edit' de Premiere Pro, essentiel pour un montage rapide et fluide."
     },
     {
         question: "Le codec H.264 est privilégié pour la diffusion car...",
@@ -203,23 +181,42 @@ const cinemaQuizData = [
 ];
 
 let quizOverlay = null;
-let quizState = { current: 0, score: 0, answered: false };
+let quizState = { current: 0, score: 0, answered: false, cvMode: false };
+
+function openCinemaQuizForCV() {
+    _openQuiz(true);
+}
 
 function openCinemaQuiz() {
+    _openQuiz(false);
+}
+
+function _openQuiz(cvMode) {
     if (quizOverlay) return;
-    quizState = { current: 0, score: 0, answered: false };
+    quizState = { current: 0, score: 0, answered: false, cvMode };
+
     quizOverlay = document.createElement('div');
     quizOverlay.id = 'cinema-quiz-overlay';
+
+    const intro = cvMode
+        ? `<p>Mon CV ne se mérite pas… il se gagne ! 🎬<br>Prouve que tu connais l'audiovisuel en répondant à <strong>8 questions</strong>.</p>`
+        : `<p>Tu as trouvé l'easter egg ! 8 questions sur le cinéma & l'audiovisuel.</p>`;
+
+    const titleTag = cvMode
+        ? `MON CV ? IL FAUT LE MÉRITER !`
+        : `QUIZ CINÉMA <span class="quiz-secret-tag">SECRET</span>`;
+
     quizOverlay.innerHTML = `
         <div class="quiz-container">
             <button class="quiz-close" onclick="closeCinemaQuiz()"><i class="fas fa-times"></i></button>
             <div class="quiz-header">
-                <div class="quiz-icon">🎬</div>
-                <h2>QUIZ CINÉMA <span class="quiz-secret-tag">SECRET</span></h2>
-                <p>Tu as découvert l'easter egg ! 8 questions sur le cinéma & l'audiovisuel.</p>
+                <div class="quiz-icon">${cvMode ? '🏆' : '🎬'}</div>
+                <h2>${titleTag}</h2>
+                ${intro}
             </div>
             <div id="quiz-body"></div>
         </div>`;
+
     document.body.appendChild(quizOverlay);
     setTimeout(() => quizOverlay.classList.add('visible'), 10);
     renderQuizQuestion();
@@ -270,6 +267,8 @@ function nextQuizQuestion() {
 function renderQuizResults() {
     const score = quizState.score, total = cinemaQuizData.length;
     const pct = Math.round((score / total) * 100);
+    const cvMode = quizState.cvMode;
+
     const grades = [
         { min: 87, grade: "Expert Cinéphile", emoji: "🏆", msg: "Impressionnant ! Tu maîtrises l'audiovisuel comme un pro." },
         { min: 62, grade: "Passionné du 7ème Art", emoji: "🎥", msg: "Belle connaissance ! Tu as l'œil du réalisateur." },
@@ -277,6 +276,21 @@ function renderQuizResults() {
         { min: 0,  grade: "Spectateur Curieux", emoji: "🍿", msg: "Les bases se construisent plan par plan !" }
     ];
     const { grade, emoji, msg } = grades.find(g => pct >= g.min);
+
+    const unlocked = pct >= 62;
+    const rewardBlock = unlocked
+        ? `<div class="quiz-reward">
+               <div class="quiz-reward-title">🎁 CV DÉBLOQUÉ !</div>
+               <p>${cvMode ? 'Tu l\'as mérité — voici mon CV :' : 'Récompense débloquée !'}</p>
+               <a href="assets/CV_BOULAIRE_DYLAN_ALTERNANCE (2).pdf" target="_blank" class="quiz-cv-btn">
+                   <i class="fas fa-file-pdf"></i> TÉLÉCHARGER MON CV
+               </a>
+           </div>`
+        : `<div class="quiz-reward quiz-reward--locked">
+               <div class="quiz-reward-title">🔒 CV VERROUILLÉ</div>
+               <p>${cvMode ? 'Score 5/8 minimum pour débloquer mon CV. Rejoue !' : 'Score 5/8 ou plus pour débloquer la récompense…'}</p>
+           </div>`;
+
     document.getElementById('quiz-body').innerHTML = `
         <div class="quiz-results">
             <div class="quiz-result-emoji">${emoji}</div>
@@ -284,20 +298,13 @@ function renderQuizResults() {
             <div class="quiz-result-grade">${grade}</div>
             <p class="quiz-result-msg">${msg}</p>
             <div class="quiz-result-pct">${pct}% de réussite</div>
-            ${pct >= 62 ? `
-            <div class="quiz-reward">
-                <div class="quiz-reward-title">🎁 RÉCOMPENSE DÉBLOQUÉE</div>
-                <p>Félicitations ! Voici mon CV :</p>
-                <a href="assets/CV_BOULAIRE_DYLAN_ALTERNANCE (2).pdf" target="_blank" class="quiz-cv-btn">
-                    <i class="fas fa-file-pdf"></i> VOIR MON CV
-                </a>
-            </div>` : `<p class="quiz-retry-hint">Score 5/8 ou plus pour débloquer la récompense…</p>`}
-            <button class="quiz-restart-btn" onclick="restartQuiz()">REJOUER</button>
+            ${rewardBlock}
+            <button class="quiz-restart-btn" onclick="restartQuiz()">↩ REJOUER</button>
         </div>`;
 }
 
 function restartQuiz() {
-    quizState = { current: 0, score: 0, answered: false };
+    quizState = { ...quizState, current: 0, score: 0, answered: false };
     renderQuizQuestion();
 }
 
