@@ -18,6 +18,21 @@
         <div class="video-overlay"></div>
     </div>
 
+    <!-- MOBILE NAV OVERLAY -->
+    <div class="nav-overlay">
+        <div class="nav-overlay-links">
+            <span onclick="scrollToSection('work')">RÉALISATIONS</span>
+            <a href="contact.html">CONTACT</a>
+            <a href="galerie.html">GALERIE</a>
+            <span onclick="scrollToSection('gear')" style="font-size:1.4rem; opacity:0.4; letter-spacing:2px; margin-top:10px;">ÉQUIPEMENTS</span>
+        </div>
+        <div class="nav-overlay-actions">
+            <button class="theme-toggle" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
+            <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
+            <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
+        </div>
+    </div>
+
     <header>
         <nav class="nav-left">
             <ul>
@@ -27,6 +42,7 @@
             </ul>
         </nav>
         <div class="logo-center">
+            <!-- Click logo 5 times quickly to unlock the secret quiz! -->
             <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
         </div>
         <div class="nav-right">
@@ -34,6 +50,10 @@
             <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
             <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
+        <!-- Burger (mobile) -->
+        <button class="burger-menu" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
     </header>
 
     <section id="home" class="hero-content">
@@ -43,8 +63,11 @@
     </section>
 
     <section id="work" class="projects-section">
-        <div class="section-header">
-            <div class="section-title"><h2>RÉALISATIONS</h2><p>Une sélection de mes travaux récents.</p></div>
+        <div class="section-header reveal-on-scroll">
+            <div class="section-title">
+                <h2>RÉALISATIONS</h2>
+                <p>Une sélection de mes travaux récents.</p>
+            </div>
             <div class="filters">
                 <button class="filter-btn active" onclick="filterProjects('all')">Tout</button>
                 <button class="filter-btn" onclick="filterProjects('video')">Vidéo</button>
@@ -55,8 +78,127 @@
         <div class="projects-grid" id="grid"></div>
     </section>
 
+    <!-- =============================================
+         EQUIPMENT & SOFTWARE SECTION
+         ============================================= -->
+    <section id="gear" class="gear-section">
+        <div class="section-header reveal-on-scroll" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
+            <div class="section-title">
+                <h2>ÉQUIPEMENTS & OUTILS</h2>
+                <p>Le matériel et les logiciels avec lesquels je travaille.</p>
+            </div>
+        </div>
+
+        <div class="gear-grid">
+            <!-- MATÉRIEL PHOTO/VIDÉO -->
+            <div class="reveal-on-scroll">
+                <div class="gear-column-title">
+                    <i class="fas fa-camera" style="color:var(--btn-color)"></i>
+                    MATÉRIEL
+                </div>
+                <div class="gear-items">
+                    <div class="gear-item">
+                        <div class="gear-icon">📷</div>
+                        <div class="gear-info">
+                            <span class="gear-name">Sony A6700</span>
+                            <span class="gear-detail">Boîtier APS-C hybride — Photo & Vidéo 4K 120fps</span>
+                        </div>
+                    </div>
+                    <div class="gear-item">
+                        <div class="gear-icon">🔭</div>
+                        <div class="gear-info">
+                            <span class="gear-name">Sony 70-350mm f/4.5-6.3</span>
+                            <span class="gear-detail">Téléobjectif — Animalier & Sport</span>
+                        </div>
+                    </div>
+                    <div class="gear-item">
+                        <div class="gear-icon">🎯</div>
+                        <div class="gear-info">
+                            <span class="gear-name">Sigma 30mm f/1.4</span>
+                            <span class="gear-detail">Focale fixe lumineuse — Portraits & Low Light</span>
+                        </div>
+                    </div>
+                    <div class="gear-item">
+                        <div class="gear-icon">✨</div>
+                        <div class="gear-info">
+                            <span class="gear-name">Black Mist Filter 1/4</span>
+                            <span class="gear-detail">Filtre diffuseur — Effet cinématique doux</span>
+                        </div>
+                    </div>
+                    <div class="gear-item">
+                        <div class="gear-icon">🌫️</div>
+                        <div class="gear-info">
+                            <span class="gear-name">Black Mist Filter 1/8</span>
+                            <span class="gear-detail">Filtre diffuseur léger — Touche subtile de grain</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- LOGICIELS -->
+            <div class="reveal-on-scroll">
+                <div class="gear-column-title">
+                    <i class="fas fa-layer-group" style="color:var(--btn-color)"></i>
+                    LOGICIELS
+                </div>
+                <div class="software-grid">
+                    <div class="software-item">
+                        <i class="devicon-premierepro-plain colored"></i>
+                        <span>Premiere</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="devicon-aftereffects-plain colored"></i>
+                        <span>After Effects</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="devicon-photoshop-plain colored"></i>
+                        <span>Photoshop</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="devicon-illustrator-plain colored"></i>
+                        <span>Illustrator</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="devicon-indesign-plain colored"></i>
+                        <span>InDesign</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="devicon-canva-original colored"></i>
+                        <span>Canva</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="devicon-blender-original colored"></i>
+                        <span>Blender</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="devicon-figma-plain colored"></i>
+                        <span>Figma</span>
+                    </div>
+                    <div class="software-item">
+                        <!-- DaVinci no devicon, use custom -->
+                        <i class="fas fa-film" style="color:#FF6B35"></i>
+                        <span>DaVinci</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="fas fa-sun" style="color:#31A8FF"></i>
+                        <span>Lightroom</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="fab fa-google" style="color:#4285F4"></i>
+                        <span>G Suite</span>
+                    </div>
+                    <div class="software-item">
+                        <i class="fab fa-microsoft" style="color:#00A4EF"></i>
+                        <span>Office</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
     <footer><p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p></footer>
 
+    <!-- PROJECT MODAL -->
     <div class="modal-overlay" id="modal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
@@ -64,7 +206,6 @@
             <div class="modal-viewer">
                 <button class="carousel-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></button>
                 <button class="carousel-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></button>
-                
                 <div id="main-viewer" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
             </div>
 
@@ -107,11 +248,8 @@
 
     <script src="script.js"></script>
     <script>
-        // --- 1. CONFIGURATION PROJETS ---
-        // Liste complète basée sur ta demande
+        // --- PROJECTS DATA ---
         const projects = [
-            
-            // --- 1. KERNAE (Le plus gros) ---
             {
                 id: 1, title: "Kernae", category: "comm", role: "Stagiaire Communication",
                 client: "Fonds Kernae", year: "2023",
@@ -150,8 +288,6 @@
                     ]
                 }
             },
-
-            // --- 2. SCOBAT (Stage 2) ---
             {
                 id: 2, title: "Scobat", category: "comm", role: "Stagiaire Communication",
                 client: "Scobat", year: "2024",
@@ -163,7 +299,7 @@
                         { type: "youtube", src: "https://www.youtube.com/watch?v=uID1Cq0S92g", title: "Vidéo Scobat", info: "Vidéo courte pour site web" }
                     ],
                     "Photos Scobat": [
-                        { type: "pdf", src: "assets/miniatures/SCOBAT/Photos%20Scobat.pdf", title: "Photos Scobat", info: "Photos prise durant le sttage" }
+                        { type: "pdf", src: "assets/miniatures/SCOBAT/Photos%20Scobat.pdf", title: "Photos Scobat", info: "Photos prise durant le stage" }
                     ],
                     "Calendrier Tryptique Scobat": [
                         { type: "pdf", src: "assets/miniatures/SCOBAT/Calendrier%20Scobat.pdf", title: "Calendrier Scobat", info: "Calendrier" },
@@ -177,7 +313,7 @@
                         { type: "pdf", src: "assets/miniatures/SCOBAT/CHARTE_GRAPHIQUE_compressed.pdf", title: "Charte Graphique", info: "Charte graphique inventée pour moderniser SCOBAT" }
                     ],
                     "Mémoire Technique": [
-                        { type: "pdf", src: "MEMOIRE%20TECHNIQUE%20PAYSAGE_compressed.pdf", title: "Mémoire Technique", info: "Support ce voulant intéractif, et modifiable par tous" }
+                        { type: "pdf", src: "MEMOIRE%20TECHNIQUE%20PAYSAGE_compressed.pdf", title: "Mémoire Technique", info: "Support interactif et modifiable" }
                     ],
                     "Autres créations graphiques": [
                         { type: "pdf", src: "assets/miniatures/SCOBAT/LIVRET_EPARGNE_SALARIALE.pdf", title: "Livret D'épargne Salariale", info: "Interne" },
@@ -189,8 +325,6 @@
                     ]
                 }
             },
-
-            // --- 3. CHECK-ID (Onfido) ---
             {
                 id: 3, title: "Check-ID (Onfido)", category: "video", role: "Réalisateur",
                 client: "Projet BUT MMI", year: "2023",
@@ -203,8 +337,6 @@
                     ]
                 }
             },
-
-            // --- 4. LA PHOTONIQUE ---
             {
                 id: 4, title: "La Photonique", category: "video", role: "Cadreur / Monteur",
                 client: "IUT Lannion", year: "2023",
@@ -216,14 +348,12 @@
                         { type: "youtube", src: "https://www.youtube.com/watch?v=SpJd5RpsWEM", title: "Reportage Complet", info: "14m" }
                     ],
                     "Captures": [
-                        { type: "image", src: "assets/miniatures/projet2.png", title: "Laboratoire", info: "Screen" },
-                        { type: "image", src: "LIEN_SCREEN_2.jpg", title: "Interview", info: "Screen" }
+                        { type: "image", src: "assets/miniatures/projet2.png", title: "Laboratoire", info: "Screen" }
                     ]
                 }
             },
-// --- 4. Vidéos cas pratique ---
             {
-                id: 4, title: "Cas pratiques", category: "video", role: "Cadreur / Monteur",
+                id: 5, title: "Cas pratiques", category: "video", role: "Cadreur / Monteur",
                 client: "Recruteurs", year: "2025",
                 thumb: "assets/miniatures/minia videos.png",
                 desc: "Cas pratiques réalisés avec des contraintes de temps pour des entreprises.",
@@ -237,10 +367,8 @@
                     ]
                 }
             },
-
-            // --- 5. CESSON VOLLEY ---
             {
-                id: 5, title: "Cesson Volley Club", category: "comm", role: "Graphiste",
+                id: 6, title: "Cesson Volley Club", category: "comm", role: "Graphiste",
                 client: "Projet Fictif", year: "2024",
                 thumb: "assets/miniatures/projet1.png",
                 desc: "Création d'identité visuelle et animation fictive pour le club de volley Cesson Saint-Brieuc",
@@ -260,10 +388,8 @@
                     ]
                 }
             },
-
-            // --- 6. MOTION DESIGN ---
             {
-                id: 6, title: "Motion Design", category: "graphisme", role: "Motion Designer",
+                id: 7, title: "Motion Design", category: "graphisme", role: "Motion Designer",
                 client: "Personnel", year: "2024",
                 thumb: "assets/miniatures/projet4.png",
                 desc: "Explorations graphiques.",
@@ -274,10 +400,8 @@
                     ]
                 }
             },
-
-            // --- 7. BLENDER 3D ---
             {
-                id: 7, title: "Animation 3D", category: "graphisme", role: "3D Artist",
+                id: 8, title: "Animation 3D", category: "graphisme", role: "3D Artist",
                 client: "Personnel", year: "2023",
                 thumb: "assets/miniatures/MINIA%20BLENDER.png",
                 desc: "Animation réalisée sous Blender.",
@@ -288,10 +412,8 @@
                     ]
                 }
             },
-
-            // --- 8. POSTERS & INFOGRAPHIES ---
             {
-                id: 8, title: "Posters & Infos", category: "graphisme", role: "Graphiste",
+                id: 9, title: "Posters & Infos", category: "graphisme", role: "Graphiste",
                 client: "Personnel", year: "2023",
                 thumb: "assets/miniatures/projet3.jpg",
                 desc: "Série de créations graphiques.",
@@ -299,18 +421,16 @@
                 content: {
                     "Affiches": [
                         { type: "image", src: "assets/galerie/galerie1.png", title: "Poster 1", info: "Art" },
-                        { type: "image", src: "assets/galerie/galerie2.png", title: "Poster 1", info: "Art" },
-                        { type: "image", src: "assets/galerie/galerie3.png", title: "Poster 1", info: "Art" },
-                        { type: "image", src: "assets/galerie/galerie5.png", title: "Poster 1", info: "Art" },
-                        { type: "image", src: "assets/galerie/galerie6.png", title: "Poster 1", info: "Art" },
-                        { type: "image", src: "assets/galerie/galerie7.png", title: "Poster 1", info: "Art" },
+                        { type: "image", src: "assets/galerie/galerie2.png", title: "Poster 2", info: "Art" },
+                        { type: "image", src: "assets/galerie/galerie3.png", title: "Poster 3", info: "Art" },
+                        { type: "image", src: "assets/galerie/galerie5.png", title: "Poster 4", info: "Art" },
+                        { type: "image", src: "assets/galerie/galerie6.png", title: "Poster 5", info: "Art" },
+                        { type: "image", src: "assets/galerie/galerie7.png", title: "Poster 6", info: "Art" }
                     ]
                 }
             },
-
-            // --- 9. PHOTOS ---
             {
-                id: 9, title: "Photographie", category: "graphisme", role: "Photographe",
+                id: 10, title: "Photographie", category: "graphisme", role: "Photographe",
                 client: "Personnel", year: "2023",
                 thumb: "assets/miniatures/projet5.jpg",
                 desc: "Clichés personnels.",
@@ -324,53 +444,64 @@
                         { type: "image", src: "assets/miniatures/photos/PHOTO_5.jpg", title: "Photo 5", info: "Sony A6700" },
                         { type: "image", src: "assets/miniatures/photos/PHOTO_6.jpg", title: "Photo 6", info: "Sony A6700" },
                         { type: "image", src: "assets/miniatures/photos/PHOTO_7.jpg", title: "Photo 7", info: "Sony A6700" },
-                        { type: "image", src: "assets/miniatures/photos/PHOTO_8.jpg", title: "Photo 8", info: "Sony A6700" },
+                        { type: "image", src: "assets/miniatures/photos/PHOTO_8.jpg", title: "Photo 8", info: "Sony A6700" }
                     ]
                 }
             },
-
-            // --- 10. Vidéo Linkedin ---
             {
-                id: 10, title: "Vidéo recherche alternance LinkedIn", category: "video", role: "Monteur",
+                id: 11, title: "Vidéo LinkedIn Alternance", category: "video", role: "Monteur",
                 client: "Personnel", year: "2025",
                 thumb: "assets/miniatures/alternance.png",
                 desc: "Vidéo réalisée sur After Effects.",
                 toolsIcons: ['devicon-aftereffects-plain'],
                 content: {
                     "Le rendu": [
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=bwmZr3AhyA0", title: "Vidéo recherche alternance", info: "Vidéo pour recherche d'alternance sur LinkedIn" }
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=bwmZr3AhyA0", title: "Vidéo recherche alternance", info: "LinkedIn" }
                     ]
                 }
             }
         ];
 
-        // --- 2. LOGIQUE NAVIGATION HYBRIDE (TREE + CAROUSEL) ---
+        // --- GRID LOGIC ---
         const grid = document.getElementById('grid');
         const modal = document.getElementById('modal');
         const viewer = document.getElementById('main-viewer');
         const fileTree = document.getElementById('file-tree');
-        
+
         let allFiles = [];
         let currentFileIndex = 0;
 
         const categoryNames = { "comm": "COMMUNICATION", "video": "VIDÉO", "graphisme": "GRAPHISME", "all": "TOUT" };
-        
-        const getYoutubeID = (url) => { 
-            const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/; 
-            const m = url.match(reg); 
+
+        const getYoutubeID = (url) => {
+            const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/;
+            const m = url.match(reg);
             return (m && m[1]) || null;
         };
 
         function renderGrid(filter) {
             grid.innerHTML = '';
-            projects.forEach(p => {
-                if (filter === 'all' || p.category === filter) {
-                    const dCat = categoryNames[p.category] || p.category.toUpperCase();
-                    const card = document.createElement('div'); card.className = 'project-card visible';
-                    card.innerHTML = `<img src="${p.thumb}"><div class="card-overlay"><span class="card-cat">${dCat}</span><div class="card-title">${p.title}</div></div>`;
-                    card.onclick = () => openModal(p); grid.appendChild(card);
-                }
+            const filtered = projects.filter(p => filter === 'all' || p.category === filter);
+            filtered.forEach((p, i) => {
+                const dCat = categoryNames[p.category] || p.category.toUpperCase();
+                const card = document.createElement('div');
+                card.className = 'project-card';
+                card.style.transitionDelay = `${i * 60}ms`;
+                card.innerHTML = `
+                    <img src="${p.thumb}" alt="${p.title}" loading="lazy">
+                    <div class="card-overlay">
+                        <span class="card-cat">${dCat}</span>
+                        <div class="card-title">${p.title}</div>
+                    </div>`;
+                card.onclick = () => openModal(p);
+                grid.appendChild(card);
             });
+            // Trigger staggered reveal
+            setTimeout(() => {
+                document.querySelectorAll('.project-card').forEach((card, i) => {
+                    setTimeout(() => card.classList.add('card-revealed'), i * 60);
+                });
+            }, 50);
         }
 
         function openModal(p) {
@@ -380,24 +511,25 @@
             document.getElementById('m-client').innerText = p.client;
             document.getElementById('m-year').innerText = p.year;
             document.getElementById('m-desc').innerText = p.desc;
-            
-            const tCont = document.getElementById('m-tools'); tCont.innerHTML = '';
-            if(p.toolsIcons) p.toolsIcons.forEach(c => tCont.innerHTML += `<i class="${c} tool-icon"></i>`);
-            else tCont.innerHTML = "-";
+
+            const tCont = document.getElementById('m-tools');
+            tCont.innerHTML = '';
+            if (p.toolsIcons) p.toolsIcons.forEach(c => tCont.innerHTML += `<i class="${c} tool-icon"></i>`);
+            else tCont.innerHTML = '-';
 
             allFiles = [];
             Object.keys(p.content).forEach(folder => {
                 p.content[folder].forEach((file, index) => {
-                    allFiles.push({ ...file, folder: folder, originalIndex: index });
+                    allFiles.push({ ...file, folder, originalIndex: index });
                 });
             });
 
             renderFileExplorer(p.content);
-
             currentFileIndex = 0;
-            if(allFiles.length > 0) loadMediaFromIndex(0);
+            if (allFiles.length > 0) loadMediaFromIndex(0);
 
-            modal.classList.add('open'); document.body.style.overflow = 'hidden';
+            modal.classList.add('open');
+            document.body.style.overflow = 'hidden';
         }
 
         function renderFileExplorer(content) {
@@ -405,32 +537,29 @@
             Object.keys(content).forEach((folderName, index) => {
                 const files = content[folderName];
                 const isOpen = index === 0 ? 'open' : '';
-                let fileHTML = '';
-                files.forEach((f, i) => {
-                    fileHTML += `
-                        <div class="file-item" id="file-${folderName}-${i}" onclick="handleTreeClick('${folderName}', ${i})">
-                            <i class="fas ${getFileIcon(f.type)} file-icon"></i>
-                            <div class="file-meta"><span class="file-name">${f.title}</span><span class="file-desc">${f.info || ''}</span></div>
+                let fileHTML = files.map((f, i) => `
+                    <div class="file-item" id="file-${folderName.replace(/\s/g,'-')}-${i}" onclick="handleTreeClick('${folderName}', ${i})">
+                        <i class="fas ${getFileIcon(f.type)} file-icon"></i>
+                        <div class="file-meta">
+                            <span class="file-name">${f.title}</span>
+                            <span class="file-desc">${f.info || ''}</span>
                         </div>
-                    `;
-                });
+                    </div>`).join('');
+
                 fileTree.innerHTML += `
                     <div class="folder-group ${isOpen}">
                         <div class="folder-header" onclick="toggleFolder(this)">
-                            <div><i class="fas fa-folder"></i> ${folderName}</div><i class="fas fa-chevron-down folder-arrow"></i>
+                            <div><i class="fas fa-folder"></i> ${folderName}</div>
+                            <i class="fas fa-chevron-down folder-arrow"></i>
                         </div>
                         <div class="folder-content">${fileHTML}</div>
-                    </div>
-                `;
+                    </div>`;
             });
         }
 
         function handleTreeClick(folder, index) {
             const flatIndex = allFiles.findIndex(f => f.folder === folder && f.originalIndex === index);
-            if (flatIndex !== -1) {
-                currentFileIndex = flatIndex;
-                loadMediaFromIndex(currentFileIndex);
-            }
+            if (flatIndex !== -1) { currentFileIndex = flatIndex; loadMediaFromIndex(currentFileIndex); }
         }
 
         function moveSlide(dir) {
@@ -441,46 +570,62 @@
         }
 
         function loadMedia(file) {
-            const viewer = document.getElementById('main-viewer');
-            viewer.innerHTML = '';
+            const v = document.getElementById('main-viewer');
+            v.innerHTML = '';
             if (file.type === 'video') {
-                viewer.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
+                v.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
             } else if (file.type === 'youtube') {
                 const id = getYoutubeID(file.src);
-                if(id) viewer.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen class="fade-in"></iframe>`;
-                else viewer.innerHTML = `<div style="color:white; text-align:center;">Lien vidéo invalide ou manquant</div>`;
+                if (id) v.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen class="fade-in"></iframe>`;
+                else v.innerHTML = `<div style="color:white; text-align:center;">Lien invalide</div>`;
             } else if (file.type === 'pdf') {
-                viewer.innerHTML = `<iframe src="${file.src}" class="fade-in" style="width:100%; height:100%; border:none; background:white;"></iframe>`;
+                v.innerHTML = `<iframe src="${file.src}" class="fade-in" style="width:100%; height:100%; border:none; background:white;"></iframe>`;
             } else {
-                viewer.innerHTML = `<img src="${file.src}" class="fade-in">`;
+                v.innerHTML = `<img src="${file.src}" class="fade-in">`;
             }
         }
 
         function loadMediaFromIndex(index) {
             if (index < 0 || index >= allFiles.length) return;
-            
             const file = allFiles[index];
-            
             loadMedia(file);
-            
             document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
-            const activeItem = document.getElementById(`file-${file.folder}-${file.originalIndex}`);
+            const key = `file-${file.folder.replace(/\s/g,'-')}-${file.originalIndex}`;
+            const activeItem = document.getElementById(key);
             if (activeItem) {
                 activeItem.classList.add('active');
                 const folderContent = activeItem.closest('.folder-content');
-                if(folderContent && !folderContent.parentElement.classList.contains('open')) {
+                if (folderContent && !folderContent.parentElement.classList.contains('open')) {
                     folderContent.parentElement.classList.add('open');
                 }
                 activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
 
-        function getFileIcon(type) { if(type === 'video' || type === 'youtube') return 'fa-play-circle'; if(type === 'image') return 'fa-image'; return 'fa-file'; }
+        function getFileIcon(type) {
+            if (type === 'video' || type === 'youtube') return 'fa-play-circle';
+            if (type === 'image') return 'fa-image';
+            return 'fa-file';
+        }
         function toggleFolder(header) { header.parentElement.classList.toggle('open'); }
-        function toggleAccordion(btn) { const content = btn.nextElementSibling; btn.classList.toggle('active'); if (content.style.maxHeight) { content.style.maxHeight = null; } else { content.style.maxHeight = content.scrollHeight + 'px'; } }
-        function closeModal() { modal.classList.remove('open'); document.body.style.overflow = 'auto'; document.getElementById('main-viewer').innerHTML = ''; }
-        function filterProjects(cat) { document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active')); event.target.classList.add('active'); renderGrid(cat); }
-        function scrollToSection(id) { document.getElementById(id).scrollIntoView({ behavior: 'smooth' }); }
+        function toggleAccordion(btn) {
+            const content = btn.nextElementSibling;
+            btn.classList.toggle('active');
+            content.style.maxHeight = content.style.maxHeight ? null : content.scrollHeight + 'px';
+        }
+        function closeModal() {
+            modal.classList.remove('open');
+            document.body.style.overflow = 'auto';
+            document.getElementById('main-viewer').innerHTML = '';
+        }
+        function filterProjects(cat) {
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            event.target.classList.add('active');
+            renderGrid(cat);
+        }
+        function scrollToSection(id) {
+            document.getElementById(id).scrollIntoView({ behavior: 'smooth' });
+        }
 
         renderGrid('all');
     </script>
