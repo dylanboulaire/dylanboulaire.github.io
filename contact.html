@@ -3,7 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - Dylan Boulaire</title>
+    <title>Contact — Dylan Boulaire | Étudiant MMI, Monteur Vidéo & Graphiste</title>
+
+    <!-- SEO META -->
+    <meta name="description" content="Contactez Dylan Boulaire, étudiant BUT MMI à l'IUT de Lannion, passionné de montage vidéo, motion design et communication visuelle. Disponible pour alternance et projets freelance.">
+    <meta name="keywords" content="Dylan Boulaire, contact, portfolio, MMI, Lannion, montage vidéo, graphisme, communication, alternance, Bretagne">
+    <meta name="author" content="Dylan Boulaire">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://dylan-boulaire.fr/contact.html">
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://dylan-boulaire.fr/contact.html">
+    <meta property="og:title" content="Contact — Dylan Boulaire">
+    <meta property="og:description" content="Un projet ? Une collaboration ? Contactez Dylan Boulaire, créatif MMI à Lannion.">
+    <meta property="og:image" content="https://dylan-boulaire.fr/assets/og-image.jpg">
+
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
@@ -34,7 +49,7 @@
             </ul>
         </nav>
         <div class="logo-center">
-            <a href="index.html"><img src="assets/logo.png" alt="" class="logo-img"></a>
+            <a href="index.html"><img src="assets/logo.png" alt="Logo Dylan Boulaire" class="logo-img"></a>
         </div>
         <div class="nav-right">
             <button class="theme-toggle" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
@@ -52,10 +67,9 @@
             <p class="subtitle">Un projet ? Une collaboration ? N'hésitez pas.</p>
 
             <form action="https://formsubmit.co/boulairedylan@gmail.com" method="POST" class="contact-form">
-                <input type="hidden" name="_next" value="https://ton-site.com/merci.html">
+                <input type="hidden" name="_next" value="https://dylan-boulaire.fr/merci.html">
                 <input type="hidden" name="_subject" value="Nouveau message du Portfolio !">
                 <input type="hidden" name="_captcha" value="false">
-                
                 <div class="input-group">
                     <input type="text" name="name" placeholder="Votre Nom" required>
                 </div>
@@ -65,21 +79,24 @@
                 <div class="input-group">
                     <textarea name="message" rows="6" placeholder="Votre Message" required></textarea>
                 </div>
-
                 <button type="submit" class="submit-btn">ENVOYER LE MESSAGE</button>
             </form>
         </div>
     </div>
 
+    <!-- BIO + CV (quiz gate) -->
     <div class="bio-section reveal-on-scroll">
         <div class="bio-img-box" style="margin: 0 auto 30px auto; width: 200px;">
-            <img src="assets/CV_PHOTO-1_2026-06-02_19_09_24.160682.webp" alt="Dylan Boulaire">
+            <img src="assets/CV_PHOTO-1_2026-06-02_19_09_24.160682.webp" alt="Dylan Boulaire, étudiant MMI Lannion">
         </div>
         <div class="bio-text">
             <h2>À PROPOS DE MOI</h2>
             <p>Étudiant en BUT MMI à l'IUT de Lannion, je suis passionné par la communication visuelle, le montage vidéo et la création numérique. J'aime explorer différents univers graphiques pour donner vie à des projets impactants.</p>
             <br>
-            <a href="assets/CV_BOULAIRE_DYLAN_ALTERNANCE (2).pdf" target="_blank" class="submit-btn" style="text-decoration:none; font-size:0.8rem;">VOIR MON CV</a>
+            <!-- CV button triggers quiz instead of direct download -->
+            <button onclick="openCvQuiz()" class="submit-btn cv-gate-btn" style="font-size:0.8rem; cursor:pointer;">
+                <i class="fas fa-file-pdf" style="margin-right:8px;"></i>VOIR MON CV
+            </button>
         </div>
     </div>
 
@@ -87,6 +104,15 @@
         <p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p>
     </footer>
 
+    <!-- CV QUIZ OVERLAY -->
+    <div id="cv-quiz-overlay" style="display:none;"></div>
+
     <script src="script.js"></script>
+    <script>
+        // CV Quiz gate — opens quiz, CV unlocked at score >= 5/8
+        function openCvQuiz() {
+            openCinemaQuizForCV();
+        }
+    </script>
 </body>
 </html>
