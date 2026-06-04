@@ -21,10 +21,10 @@
     <!-- MOBILE NAV OVERLAY -->
     <div class="nav-overlay">
         <div class="nav-overlay-links">
-            <span onclick="scrollToSection('work')">RÉALISATIONS</span>
+            <span class="nav-link-btn" onclick="scrollToSection('work')">RÉALISATIONS</span>
             <a href="contact.html">CONTACT</a>
             <a href="galerie.html">GALERIE</a>
-            <span onclick="scrollToSection('gear')" style="font-size:1.4rem; opacity:0.4; letter-spacing:2px; margin-top:10px;">ÉQUIPEMENTS</span>
+            <span class="nav-link-btn" onclick="scrollToSection('gear')" style="font-size:1.4rem; opacity:0.35; letter-spacing:2px; margin-top:10px;">ÉQUIPEMENTS</span>
         </div>
         <div class="nav-overlay-actions">
             <button class="theme-toggle" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
@@ -42,7 +42,6 @@
             </ul>
         </nav>
         <div class="logo-center">
-            <!-- Click logo 5 times quickly to unlock the secret quiz! -->
             <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
         </div>
         <div class="nav-right">
@@ -50,7 +49,6 @@
             <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
             <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
-        <!-- Burger (mobile) -->
         <button class="burger-menu" aria-label="Menu">
             <span></span><span></span><span></span>
         </button>
@@ -78,9 +76,7 @@
         <div class="projects-grid" id="grid"></div>
     </section>
 
-    <!-- =============================================
-         EQUIPMENT & SOFTWARE SECTION
-         ============================================= -->
+    <!-- EQUIPMENT & SOFTWARE SECTION -->
     <section id="gear" class="gear-section">
         <div class="section-header reveal-on-scroll" style="margin-bottom:0; padding-bottom:0; border-bottom:none;">
             <div class="section-title">
@@ -90,7 +86,7 @@
         </div>
 
         <div class="gear-grid">
-            <!-- MATÉRIEL PHOTO/VIDÉO -->
+            <!-- MATÉRIEL -->
             <div class="reveal-on-scroll">
                 <div class="gear-column-title">
                     <i class="fas fa-camera" style="color:var(--btn-color)"></i>
@@ -98,35 +94,45 @@
                 </div>
                 <div class="gear-items">
                     <div class="gear-item">
-                        <div class="gear-icon">📷</div>
+                        <div class="gear-img-wrap">
+                            <img src="https://www.bhphotovideo.com/cdn-cgi/image/format=auto,fit=scale-down,width=80,quality=95/https://www.bhphotovideo.com/images/images500x500/sony_ilce_6700_b_alpha_a6700_mirrorless_camera_1694534628_1779260.jpg" alt="Sony A6700" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>📷</div>'">
+                        </div>
                         <div class="gear-info">
                             <span class="gear-name">Sony A6700</span>
                             <span class="gear-detail">Boîtier APS-C hybride — Photo & Vidéo 4K 120fps</span>
                         </div>
                     </div>
                     <div class="gear-item">
-                        <div class="gear-icon">🔭</div>
+                        <div class="gear-img-wrap">
+                            <img src="https://www.bhphotovideo.com/cdn-cgi/image/format=auto,fit=scale-down,width=80,quality=95/https://www.bhphotovideo.com/images/images500x500/sony_sel70350g_fe_70_350mm_f_4_5_6_3_g_1567699510_1508126.jpg" alt="Sony 70-350mm" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>🔭</div>'">
+                        </div>
                         <div class="gear-info">
                             <span class="gear-name">Sony 70-350mm f/4.5-6.3</span>
                             <span class="gear-detail">Téléobjectif — Animalier & Sport</span>
                         </div>
                     </div>
                     <div class="gear-item">
-                        <div class="gear-icon">🎯</div>
+                        <div class="gear-img-wrap">
+                            <img src="https://www.bhphotovideo.com/cdn-cgi/image/format=auto,fit=scale-down,width=80,quality=95/https://www.bhphotovideo.com/images/images500x500/sigma_302965_30mm_f_1_4_dc_dn_1490629200_1342547.jpg" alt="Sigma 30mm" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>🎯</div>'">
+                        </div>
                         <div class="gear-info">
                             <span class="gear-name">Sigma 30mm f/1.4</span>
                             <span class="gear-detail">Focale fixe lumineuse — Portraits & Low Light</span>
                         </div>
                     </div>
                     <div class="gear-item">
-                        <div class="gear-icon">✨</div>
+                        <div class="gear-img-wrap">
+                            <img src="https://www.bhphotovideo.com/cdn-cgi/image/format=auto,fit=scale-down,width=80,quality=95/https://www.bhphotovideo.com/images/images500x500/tiffen_49bpm14_49mm_black_pro_mist_1_4_1554393628_1492508.jpg" alt="Black Mist 1/4" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>✨</div>'">
+                        </div>
                         <div class="gear-info">
                             <span class="gear-name">Black Mist Filter 1/4</span>
                             <span class="gear-detail">Filtre diffuseur — Effet cinématique doux</span>
                         </div>
                     </div>
                     <div class="gear-item">
-                        <div class="gear-icon">🌫️</div>
+                        <div class="gear-img-wrap">
+                            <img src="https://www.bhphotovideo.com/cdn-cgi/image/format=auto,fit=scale-down,width=80,quality=95/https://www.bhphotovideo.com/images/images500x500/tiffen_49bpm18_49mm_black_pro_mist_1_8_1554393547_1492504.jpg" alt="Black Mist 1/8" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>🌫️</div>'">
+                        </div>
                         <div class="gear-info">
                             <span class="gear-name">Black Mist Filter 1/8</span>
                             <span class="gear-detail">Filtre diffuseur léger — Touche subtile de grain</span>
@@ -143,56 +149,59 @@
                 </div>
                 <div class="software-grid">
                     <div class="software-item">
-                        <i class="devicon-premierepro-plain colored"></i>
-                        <span>Premiere</span>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg" class="sw-logo" alt="Premiere Pro">
+                        <span>Premiere Pro</span>
                     </div>
                     <div class="software-item">
-                        <i class="devicon-aftereffects-plain colored"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/c/cb/Adobe_After_Effects_CC_icon.svg" class="sw-logo" alt="After Effects">
                         <span>After Effects</span>
                     </div>
                     <div class="software-item">
-                        <i class="devicon-photoshop-plain colored"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Photoshop_CC_icon.svg" class="sw-logo" alt="Photoshop">
                         <span>Photoshop</span>
                     </div>
                     <div class="software-item">
-                        <i class="devicon-illustrator-plain colored"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg" class="sw-logo" alt="Illustrator">
                         <span>Illustrator</span>
                     </div>
                     <div class="software-item">
-                        <i class="devicon-indesign-plain colored"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/48/Adobe_InDesign_CC_icon.svg" class="sw-logo" alt="InDesign">
                         <span>InDesign</span>
                     </div>
                     <div class="software-item">
-                        <i class="devicon-canva-original colored"></i>
-                        <span>Canva</span>
-                    </div>
-                    <div class="software-item">
-                        <i class="devicon-blender-original colored"></i>
-                        <span>Blender</span>
-                    </div>
-                    <div class="software-item">
-                        <i class="devicon-figma-plain colored"></i>
-                        <span>Figma</span>
-                    </div>
-                    <div class="software-item">
-                        <!-- DaVinci no devicon, use custom -->
-                        <i class="fas fa-film" style="color:#FF6B35"></i>
-                        <span>DaVinci</span>
-                    </div>
-                    <div class="software-item">
-                        <i class="fas fa-sun" style="color:#31A8FF"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/b/b9/Adobe_Lightroom_CC_logo.svg" class="sw-logo" alt="Lightroom">
                         <span>Lightroom</span>
                     </div>
                     <div class="software-item">
-                        <i class="fab fa-google" style="color:#4285F4"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0d/Canva_icon_2021.svg" class="sw-logo" alt="Canva">
+                        <span>Canva</span>
+                    </div>
+                    <div class="software-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/0c/Blender_logo_no_text.svg" class="sw-logo" alt="Blender">
+                        <span>Blender</span>
+                    </div>
+                    <div class="software-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg" class="sw-logo" alt="Figma">
+                        <span>Figma</span>
+                    </div>
+                    <div class="software-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/9/90/DaVinci_Resolve_17_logo.svg" class="sw-logo" alt="DaVinci">
+                        <span>DaVinci</span>
+                    </div>
+                    <div class="software-item">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Google_Workspace_logo_%282020%29.svg/320px-Google_Workspace_logo_%282020%29.svg.png" class="sw-logo" alt="Google Suite">
                         <span>G Suite</span>
                     </div>
                     <div class="software-item">
-                        <i class="fab fa-microsoft" style="color:#00A4EF"></i>
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/2013_Microsoft_Office_Logo.svg/320px-2013_Microsoft_Office_Logo.svg.png" class="sw-logo" alt="Office">
                         <span>Office</span>
                     </div>
                 </div>
             </div>
+        </div>
+
+        <div class="secret-hint">
+            <span>🎬</span> Un easter egg est caché sur cette page…
         </div>
     </section>
 
@@ -202,13 +211,11 @@
     <div class="modal-overlay" id="modal">
         <div class="modal-container">
             <button class="modal-close" onclick="closeModal()"><i class="fas fa-times"></i></button>
-            
             <div class="modal-viewer">
                 <button class="carousel-btn prev-btn" onclick="moveSlide(-1)"><i class="fas fa-chevron-left"></i></button>
                 <button class="carousel-btn next-btn" onclick="moveSlide(1)"><i class="fas fa-chevron-right"></i></button>
                 <div id="main-viewer" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
             </div>
-
             <div class="modal-sidebar">
                 <div class="sidebar-header">
                     <div class="cat-year-row">
@@ -217,7 +224,6 @@
                     </div>
                     <h2 class="modal-title" id="m-title">Titre</h2>
                     <p class="modal-role" id="m-role">Rôle</p>
-
                     <div class="accordion-container">
                         <div class="accordion-item">
                             <button class="accordion-btn" onclick="toggleAccordion(this)">
@@ -225,8 +231,8 @@
                             </button>
                             <div class="accordion-content">
                                 <div class="inner-content">
-                                    <p id="m-desc">Description...</p>
-                                    <p style="margin-top:10px; font-weight:700;">CLIENT : <span id="m-client" style="font-weight:400;">Nom</span></p>
+                                    <p id="m-desc"></p>
+                                    <p style="margin-top:10px; font-weight:700;">CLIENT : <span id="m-client" style="font-weight:400;"></span></p>
                                 </div>
                             </div>
                         </div>
@@ -240,7 +246,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="file-explorer" id="file-tree"></div>
             </div>
         </div>
@@ -248,14 +253,39 @@
 
     <script src="script.js"></script>
     <script>
-        // --- PROJECTS DATA ---
+        // ── TOOL ICON HELPER ───────────────────────────────────────────
+        // Returns an <img> tag using official Wikipedia SVG logos
+        const SW_LOGOS = {
+            premiere:     'https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg',
+            aftereffects: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Adobe_After_Effects_CC_icon.svg',
+            photoshop:    'https://upload.wikimedia.org/wikipedia/commons/a/af/Adobe_Photoshop_CC_icon.svg',
+            illustrator:  'https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg',
+            indesign:     'https://upload.wikimedia.org/wikipedia/commons/4/48/Adobe_InDesign_CC_icon.svg',
+            lightroom:    'https://upload.wikimedia.org/wikipedia/commons/b/b9/Adobe_Lightroom_CC_logo.svg',
+            canva:        'https://upload.wikimedia.org/wikipedia/commons/0/0d/Canva_icon_2021.svg',
+            blender:      'https://upload.wikimedia.org/wikipedia/commons/0/0c/Blender_logo_no_text.svg',
+            figma:        'https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg',
+            davinci:      'https://upload.wikimedia.org/wikipedia/commons/9/90/DaVinci_Resolve_17_logo.svg',
+        };
+        function swIcon(key, label) {
+            const src = SW_LOGOS[key];
+            if (src) return `<img src="${src}" class="tool-icon-img" alt="${label}" title="${label}">`;
+            return `<span class="tool-icon-text">${label}</span>`;
+        }
+
+        // ── PROJECTS DATA ─────────────────────────────────────────────
         const projects = [
             {
                 id: 1, title: "Kernae", category: "comm", role: "Stagiaire Communication",
                 client: "Fonds Kernae", year: "2023",
                 thumb: "assets/miniatures/projet6.png",
                 desc: "Stage de 4 mois. Création de contenus variés : vidéos, visuels, print.",
-                toolsIcons: ['devicon-premierepro-plain', 'devicon-indesign-plain', 'devicon-canva-original', 'devicon-aftereffects-plain'],
+                tools: [
+                    { key: 'premiere',     label: 'Premiere Pro' },
+                    { key: 'indesign',     label: 'InDesign' },
+                    { key: 'canva',        label: 'Canva' },
+                    { key: 'aftereffects', label: 'After Effects' }
+                ],
                 content: {
                     "Reportages Vidéo": [
                         { type: "youtube", src: "https://www.youtube.com/watch?v=6LOC3zduma8", title: "Épisode 1", info: "Le Refuge" },
@@ -268,9 +298,6 @@
                     ],
                     "Podcasts": [
                         { type: "youtube", src: "https://www.youtube.com/watch?v=VgBe1zzPbq0&t=59s", title: "Podcast 1", info: "Format Reel" }
-                    ],
-                    "Motion Web": [
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=6LOC3zduma8", title: "Animation Site", info: "Motion explicatif" }
                     ],
                     "Newsletter": [
                         { type: "pdf", src: "assets/miniatures/KERNAE/newsletter8.pdf", title: "Header", info: "Graphisme" }
@@ -293,15 +320,18 @@
                 client: "Scobat", year: "2024",
                 thumb: "assets/miniatures/SCOBAT/Scobat.png",
                 desc: "Deuxième stage en BUT MMI. Réalisation de contenus de communication.",
-                toolsIcons: ['devicon-premierepro-plain', 'devicon-illustrator-plain'],
+                tools: [
+                    { key: 'premiere',    label: 'Premiere Pro' },
+                    { key: 'illustrator', label: 'Illustrator' }
+                ],
                 content: {
                     "Vidéo Scobat": [
                         { type: "youtube", src: "https://www.youtube.com/watch?v=uID1Cq0S92g", title: "Vidéo Scobat", info: "Vidéo courte pour site web" }
                     ],
                     "Photos Scobat": [
-                        { type: "pdf", src: "assets/miniatures/SCOBAT/Photos%20Scobat.pdf", title: "Photos Scobat", info: "Photos prise durant le stage" }
+                        { type: "pdf", src: "assets/miniatures/SCOBAT/Photos%20Scobat.pdf", title: "Photos Scobat", info: "Photos prises durant le stage" }
                     ],
-                    "Calendrier Tryptique Scobat": [
+                    "Calendrier Tryptique": [
                         { type: "pdf", src: "assets/miniatures/SCOBAT/Calendrier%20Scobat.pdf", title: "Calendrier Scobat", info: "Calendrier" },
                         { type: "image", src: "assets/miniatures/SCOBAT/MOCKUP%20CALENDRIER%201.png", title: "Mockup 1", info: "Mockup" },
                         { type: "image", src: "assets/miniatures/SCOBAT/MOCKUP%20CALENDRIER%202.png", title: "Mockup 2", info: "Mockup" }
@@ -310,18 +340,18 @@
                         { type: "pdf", src: "assets/miniatures/SCOBAT/LIVRET%20ACCUEIL.pdf", title: "Livret D'accueil", info: "Format Papier" }
                     ],
                     "Charte Graphique": [
-                        { type: "pdf", src: "assets/miniatures/SCOBAT/CHARTE_GRAPHIQUE_compressed.pdf", title: "Charte Graphique", info: "Charte graphique inventée pour moderniser SCOBAT" }
+                        { type: "pdf", src: "assets/miniatures/SCOBAT/CHARTE_GRAPHIQUE_compressed.pdf", title: "Charte Graphique", info: "Modernisation SCOBAT" }
                     ],
                     "Mémoire Technique": [
-                        { type: "pdf", src: "MEMOIRE%20TECHNIQUE%20PAYSAGE_compressed.pdf", title: "Mémoire Technique", info: "Support interactif et modifiable" }
+                        { type: "pdf", src: "MEMOIRE%20TECHNIQUE%20PAYSAGE_compressed.pdf", title: "Mémoire Technique", info: "Support interactif" }
                     ],
-                    "Autres créations graphiques": [
-                        { type: "pdf", src: "assets/miniatures/SCOBAT/LIVRET_EPARGNE_SALARIALE.pdf", title: "Livret D'épargne Salariale", info: "Interne" },
+                    "Autres créations": [
+                        { type: "pdf", src: "assets/miniatures/SCOBAT/LIVRET_EPARGNE_SALARIALE.pdf", title: "Livret Épargne Salariale", info: "Interne" },
                         { type: "pdf", src: "assets/miniatures/SCOBAT/FICHES%20METIER.pdf", title: "Fiches Métier", info: "Externe" },
                         { type: "image", src: "assets/miniatures/SCOBAT/Carte%20de%20voeux%20Scobat.png", title: "Carte de Voeux 2025", info: "Interne" },
                         { type: "pdf", src: "assets/miniatures/SCOBAT/RSE%20SCOBAT.pdf", title: "Affiche RSE", info: "Interne" },
-                        { type: "image", src: "assets/miniatures/SCOBAT/RECRUTEMENT_1.png", title: "Post", info: "Interne" },
-                        { type: "image", src: "assets/miniatures/SCOBAT/BANNIERE_MAIL_FETES_SCOBAT_2027.gif", title: "Banniere mail", info: "Interne" }
+                        { type: "image", src: "assets/miniatures/SCOBAT/RECRUTEMENT_1.png", title: "Post Recrutement", info: "Interne" },
+                        { type: "image", src: "assets/miniatures/SCOBAT/BANNIERE_MAIL_FETES_SCOBAT_2027.gif", title: "Bannière mail fêtes", info: "Interne" }
                     ]
                 }
             },
@@ -330,7 +360,11 @@
                 client: "Projet BUT MMI", year: "2023",
                 thumb: "assets/miniatures/CHECKID.png",
                 desc: "Projet vidéo mettant en valeur la solution Onfido via une fausse application créée pour l'occasion.",
-                toolsIcons: ['devicon-premierepro-plain', 'devicon-aftereffects-plain', 'devicon-figma-plain'],
+                tools: [
+                    { key: 'premiere',     label: 'Premiere Pro' },
+                    { key: 'aftereffects', label: 'After Effects' },
+                    { key: 'figma',        label: 'Figma' }
+                ],
                 content: {
                     "Campagne Vidéo": [
                         { type: "youtube", src: "https://www.youtube.com/watch?v=kFT2kh2IGgc", title: "Spot Publicitaire", info: "2min" }
@@ -342,10 +376,10 @@
                 client: "IUT Lannion", year: "2023",
                 thumb: "assets/miniatures/projet2.png",
                 desc: "Reportage documentaire sur les métiers de la photonique.",
-                toolsIcons: ['devicon-premierepro-plain'],
+                tools: [{ key: 'premiere', label: 'Premiere Pro' }],
                 content: {
                     "Le Film": [
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=SpJd5RpsWEM", title: "Reportage Complet", info: "14m" }
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=SpJd5RpsWEM", title: "Reportage Complet", info: "14min" }
                     ],
                     "Captures": [
                         { type: "image", src: "assets/miniatures/projet2.png", title: "Laboratoire", info: "Screen" }
@@ -357,13 +391,13 @@
                 client: "Recruteurs", year: "2025",
                 thumb: "assets/miniatures/minia videos.png",
                 desc: "Cas pratiques réalisés avec des contraintes de temps pour des entreprises.",
-                toolsIcons: ['devicon-premierepro-plain'],
+                tools: [{ key: 'premiere', label: 'Premiere Pro' }],
                 content: {
                     "The Kub": [
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=EPIlGQqUvoE", title: "Montage dynamique", info: "1m" }
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=EPIlGQqUvoE", title: "Montage dynamique", info: "1min" }
                     ],
                     "SmartWorkout": [
-                        { type: "youtube", src: "https://www.youtube.com/shorts/3E_f0e-CEOU", title: "Short", info: "1m" }
+                        { type: "youtube", src: "https://www.youtube.com/shorts/3E_f0e-CEOU", title: "Short", info: "1min" }
                     ]
                 }
             },
@@ -371,14 +405,17 @@
                 id: 6, title: "Cesson Volley Club", category: "comm", role: "Graphiste",
                 client: "Projet Fictif", year: "2024",
                 thumb: "assets/miniatures/projet1.png",
-                desc: "Création d'identité visuelle et animation fictive pour le club de volley Cesson Saint-Brieuc",
-                toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain'],
+                desc: "Création d'identité visuelle et animation fictive pour le club de volley Cesson Saint-Brieuc.",
+                tools: [
+                    { key: 'photoshop',   label: 'Photoshop' },
+                    { key: 'illustrator', label: 'Illustrator' }
+                ],
                 content: {
                     "Animation score Live": [
                         { type: "youtube", src: "https://www.youtube.com/watch?v=m9vN4qYa7os", title: "Animation Joueur", info: "" },
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=0THt2HMLxJQ", title: "Animation Score", info: "Variante 1" },
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=lUw95mtQo6w", title: "Animation Score", info: "Variante 2" },
-                        { type: "youtube", src: "https://www.youtube.com/watch?v=Z_cIaU6El_g", title: "Animation Score", info: "Variante 3" }
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=0THt2HMLxJQ", title: "Animation Score V1", info: "Variante 1" },
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=lUw95mtQo6w", title: "Animation Score V2", info: "Variante 2" },
+                        { type: "youtube", src: "https://www.youtube.com/watch?v=Z_cIaU6El_g", title: "Animation Score V3", info: "Variante 3" }
                     ],
                     "Communiqué de presse": [
                         { type: "image", src: "assets/miniatures/CESSON%20COMMUNIQUE1.jpg", title: "Communiqué 1", info: "A4" },
@@ -392,8 +429,8 @@
                 id: 7, title: "Motion Design", category: "graphisme", role: "Motion Designer",
                 client: "Personnel", year: "2024",
                 thumb: "assets/miniatures/projet4.png",
-                desc: "Explorations graphiques.",
-                toolsIcons: ['devicon-aftereffects-plain'],
+                desc: "Explorations graphiques en motion design.",
+                tools: [{ key: 'aftereffects', label: 'After Effects' }],
                 content: {
                     "Animations": [
                         { type: "youtube", src: "https://www.youtube.com/shorts/Yuda_fgzcIU", title: "Coeur d'artichaut", info: "projet fictif" }
@@ -405,7 +442,7 @@
                 client: "Personnel", year: "2023",
                 thumb: "assets/miniatures/MINIA%20BLENDER.png",
                 desc: "Animation réalisée sous Blender.",
-                toolsIcons: ['devicon-blender-original'],
+                tools: [{ key: 'blender', label: 'Blender' }],
                 content: {
                     "Rendus 3D": [
                         { type: "youtube", src: "https://www.youtube.com/watch?v=su9Zpjx9ncY", title: "Animation Finale", info: "Render" }
@@ -416,8 +453,11 @@
                 id: 9, title: "Posters & Infos", category: "graphisme", role: "Graphiste",
                 client: "Personnel", year: "2023",
                 thumb: "assets/miniatures/projet3.jpg",
-                desc: "Série de créations graphiques.",
-                toolsIcons: ['devicon-photoshop-plain', 'devicon-illustrator-plain'],
+                desc: "Série de créations graphiques — affiches et illustrations.",
+                tools: [
+                    { key: 'photoshop',   label: 'Photoshop' },
+                    { key: 'illustrator', label: 'Illustrator' }
+                ],
                 content: {
                     "Affiches": [
                         { type: "image", src: "assets/galerie/galerie1.png", title: "Poster 1", info: "Art" },
@@ -433,8 +473,11 @@
                 id: 10, title: "Photographie", category: "graphisme", role: "Photographe",
                 client: "Personnel", year: "2023",
                 thumb: "assets/miniatures/projet5.jpg",
-                desc: "Clichés personnels.",
-                toolsIcons: ['devicon-photoshop-plain'],
+                desc: "Clichés personnels au Sony A6700.",
+                tools: [
+                    { key: 'lightroom',  label: 'Lightroom' },
+                    { key: 'photoshop',  label: 'Photoshop' }
+                ],
                 content: {
                     "Galerie": [
                         { type: "image", src: "assets/miniatures/photos/PHOTO_1.jpg", title: "Photo 1", info: "Sony A6700" },
@@ -452,8 +495,8 @@
                 id: 11, title: "Vidéo LinkedIn Alternance", category: "video", role: "Monteur",
                 client: "Personnel", year: "2025",
                 thumb: "assets/miniatures/alternance.png",
-                desc: "Vidéo réalisée sur After Effects.",
-                toolsIcons: ['devicon-aftereffects-plain'],
+                desc: "Vidéo réalisée sur After Effects pour ma recherche d'alternance.",
+                tools: [{ key: 'aftereffects', label: 'After Effects' }],
                 content: {
                     "Le rendu": [
                         { type: "youtube", src: "https://www.youtube.com/watch?v=bwmZr3AhyA0", title: "Vidéo recherche alternance", info: "LinkedIn" }
@@ -462,41 +505,32 @@
             }
         ];
 
-        // --- GRID LOGIC ---
+        // ── GRID LOGIC ───────────────────────────────────────────────
         const grid = document.getElementById('grid');
         const modal = document.getElementById('modal');
-        const viewer = document.getElementById('main-viewer');
         const fileTree = document.getElementById('file-tree');
-
-        let allFiles = [];
-        let currentFileIndex = 0;
-
-        const categoryNames = { "comm": "COMMUNICATION", "video": "VIDÉO", "graphisme": "GRAPHISME", "all": "TOUT" };
+        let allFiles = [], currentFileIndex = 0;
+        const categoryNames = { comm: "COMMUNICATION", video: "VIDÉO", graphisme: "GRAPHISME" };
 
         const getYoutubeID = (url) => {
-            const reg = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/;
-            const m = url.match(reg);
-            return (m && m[1]) || null;
+            const m = url.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/);
+            return m ? m[1] : null;
         };
 
         function renderGrid(filter) {
             grid.innerHTML = '';
-            const filtered = projects.filter(p => filter === 'all' || p.category === filter);
-            filtered.forEach((p, i) => {
-                const dCat = categoryNames[p.category] || p.category.toUpperCase();
+            projects.filter(p => filter === 'all' || p.category === filter).forEach((p, i) => {
                 const card = document.createElement('div');
                 card.className = 'project-card';
-                card.style.transitionDelay = `${i * 60}ms`;
                 card.innerHTML = `
                     <img src="${p.thumb}" alt="${p.title}" loading="lazy">
                     <div class="card-overlay">
-                        <span class="card-cat">${dCat}</span>
+                        <span class="card-cat">${categoryNames[p.category] || p.category.toUpperCase()}</span>
                         <div class="card-title">${p.title}</div>
                     </div>`;
                 card.onclick = () => openModal(p);
                 grid.appendChild(card);
             });
-            // Trigger staggered reveal
             setTimeout(() => {
                 document.querySelectorAll('.project-card').forEach((card, i) => {
                     setTimeout(() => card.classList.add('card-revealed'), i * 60);
@@ -512,22 +546,17 @@
             document.getElementById('m-year').innerText = p.year;
             document.getElementById('m-desc').innerText = p.desc;
 
+            // Render tool icons using SVG logos
             const tCont = document.getElementById('m-tools');
-            tCont.innerHTML = '';
-            if (p.toolsIcons) p.toolsIcons.forEach(c => tCont.innerHTML += `<i class="${c} tool-icon"></i>`);
-            else tCont.innerHTML = '-';
+            tCont.innerHTML = (p.tools || []).map(t => swIcon(t.key, t.label)).join('');
 
             allFiles = [];
             Object.keys(p.content).forEach(folder => {
-                p.content[folder].forEach((file, index) => {
-                    allFiles.push({ ...file, folder, originalIndex: index });
-                });
+                p.content[folder].forEach((file, index) => allFiles.push({ ...file, folder, originalIndex: index }));
             });
-
             renderFileExplorer(p.content);
             currentFileIndex = 0;
             if (allFiles.length > 0) loadMediaFromIndex(0);
-
             modal.classList.add('open');
             document.body.style.overflow = 'hidden';
         }
@@ -537,15 +566,14 @@
             Object.keys(content).forEach((folderName, index) => {
                 const files = content[folderName];
                 const isOpen = index === 0 ? 'open' : '';
-                let fileHTML = files.map((f, i) => `
-                    <div class="file-item" id="file-${folderName.replace(/\s/g,'-')}-${i}" onclick="handleTreeClick('${folderName}', ${i})">
+                const fileHTML = files.map((f, i) => `
+                    <div class="file-item" id="file-${folderName.replace(/[\s&]/g,'-')}-${i}" onclick="handleTreeClick('${folderName}', ${i})">
                         <i class="fas ${getFileIcon(f.type)} file-icon"></i>
                         <div class="file-meta">
                             <span class="file-name">${f.title}</span>
                             <span class="file-desc">${f.info || ''}</span>
                         </div>
                     </div>`).join('');
-
                 fileTree.innerHTML += `
                     <div class="folder-group ${isOpen}">
                         <div class="folder-header" onclick="toggleFolder(this)">
@@ -563,9 +591,7 @@
         }
 
         function moveSlide(dir) {
-            currentFileIndex += dir;
-            if (currentFileIndex >= allFiles.length) currentFileIndex = 0;
-            if (currentFileIndex < 0) currentFileIndex = allFiles.length - 1;
+            currentFileIndex = (currentFileIndex + dir + allFiles.length) % allFiles.length;
             loadMediaFromIndex(currentFileIndex);
         }
 
@@ -573,15 +599,16 @@
             const v = document.getElementById('main-viewer');
             v.innerHTML = '';
             if (file.type === 'video') {
-                v.innerHTML = `<video src="${file.src}" controls autoplay class="fade-in"></video>`;
+                v.innerHTML = `<video src="${file.src}" controls autoplay></video>`;
             } else if (file.type === 'youtube') {
                 const id = getYoutubeID(file.src);
-                if (id) v.innerHTML = `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen class="fade-in"></iframe>`;
-                else v.innerHTML = `<div style="color:white; text-align:center;">Lien invalide</div>`;
+                v.innerHTML = id
+                    ? `<iframe src="https://www.youtube.com/embed/${id}?autoplay=1&rel=0" allowfullscreen></iframe>`
+                    : `<div style="color:white;text-align:center;">Lien invalide</div>`;
             } else if (file.type === 'pdf') {
-                v.innerHTML = `<iframe src="${file.src}" class="fade-in" style="width:100%; height:100%; border:none; background:white;"></iframe>`;
+                v.innerHTML = `<iframe src="${file.src}" style="width:100%;height:100%;border:none;background:white;"></iframe>`;
             } else {
-                v.innerHTML = `<img src="${file.src}" class="fade-in">`;
+                v.innerHTML = `<img src="${file.src}" style="max-width:100%;max-height:100%;object-fit:contain;">`;
             }
         }
 
@@ -590,14 +617,12 @@
             const file = allFiles[index];
             loadMedia(file);
             document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
-            const key = `file-${file.folder.replace(/\s/g,'-')}-${file.originalIndex}`;
+            const key = `file-${file.folder.replace(/[\s&]/g,'-')}-${file.originalIndex}`;
             const activeItem = document.getElementById(key);
             if (activeItem) {
                 activeItem.classList.add('active');
-                const folderContent = activeItem.closest('.folder-content');
-                if (folderContent && !folderContent.parentElement.classList.contains('open')) {
-                    folderContent.parentElement.classList.add('open');
-                }
+                const fc = activeItem.closest('.folder-content');
+                if (fc && !fc.parentElement.classList.contains('open')) fc.parentElement.classList.add('open');
                 activeItem.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
             }
         }
