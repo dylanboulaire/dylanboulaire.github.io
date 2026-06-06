@@ -129,7 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
 //   openCinemaQuiz()       → classic easter egg (no CV reward wording)
 //   openCinemaQuizForCV()  → triggered from CV button with "mérite" intro
 // =====================================================================
-const cinemaQuizData = [
+
+// FIX: Shuffle answers so the correct answer isn't always position A
+const cinemaQuizDataRaw = [
     {
         question: "Quel film a popularisé le 'jump cut' grâce à sa révolution du montage ?",
         answers: ["À bout de souffle", "Citizen Kane", "8½", "Metropolis"],
@@ -180,6 +182,27 @@ const cinemaQuizData = [
     }
 ];
 
+// Shuffle each question's answers randomly, keeping track of which is correct
+function buildShuffledQuiz(rawData) {
+    return rawData.map(q => {
+        const correctAnswer = q.answers[q.correct];
+        // Fisher-Yates shuffle on a copy
+        const shuffled = [...q.answers];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        return {
+            question: q.question,
+            answers: shuffled,
+            correct: shuffled.indexOf(correctAnswer),
+            fact: q.fact
+        };
+    });
+}
+
+let cinemaQuizData = [];
+
 let quizOverlay = null;
 let quizState = { current: 0, score: 0, answered: false, cvMode: false };
 
@@ -193,13 +216,16 @@ function openCinemaQuiz() {
 
 function _openQuiz(cvMode) {
     if (quizOverlay) return;
+    // Rebuild shuffled quiz each time so order varies
+    cinemaQuizData = buildShuffledQuiz(cinemaQuizDataRaw);
     quizState = { current: 0, score: 0, answered: false, cvMode };
 
     quizOverlay = document.createElement('div');
     quizOverlay.id = 'cinema-quiz-overlay';
 
+    // FIX: corrected the contradictory CV intro text
     const intro = cvMode
-        ? `<p>Mon CV ne se mérite pas… il se gagne ! 🎬<br>Prouve que tu connais l'audiovisuel en répondant à <strong>8 questions</strong>.</p>`
+        ? `<p>Mon CV se mérite ! 🎬<br>Prouve que tu connais l'audiovisuel en répondant à <strong>8 questions</strong>.</p>`
         : `<p>Tu as trouvé l'easter egg ! 8 questions sur le cinéma & l'audiovisuel.</p>`;
 
     const titleTag = cvMode
@@ -304,6 +330,7 @@ function renderQuizResults() {
 }
 
 function restartQuiz() {
+    cinemaQuizData = buildShuffledQuiz(cinemaQuizDataRaw);
     quizState = { ...quizState, current: 0, score: 0, answered: false };
     renderQuizQuestion();
 }
