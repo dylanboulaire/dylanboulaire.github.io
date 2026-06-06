@@ -143,7 +143,6 @@
                 <div class="gear-items">
                     <div class="gear-item">
                         <div class="gear-img-wrap">
-                            <!-- REMPLACE ICI : mets ton image Sony A6700 dans assets/gear/a6700.jpg -->
                             <img src="assets/gear/a6700.jpg" alt="Sony A6700" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>📷</div>'">
                         </div>
                         <div class="gear-info">
@@ -153,7 +152,6 @@
                     </div>
                     <div class="gear-item">
                         <div class="gear-img-wrap">
-                            <!-- REMPLACE ICI : mets ton image Sony 70-350mm dans assets/gear/70-350.jpg -->
                             <img src="assets/gear/70-350.jpg" alt="Sony 70-350mm" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>🔭</div>'">
                         </div>
                         <div class="gear-info">
@@ -163,7 +161,6 @@
                     </div>
                     <div class="gear-item">
                         <div class="gear-img-wrap">
-                            <!-- REMPLACE ICI : mets ton image Sigma 30mm dans assets/gear/sigma30.jpg -->
                             <img src="assets/gear/sigma30.jpg" alt="Sigma 30mm" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>🎯</div>'">
                         </div>
                         <div class="gear-info">
@@ -173,7 +170,6 @@
                     </div>
                     <div class="gear-item">
                         <div class="gear-img-wrap">
-                            <!-- REMPLACE ICI : mets ton image Black Mist 1/4 dans assets/gear/blackmist14.jpg -->
                             <img src="assets/gear/blackmist14.jpg" alt="Black Mist 1/4" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>✨</div>'">
                         </div>
                         <div class="gear-info">
@@ -183,7 +179,6 @@
                     </div>
                     <div class="gear-item">
                         <div class="gear-img-wrap">
-                            <!-- REMPLACE ICI : mets ton image Black Mist 1/8 dans assets/gear/blackmist18.jpg -->
                             <img src="assets/gear/blackmist18.jpg" alt="Black Mist 1/8" onerror="this.parentNode.innerHTML='<div class=\'gear-icon-fallback\'>🌫️</div>'">
                         </div>
                         <div class="gear-info">
@@ -194,7 +189,7 @@
                 </div>
             </div>
 
-            <!-- LOGICIELS -->
+            <!-- LOGICIELS — FIX: updated logos for Canva, G Suite, Notion, Trello, Miro -->
             <div class="reveal-on-scroll">
                 <div class="gear-column-title">
                     <i class="fas fa-layer-group" style="color:var(--btn-color)"></i>
@@ -222,11 +217,11 @@
                         <span>InDesign</span>
                     </div>
                     <div class="software-item">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Adobe_Lightroom_CC_logo_%282017%29.svg/640px-Adobe_Lightroom_CC_logo_%282017%29.svg.png" class="sw-logo" alt="Lightroom" onerror="this.src='https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/adobelightroom.svg'">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Adobe_Lightroom_CC_logo_%282017%29.svg/640px-Adobe_Lightroom_CC_logo_%282017%29.svg.png" class="sw-logo" alt="Lightroom">
                         <span>Lightroom</span>
                     </div>
                     <div class="software-item">
-                        <img src="https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/canva.svg" class="sw-logo sw-logo-colored" alt="Canva" style="background:#00C4CC; border-radius:8px; padding:4px;">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg" class="sw-logo" alt="Canva">
                         <span>Canva</span>
                     </div>
                     <div class="software-item">
@@ -242,7 +237,7 @@
                         <span>DaVinci</span>
                     </div>
                     <div class="software-item">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_Workspace_Logo.svg/640px-Google_Workspace_Logo.svg.png" class="sw-logo" alt="Google Workspace" onerror="this.src='https://www.gstatic.com/images/branding/product/2x/google_workspace_512dp.png'">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/640px-Google_%22G%22_Logo.svg.png" class="sw-logo" alt="Google Workspace">
                         <span>G Suite</span>
                     </div>
                     <div class="software-item">
@@ -250,7 +245,7 @@
                         <span>Office</span>
                     </div>
                     <div class="software-item">
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9b/Notion_squared.svg/640px-Notion_squared.svg.png" class="sw-logo" alt="Notion" onerror="this.src='https://www.notion.so/images/favicon.ico'">
+                        <img src="https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png" class="sw-logo" alt="Notion">
                         <span>Notion</span>
                     </div>
                     <div class="software-item">
@@ -264,10 +259,7 @@
                 </div>
             </div>
         </div>
-
-        <div class="secret-hint">
-            <span>🎬</span> Un easter egg est caché sur cette page…
-        </div>
+        <!-- FIX: Secret hint removed as requested -->
     </section>
 
     <footer><p>&copy; 2024 Dylan Boulaire. Tous droits réservés.</p></footer>
@@ -282,7 +274,12 @@
                 <div id="main-viewer" style="width:100%; height:100%; display:flex; justify-content:center; align-items:center;"></div>
             </div>
             <div class="modal-sidebar">
-                <div class="sidebar-header">
+                <!-- FIX: Mobile tabs for easy navigation on small screens -->
+                <div class="modal-tabs">
+                    <button class="modal-tab active" onclick="switchModalTab('info')">Infos</button>
+                    <button class="modal-tab" onclick="switchModalTab('files')">Fichiers</button>
+                </div>
+                <div class="sidebar-header modal-tab-panel" id="tab-info">
                     <div class="cat-year-row">
                         <span class="modal-cat" id="m-cat">CAT</span>
                         <span class="modal-year" id="m-year">2024</span>
@@ -311,7 +308,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="file-explorer" id="file-tree"></div>
+                <div class="file-explorer modal-tab-panel" id="tab-files" id="file-tree"></div>
             </div>
         </div>
     </div>
@@ -319,7 +316,6 @@
     <script src="script.js"></script>
     <script>
         // ── TOOL ICON HELPER ───────────────────────────────────────────
-        // Returns an <img> tag using official Wikipedia SVG logos
         const SW_LOGOS = {
             premiere:     'https://upload.wikimedia.org/wikipedia/commons/4/40/Adobe_Premiere_Pro_CC_icon.svg',
             aftereffects: 'https://upload.wikimedia.org/wikipedia/commons/c/cb/Adobe_After_Effects_CC_icon.svg',
@@ -327,19 +323,30 @@
             illustrator:  'https://upload.wikimedia.org/wikipedia/commons/f/fb/Adobe_Illustrator_CC_icon.svg',
             indesign:     'https://upload.wikimedia.org/wikipedia/commons/4/48/Adobe_InDesign_CC_icon.svg',
             lightroom:    'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e3/Adobe_Lightroom_CC_logo_%282017%29.svg/640px-Adobe_Lightroom_CC_logo_%282017%29.svg.png',
-            canva:        'https://cdn.jsdelivr.net/npm/simple-icons@v11/icons/canva.svg',
+            canva:        'https://upload.wikimedia.org/wikipedia/commons/0/08/Canva_icon_2021.svg',
             blender:      'https://upload.wikimedia.org/wikipedia/commons/0/0c/Blender_logo_no_text.svg',
             figma:        'https://upload.wikimedia.org/wikipedia/commons/3/33/Figma-logo.svg',
             davinci:      'https://upload.wikimedia.org/wikipedia/commons/9/90/DaVinci_Resolve_17_logo.svg',
-            notion:       'https://upload.wikimedia.org/wikipedia/commons/thumb/e/e9/Notion-logo.svg/640px-Notion-logo.svg.png',
+            notion:       'https://upload.wikimedia.org/wikipedia/commons/4/45/Notion_app_logo.png',
             trello:       'https://upload.wikimedia.org/wikipedia/en/thumb/8/8c/Trello_logo.svg/640px-Trello_logo.svg.png',
             miro:         'https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Miro_-_Logo.svg/640px-Miro_-_Logo.svg.png',
         };
         function swIcon(key, label) {
             const src = SW_LOGOS[key];
-            const extra = key === 'canva' ? ' style="background:#00C4CC;border-radius:6px;padding:3px;"' : '';
-            if (src) return `<img src="${src}" class="tool-icon-img" alt="${label}" title="${label}"${extra}>`;
+            if (src) return `<img src="${src}" class="tool-icon-img" alt="${label}" title="${label}">`;
             return `<span class="tool-icon-text">${label}</span>`;
+        }
+
+        // FIX: Mobile tab switching for modal
+        function switchModalTab(tab) {
+            document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.modal-tab-panel').forEach(p => p.classList.remove('active'));
+            event.target.classList.add('active');
+            if (tab === 'info') {
+                document.getElementById('tab-info').classList.add('active');
+            } else {
+                document.getElementById('tab-files').classList.add('active');
+            }
         }
 
         // ── PROJECTS DATA ─────────────────────────────────────────────
@@ -577,7 +584,7 @@
         // ── GRID LOGIC ───────────────────────────────────────────────
         const grid = document.getElementById('grid');
         const modal = document.getElementById('modal');
-        const fileTree = document.getElementById('file-tree');
+        const fileTree = document.getElementById('tab-files');
         let allFiles = [], currentFileIndex = 0;
         const categoryNames = { comm: "COMMUNICATION", video: "VIDÉO", graphisme: "GRAPHISME" };
 
@@ -615,7 +622,6 @@
             document.getElementById('m-year').innerText = p.year;
             document.getElementById('m-desc').innerText = p.desc;
 
-            // Render tool icons using SVG logos
             const tCont = document.getElementById('m-tools');
             tCont.innerHTML = (p.tools || []).map(t => swIcon(t.key, t.label)).join('');
 
@@ -628,6 +634,20 @@
             if (allFiles.length > 0) loadMediaFromIndex(0);
             modal.classList.add('open');
             document.body.style.overflow = 'hidden';
+
+            // On mobile, default to files tab since it's most useful
+            if (window.innerWidth <= 1024) {
+                document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.modal-tab-panel').forEach(p => p.classList.remove('active'));
+                document.querySelector('.modal-tab[onclick*="files"]').classList.add('active');
+                document.getElementById('tab-files').classList.add('active');
+            } else {
+                // Desktop: show info tab by default
+                document.querySelectorAll('.modal-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.modal-tab-panel').forEach(p => p.classList.remove('active'));
+                document.querySelector('.modal-tab[onclick*="info"]').classList.add('active');
+                document.getElementById('tab-info').classList.add('active');
+            }
         }
 
         function renderFileExplorer(content) {
@@ -656,7 +676,17 @@
 
         function handleTreeClick(folder, index) {
             const flatIndex = allFiles.findIndex(f => f.folder === folder && f.originalIndex === index);
-            if (flatIndex !== -1) { currentFileIndex = flatIndex; loadMediaFromIndex(currentFileIndex); }
+            if (flatIndex !== -1) {
+                currentFileIndex = flatIndex;
+                loadMediaFromIndex(currentFileIndex);
+                // On mobile, switch to viewer after selecting a file
+                if (window.innerWidth <= 1024) {
+                    // Small delay so user sees the selection before switching
+                    setTimeout(() => {
+                        // No auto-switch needed since viewer is always visible above tabs
+                    }, 100);
+                }
+            }
         }
 
         function moveSlide(dir) {
