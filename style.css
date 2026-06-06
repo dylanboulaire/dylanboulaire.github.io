@@ -154,15 +154,11 @@ body.light-mode header.scrolled {
     height: 50px;
     display: block;
     transition: 0.3s;
-    /* Default: white logo on dark background */
     filter: brightness(1) invert(0);
 }
-
-/* LOGO FIX: invert to black in light mode */
 body.light-mode .logo-img {
     filter: brightness(0) invert(0);
 }
-
 .logo-center:hover .logo-img { transform: scale(1.05); }
 
 .nav-right {
@@ -326,7 +322,6 @@ body.light-mode .video-overlay { background: rgba(255, 255, 255, 0.3); }
     text-shadow: 0 5px 15px rgba(0,0,0,0.5);
     color: var(--text-primary);
     line-height: 1.05;
-    /* Animate in */
     animation: heroSlideIn 1s ease forwards;
     animation-delay: 0.3s;
     opacity: 0;
@@ -719,7 +714,7 @@ body.light-mode .carousel-btn { background: rgba(0,0,0,0.15); color: #222; }
     transition: all 0.3s ease;
     overflow: hidden;
 }
-.sidebar-header { padding: 30px; border-bottom: 1px solid var(--border-color); }
+.sidebar-header { padding: 30px; border-bottom: 1px solid var(--border-color); overflow-y: auto; }
 .cat-year-row { display: flex; gap: 15px; margin-bottom: 8px; align-items: center; }
 .modal-cat {
     color: var(--text-accent);
@@ -1098,28 +1093,38 @@ footer {
 @media (max-width: 1024px) {
     header { padding: 15px 30px; }
 
-    /* Show burger, hide desktop nav */
     .nav-left { display: none; }
     .burger-menu { display: flex; }
 
-    .modal-container { flex-direction: column; width: 100%; height: 100%; border-radius: 0; }
-    .modal-viewer { height: 45vh; flex: none; }
-    .modal-sidebar { height: 55vh; min-width: 100%; max-width: 100%; }
+    .modal-container {
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        border-radius: 0;
+    }
+    .modal-viewer {
+        height: 45vh;
+        flex: none;
+    }
+    .modal-sidebar {
+        height: 55vh;
+        min-width: 100%;
+        max-width: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
 
     .projects-grid { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; }
-
     .gear-grid { grid-template-columns: 1fr; gap: 40px; }
 }
 
 @media (max-width: 768px) {
     header { padding: 12px 20px; }
     header.scrolled { padding: 10px 20px; }
-
     .logo-img { height: 40px; }
-
     .hero-content { padding-right: 6%; padding-left: 6%; align-items: center; text-align: center; }
     .hero-content h1 { font-size: 2.8rem; }
-
     .projects-section { padding: 80px 20px 60px; }
     .section-header { flex-direction: column; align-items: flex-start; gap: 20px; }
     .section-title h2 { font-size: 2rem; }
@@ -1128,22 +1133,16 @@ footer {
     .projects-grid { grid-template-columns: 1fr 1fr; gap: 15px; }
     .project-card { height: 240px; }
     .card-title { font-size: 1.2rem; }
-
-    /* Mobile: always show card overlay slightly */
     .card-overlay { opacity: 0.85; transform: translateY(0); }
-
     .gear-section { padding: 70px 20px; }
     .software-grid { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
-
     .modal-viewer { height: 40vh; }
     .carousel-btn { padding: 12px 14px; font-size: 1.3rem; }
-    .modal-sidebar { min-width: 100%; }
+    .modal-sidebar { min-width: 100%; height: 60vh; }
     .sidebar-header { padding: 20px; }
     .modal-title { font-size: 1.5rem; }
-
     .contact-content { padding: 20px; }
     .contact-content h1 { font-size: 2rem; }
-
     .quiz-container { padding: 25px 20px; }
     .quiz-question { font-size: 1rem; }
 }
@@ -1185,12 +1184,11 @@ footer {
     font-size: 1.8rem;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: height: 100%;
     width: 100%;
-    height: 100%;
 }
 
-/* SOFTWARE LOGOS (img instead of devicon) */
+/* SOFTWARE LOGOS */
 .sw-logo {
     width: 40px;
     height: 40px;
@@ -1235,21 +1233,74 @@ footer {
     transform: translateY(0);
 }
 
-/* SECRET HINT */
-.secret-hint {
-    margin-top: 60px;
-    text-align: center;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    opacity: 0.4;
-    letter-spacing: 2px;
-    font-style: italic;
-    transition: opacity 0.3s;
+/* =============================================
+   MODAL TABS — Mobile navigation fix
+   ============================================= */
+.modal-tabs {
+    display: none;
+    background: var(--modal-sidebar-bg);
+    border-bottom: 1px solid var(--border-color);
+    flex-shrink: 0;
 }
-.secret-hint:hover { opacity: 0.8; }
+
+.modal-tab {
+    flex: 1;
+    padding: 14px;
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    color: var(--text-secondary);
+    font-family: 'Gopher', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.modal-tab.active {
+    color: var(--text-accent);
+    border-bottom-color: var(--text-accent);
+}
+
+.modal-tab-panel {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+}
+
+/* Desktop: both panels always visible, stacked */
+@media (min-width: 1025px) {
+    .modal-tabs { display: none !important; }
+    #tab-info { flex: 0 0 auto; overflow-y: auto; }
+    #tab-files { flex: 1; border-top: 1px solid var(--border-color); overflow-y: auto; }
+    .modal-tab-panel { display: flex !important; }
+}
+
+/* Mobile/Tablet: tabs shown, panels switch */
+@media (max-width: 1024px) {
+    .modal-tabs { display: flex; }
+    .modal-tab-panel { display: none; flex: 1; overflow-y: auto; }
+    .modal-tab-panel.active { display: flex; }
+    .file-explorer { border-top: none; padding-top: 0; }
+
+    /* Bigger tap targets on mobile */
+    .file-item { padding: 15px 20px 15px 40px; min-height: 52px; }
+    .file-item:hover, .file-item.active { padding-left: 45px; }
+    .folder-header { padding: 14px 20px; min-height: 50px; }
+
+    .modal-viewer { height: 45vh; flex: none; }
+    .modal-sidebar { height: 55vh; }
+}
+
+@media (max-width: 768px) {
+    .modal-viewer { height: 40vh; }
+    .modal-sidebar { height: 60vh; }
+}
 
 /* =============================================
-   QUIZ — CV GATE EXTRAS
+   CV GATE EXTRAS
    ============================================= */
 .cv-gate-btn {
     display: inline-flex;
@@ -1262,16 +1313,9 @@ footer {
     background: rgba(255, 90, 90, 0.07);
     border: 1px solid rgba(255, 90, 90, 0.25);
 }
-.quiz-reward--locked .quiz-reward-title {
-    color: #ff8080;
-}
-.quiz-reward--locked p {
-    color: #888;
-    font-size: 0.85rem;
-    margin: 0;
-}
+.quiz-reward--locked .quiz-reward-title { color: #ff8080; }
+.quiz-reward--locked p { color: #888; font-size: 0.85rem; margin: 0; }
 
-/* CV mode title */
 .quiz-header h2 {
     font-size: 1.4rem;
     flex-wrap: wrap;
