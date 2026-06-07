@@ -505,6 +505,7 @@ body.light-mode .card-cat { color: var(--btn-color); }
     grid-template-columns: 1fr 1fr;
     gap: 60px;
     margin-top: 60px;
+    align-items: start; /* FIX: prevent columns from stretching to match each other's height */
 }
 
 .gear-column-title {
@@ -1162,6 +1163,8 @@ footer {
 .gear-img-wrap {
     width: 64px;
     height: 64px;
+    min-width: 64px;  /* FIX: prevent shrinking or growing with real images */
+    min-height: 64px;
     flex-shrink: 0;
     display: flex;
     align-items: center;
@@ -1197,6 +1200,26 @@ footer {
 }
 .software-item:hover .sw-logo { transform: scale(1.15) translateY(-3px); }
 
+/* simple-icons (jsDelivr) are black SVGs — make them white on dark theme */
+.sw-canva,
+.sw-google,
+.sw-office,
+.sw-notion,
+.sw-trello,
+.sw-miro {
+    filter: brightness(0) invert(1);
+}
+
+/* Light mode: show them dark */
+body.light-mode .sw-canva,
+body.light-mode .sw-google,
+body.light-mode .sw-office,
+body.light-mode .sw-notion,
+body.light-mode .sw-trello,
+body.light-mode .sw-miro {
+    filter: brightness(0);
+}
+
 /* Tool icons in modal sidebar */
 .tool-icon-img {
     width: 36px;
@@ -1208,6 +1231,19 @@ footer {
     filter: drop-shadow(0 1px 3px rgba(0,0,0,0.3));
 }
 .tool-icon-img:hover { transform: translateY(-4px) scale(1.1); }
+/* simple-icons in modal are also black SVGs — invert to white */
+.tool-icon-img.sw-canva,
+.tool-icon-img.sw-notion,
+.tool-icon-img.sw-trello,
+.tool-icon-img.sw-miro {
+    filter: brightness(0) invert(1);
+}
+body.light-mode .tool-icon-img.sw-canva,
+body.light-mode .tool-icon-img.sw-notion,
+body.light-mode .tool-icon-img.sw-trello,
+body.light-mode .tool-icon-img.sw-miro {
+    filter: brightness(0);
+}
 .tool-icon-text {
     display: inline-block;
     font-size: 0.7rem;
