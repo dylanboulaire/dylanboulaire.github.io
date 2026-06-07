@@ -1201,7 +1201,6 @@ footer {
 .software-item:hover .sw-logo { transform: scale(1.15) translateY(-3px); }
 
 /* simple-icons (jsDelivr) are black SVGs — make them white on dark theme */
-.sw-canva,
 .sw-google,
 .sw-office,
 .sw-notion,
@@ -1211,7 +1210,6 @@ footer {
 }
 
 /* Light mode: show them dark */
-body.light-mode .sw-canva,
 body.light-mode .sw-google,
 body.light-mode .sw-office,
 body.light-mode .sw-notion,
