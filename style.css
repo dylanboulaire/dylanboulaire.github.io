@@ -1201,22 +1201,10 @@ footer {
 .software-item:hover .sw-logo { transform: scale(1.15) translateY(-3px); }
 
 /* simple-icons (jsDelivr) are black SVGs — make them white on dark theme */
-.sw-google,
-.sw-office,
 .sw-notion,
-.sw-trello,
-.sw-miro {
-    filter: brightness(0) invert(1);
-}
 
 /* Light mode: show them dark */
-body.light-mode .sw-google,
-body.light-mode .sw-office,
 body.light-mode .sw-notion,
-body.light-mode .sw-trello,
-body.light-mode .sw-miro {
-    filter: brightness(0);
-}
 
 /* Tool icons in modal sidebar */
 .tool-icon-img {
