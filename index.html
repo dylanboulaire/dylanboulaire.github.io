@@ -328,7 +328,7 @@
         function swIcon(key, label) {
             const src = SW_LOGOS[key];
             // simple-icons need brightness inversion on dark bg
-            const simpleIconKeys = ['canva', 'notion', 'trello', 'miro'];
+            const simpleIconKeys = ['notion'];
             const extraClass = simpleIconKeys.includes(key) ? ` sw-${key}` : '';
             if (src) return `<img src="${src}" class="tool-icon-img${extraClass}" alt="${label}" title="${label}">`;
             return `<span class="tool-icon-text">${label}</span>`;
