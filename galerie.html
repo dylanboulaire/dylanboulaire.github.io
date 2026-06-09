@@ -199,6 +199,23 @@
         }
 
         // --- INITIALISATION ---
+        function buildColumnSequence(colIndex, totalCols) {
+    // Décale la séquence de base différemment pour chaque colonne
+    const base = Math.floor(colIndex * (galleryItems.length / totalCols));
+    const sequence = [];
+    for (let i = 0; i < galleryItems.length; i++) {
+        sequence.push(galleryItems[(base + i) % galleryItems.length]);
+    }
+    // Mélange Fisher-Yates avec une graine basée sur l'index de colonne
+    let seed = colIndex * 7 + 13;
+    const seeded = (max) => { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return Math.abs(seed) % max; };
+    for (let i = sequence.length - 1; i > 0; i--) {
+        const j = seeded(i + 1);
+        [sequence[i], sequence[j]] = [sequence[j], sequence[i]];
+    }
+    return sequence;
+}
+        
         function initGallery() {
             let oneSetWidth = 0;
             config.colWidths.forEach(w => oneSetWidth += w + config.gap);
@@ -222,7 +239,8 @@
                 for(let k=0; k<c; k++) baseX += config.colWidths[k % config.colWidths.length] + config.gap;
 
                 for(let r = 0; r < config.verticalDuplicates * galleryItems.length; r++) {
-                    const url = galleryItems[(r + c) % galleryItems.length];
+                    const colSeq = buildColumnSequence(c % config.colWidths.length, config.colWidths.length);
+                    const url = colSeq[r % colSeq.length];
                     const isYt = isYoutube(url);
                     
                     const item = document.createElement('div');
