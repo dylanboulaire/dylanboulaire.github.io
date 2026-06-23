@@ -22,7 +22,7 @@
             <a href="index.html"><img src="assets/logo.png" alt="Logo DB" class="logo-img"></a>
         </div>
         <div class="nav-right">
-            <button class="theme-toggle" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
+            <button class="theme-toggle" id="theme-btn" aria-label="Toggle theme"><i class="fas fa-moon"></i></button>
             <a href="https://www.linkedin.com/in/dylan-boulaire/" target="_blank"><i class="fab fa-linkedin-in"></i></a>
             <a href="mailto:boulairedylan@gmail.com"><i class="fas fa-envelope"></i></a>
         </div>
@@ -31,11 +31,9 @@
     <div class="vignette"></div>
     <div id="gallery-container"></div>
 
-    <div id="loader">
-        CHARGEMENT...
-    </div>
+    <div id="loader">CHARGEMENT...</div>
 
-    <div style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
+    <div id="hint-label" style="position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); color: rgba(255,255,255,0.25); font-family: 'Montserrat', sans-serif; font-size: 0.7rem; pointer-events: none; z-index: 50; letter-spacing: 2px;">
         GLISSEZ & EXPLOREZ
     </div>
 
@@ -48,13 +46,15 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             pointer-events: none; z-index: 10;
             background: radial-gradient(circle at center, transparent 40%, #050505 120%);
+            transition: background 0.4s ease;
         }
 
         #loader {
-            position: fixed; top:0; left:0; width:100%; height:100%; 
-            background:#050505; z-index: 2000; 
-            display:flex; justify-content:center; align-items:center; 
+            position: fixed; top:0; left:0; width:100%; height:100%;
+            background:#050505; z-index: 2000;
+            display:flex; justify-content:center; align-items:center;
             color:#fff; font-family: sans-serif; font-size: 0.8rem; letter-spacing: 2px;
+            transition: background 0.4s ease, color 0.4s ease;
         }
 
         #gallery-container {
@@ -66,27 +66,27 @@
 
         .gallery-item {
             position: absolute; top: 0; left: 0;
-            display: block; will-change: transform; 
+            display: block; will-change: transform;
             transform-origin: center center;
             overflow: hidden;
         }
 
         .gallery-item img {
-            width: 100%; 
-            height: 100%; 
-            object-fit: cover; /* ESSENTIEL POUR LES SHORTS */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             display: block;
             box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-            filter: brightness(0.8) grayscale(0.2); 
+            filter: brightness(0.8) grayscale(0.2);
             transition: filter 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
             pointer-events: none;
         }
 
         .gallery-item:hover { z-index: 100 !important; }
-        .gallery-item:hover img { 
+        .gallery-item:hover img {
             filter: brightness(1.1) grayscale(0);
-            transform: scale(1.05); 
-            box-shadow: 0 30px 70px rgba(0,0,0,0.9); 
+            transform: scale(1.05);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.9);
         }
 
         .play-icon {
@@ -102,25 +102,57 @@
             backdrop-filter: blur(4px);
         }
         .play-icon i { color: white; font-size: 20px; margin-left: 4px; }
-        
+
         .gallery-item:hover .play-icon {
             background: rgba(255,255,255,0.9);
             border-color: white;
             transform: translate(-50%, -50%) scale(1.1);
         }
         .gallery-item:hover .play-icon i { color: #000; }
+
+        /* ── LIGHT MODE ── */
+        body.light-mode {
+            background-color: #f0f0f0 !important;
+        }
+        body.light-mode .vignette {
+            background: radial-gradient(circle at center, transparent 40%, rgba(240,240,240,0.95) 120%);
+        }
+        body.light-mode #loader {
+            background: #f0f0f0;
+            color: #222222;
+        }
+        body.light-mode #hint-label {
+            color: rgba(0,0,0,0.25) !important;
+        }
+        body.light-mode .gallery-item img {
+            filter: brightness(0.95) grayscale(0.05);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
+        }
+        body.light-mode .gallery-item:hover img {
+            filter: brightness(1.05) grayscale(0);
+            box-shadow: 0 30px 70px rgba(0,0,0,0.25);
+        }
     </style>
 
     <script>
+        // ── THEME : init immédiat avant rendu ────────────────────────
+        (function() {
+            const saved = localStorage.getItem('theme') || 'dark';
+            if (saved === 'light') {
+                document.body.classList.add('light-mode');
+                document.body.style.backgroundColor = '#f0f0f0';
+            }
+        })();
+
         const galleryItems = [
             "assets/galerie/galerie1.png",
             "https://www.youtube.com/watch?v=su9Zpjx9ncY",
             "assets/galerie/galerie2.jpg",
             "assets/galerie/galerie3.jpg",
-            "https://www.youtube.com/watch?v=jqAytnGVjkQ", // TA VIDÉO PAYSAGE
+            "https://www.youtube.com/watch?v=jqAytnGVjkQ",
             "assets/galerie/galerie4.png",
             "assets/galerie/galerie5.png",
-            "https://www.youtube.com/shorts/nv-0ql2Qwrw",   // TON SHORT
+            "https://www.youtube.com/shorts/nv-0ql2Qwrw",
             "assets/galerie/galerie6.png",
             "assets/galerie/galerie7.jpg",
             "assets/galerie/galerie8.png",
@@ -142,10 +174,10 @@
         const config = {
             colWidths: [350, 280, 420, 300, 260],
             gap: 30,
-            verticalDuplicates: 4, 
-            horizontalSets: 3, 
+            verticalDuplicates: 4,
+            horizontalSets: 3,
             dragSpeed: 1.5,
-            ease: 0.04, 
+            ease: 0.04,
             curveStrength: 40,
             rotationMax: 8
         };
@@ -153,69 +185,77 @@
         const container = document.getElementById('gallery-container');
         const loader = document.getElementById('loader');
 
-        let items = []; 
+        let items = [];
         let scrollX = 0, scrollY = 0;
         let targetX = 0, targetY = 0;
         let totalWorldWidth = 0;
-        let colHeights = []; 
+        let colHeights = [];
 
-        // --- OUTILS YOUTUBE ---
+        // ── YOUTUBE UTILS ────────────────────────────────────────────
         const isVideoLocal = (src) => /\.(mp4|webm|mov)$/i.test(src);
-        
+
         const getYoutubeID = (url) => {
             const regExp = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=|shorts\/)|youtu\.be\/)([^"&?\/\s]{11})/;
             const match = url.match(regExp);
             return (match && match[1]) ? match[1] : null;
         };
-        
-        const isYoutube = (src) => getYoutubeID(src) !== null;
-        const isShorts = (src) => src.includes("/shorts/");
 
-        // --- PRELOAD ---
+        const isYoutube = (src) => getYoutubeID(src) !== null;
+        const isShorts  = (src) => src.includes("/shorts/");
+
+        // ── SÉQUENCES SANS DOUBLONS ADJACENTS ───────────────────────
+        function buildSmartSequences(totalCols) {
+            const sequences = [];
+
+            for (let c = 0; c < totalCols; c++) {
+                const shuffled = [...galleryItems];
+
+                // Mélange déterministe différent par colonne (xorshift)
+                let seed = (c + 1) * 73856093 ^ 19349663;
+                const rand = () => {
+                    seed ^= seed << 13; seed ^= seed >> 17; seed ^= seed << 5;
+                    return (seed >>> 0) / 0xFFFFFFFF;
+                };
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(rand() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+
+                // Anti-collision avec la colonne de gauche (même index vertical)
+                if (c > 0) {
+                    const prev = sequences[c - 1];
+                    for (let i = 0; i < shuffled.length; i++) {
+                        if (shuffled[i] === prev[i % prev.length]) {
+                            const swapIdx = (i + Math.ceil(shuffled.length / 3)) % shuffled.length;
+                            [shuffled[i], shuffled[swapIdx]] = [shuffled[swapIdx], shuffled[i]];
+                        }
+                    }
+                }
+
+                sequences.push(shuffled);
+            }
+            return sequences;
+        }
+
+        // ── PRELOAD ──────────────────────────────────────────────────
         function preloadMedia() {
             let loaded = 0;
             const total = galleryItems.length;
-
-            const check = () => {
-                loaded++;
-                if (loaded === total) initGallery();
-            };
+            const check = () => { loaded++; if (loaded === total) initGallery(); };
 
             galleryItems.forEach(src => {
+                const img = new Image();
                 if (isYoutube(src)) {
-                    const id = getYoutubeID(src);
-                    const img = new Image();
-                    // On utilise hqdefault DIRECTEMENT (Standard Quality, existe toujours)
-                    img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-                    img.onload = check;
-                    img.onerror = check; 
+                    img.src = `https://img.youtube.com/vi/${getYoutubeID(src)}/hqdefault.jpg`;
                 } else {
-                    const img = new Image();
                     img.src = src;
-                    img.onload = check;
-                    img.onerror = check;
                 }
+                img.onload = check;
+                img.onerror = check;
             });
         }
 
-        // --- INITIALISATION ---
-        function buildColumnSequence(colIndex, totalCols) {
-    // Décale la séquence de base différemment pour chaque colonne
-    const base = Math.floor(colIndex * (galleryItems.length / totalCols));
-    const sequence = [];
-    for (let i = 0; i < galleryItems.length; i++) {
-        sequence.push(galleryItems[(base + i) % galleryItems.length]);
-    }
-    // Mélange Fisher-Yates avec une graine basée sur l'index de colonne
-    let seed = colIndex * 7 + 13;
-    const seeded = (max) => { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return Math.abs(seed) % max; };
-    for (let i = sequence.length - 1; i > 0; i--) {
-        const j = seeded(i + 1);
-        [sequence[i], sequence[j]] = [sequence[j], sequence[i]];
-    }
-    return sequence;
-}
-        
+        // ── INIT GALERIE ─────────────────────────────────────────────
         function initGallery() {
             let oneSetWidth = 0;
             config.colWidths.forEach(w => oneSetWidth += w + config.gap);
@@ -223,37 +263,37 @@
 
             const totalCols = config.colWidths.length * config.horizontalSets;
             colHeights = new Array(totalCols).fill(0);
-            
-            for(let i=0; i<totalCols; i++) {
+
+            for (let i = 0; i < totalCols; i++) {
                 const type = i % 5;
-                if(type === 1) colHeights[i] = 100;
-                if(type === 3) colHeights[i] = 150;
-                if(type === 4) colHeights[i] = 50;
+                if (type === 1) colHeights[i] = 100;
+                if (type === 3) colHeights[i] = 150;
+                if (type === 4) colHeights[i] = 50;
             }
 
-            for(let c = 0; c < totalCols; c++) {
+            const colSequences = buildSmartSequences(totalCols);
+
+            for (let c = 0; c < totalCols; c++) {
                 const colType = c % config.colWidths.length;
                 const colW = config.colWidths[colType];
-                
-                let baseX = 0;
-                for(let k=0; k<c; k++) baseX += config.colWidths[k % config.colWidths.length] + config.gap;
 
-                for(let r = 0; r < config.verticalDuplicates * galleryItems.length; r++) {
-                    const colSeq = buildColumnSequence(c % config.colWidths.length, config.colWidths.length);
-                    const url = colSeq[r % colSeq.length];
+                let baseX = 0;
+                for (let k = 0; k < c; k++) baseX += config.colWidths[k % config.colWidths.length] + config.gap;
+
+                const seq = colSequences[c];
+
+                for (let r = 0; r < config.verticalDuplicates * galleryItems.length; r++) {
+                    const url = seq[r % seq.length];
                     const isYt = isYoutube(url);
-                    
+
                     const item = document.createElement('div');
                     item.className = 'gallery-item';
                     item.style.width = colW + 'px';
-                    
+
                     const img = document.createElement('img');
-                    
+
                     if (isYt) {
-                        const id = getYoutubeID(url);
-                        // On charge hqdefault (Standard) pour éviter le carré gris
-                        img.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
-                        
+                        img.src = `https://img.youtube.com/vi/${getYoutubeID(url)}/hqdefault.jpg`;
                         const icon = document.createElement('div');
                         icon.className = 'play-icon';
                         icon.innerHTML = '<i class="fas fa-play"></i>';
@@ -261,25 +301,19 @@
                     } else {
                         img.src = url;
                     }
-                    
+
                     item.appendChild(img);
                     container.appendChild(item);
 
-                    // --- CALCUL HAUTEUR ---
+                    // Hauteur selon ratio
                     let renderHeight;
-                    
-                    if(isYt) {
-                        if(isShorts(url)) {
-                            renderHeight = colW * (16 / 9); // Vertical
-                        } else {
-                            renderHeight = colW * (9 / 16); // Horizontal
-                        }
+                    if (isYt) {
+                        renderHeight = isShorts(url) ? colW * (16 / 9) : colW * (9 / 16);
                     } else {
                         const ratio = img.naturalHeight / img.naturalWidth;
                         renderHeight = colW * ratio;
                     }
-
-                    if(!renderHeight || renderHeight === 0) renderHeight = colW;
+                    if (!renderHeight || renderHeight === 0) renderHeight = colW;
 
                     item.style.height = renderHeight + "px";
 
@@ -293,25 +327,25 @@
                     });
 
                     colHeights[c] += renderHeight + config.gap;
-                    
+
                     item.addEventListener('click', () => {
-                        if(Math.abs(targetX - scrollX) < 5 && Math.abs(targetY - scrollY) < 5) {
+                        if (Math.abs(targetX - scrollX) < 5 && Math.abs(targetY - scrollY) < 5) {
                             zoomMedia(item, url);
                         }
                     });
                 }
             }
-            
+
             loader.style.display = 'none';
             animate();
-            
+
             targetX = -totalWorldWidth / 3;
             targetY = -Math.max(...colHeights) / 3;
             scrollX = targetX;
             scrollY = targetY;
         }
 
-        // --- ANIMATION ---
+        // ── ANIMATION LOOP ───────────────────────────────────────────
         function animate() {
             scrollX += (targetX - scrollX) * config.ease;
             scrollY += (targetY - scrollY) * config.ease;
@@ -324,23 +358,22 @@
                 let x = item.x + scrollX;
                 let loopedX = ((x % totalWorldWidth) + totalWorldWidth) % totalWorldWidth;
                 if (loopedX > totalWorldWidth / 2 + winW) loopedX -= totalWorldWidth;
-                
+
                 const totalH = colHeights[item.colIndex];
                 let y = item.y + scrollY;
                 let loopedY = ((y % totalH) + totalH) % totalH;
                 if (loopedY > totalH / 2 + winH) loopedY -= totalH;
 
-                const isVisible = loopedX > -400 && loopedX < winW + 400 && 
+                const isVisible = loopedX > -400 && loopedX < winW + 400 &&
                                   loopedY > -400 && loopedY < winH + 400;
 
                 if (isVisible) {
                     item.element.style.display = 'block';
                     const itemCenterX = loopedX + item.width / 2;
-                    const distFromCenterX = (itemCenterX - centerX) / centerX; 
+                    const distFromCenterX = (itemCenterX - centerX) / centerX;
                     const rotateY = distFromCenterX * config.rotationMax;
                     const translateZ = -Math.abs(distFromCenterX * config.curveStrength);
-
-                    item.element.style.transform = 
+                    item.element.style.transform =
                         `translate3d(${loopedX}px, ${loopedY}px, ${translateZ}px) rotateY(${rotateY}deg)`;
                 } else {
                     item.element.style.display = 'none';
@@ -349,50 +382,45 @@
             requestAnimationFrame(animate);
         }
 
-        // --- INPUT ---
+        // ── DRAG & TOUCH ─────────────────────────────────────────────
         let isDragging = false;
         let startX = 0, startY = 0;
 
         const onStart = (x, y) => { isDragging = true; startX = x; startY = y; container.style.cursor = "grabbing"; };
-        const onMove = (x, y) => {
-            if(!isDragging) return;
+        const onMove  = (x, y) => {
+            if (!isDragging) return;
             targetX += (x - startX) * config.dragSpeed;
             targetY += (y - startY) * config.dragSpeed;
             startX = x; startY = y;
         };
         const onEnd = () => { isDragging = false; container.style.cursor = "grab"; };
 
-        window.addEventListener('mousedown', e => onStart(e.clientX, e.clientY));
-        window.addEventListener('mousemove', e => onMove(e.clientX, e.clientY));
-        window.addEventListener('mouseup', onEnd);
-        window.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), {passive: false});
-        window.addEventListener('touchmove', e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, {passive: false});
-        window.addEventListener('touchend', onEnd);
+        window.addEventListener('mousedown',  e => onStart(e.clientX, e.clientY));
+        window.addEventListener('mousemove',  e => onMove(e.clientX, e.clientY));
+        window.addEventListener('mouseup',    onEnd);
+        window.addEventListener('touchstart', e => onStart(e.touches[0].clientX, e.touches[0].clientY), { passive: false });
+        window.addEventListener('touchmove',  e => { e.preventDefault(); onMove(e.touches[0].clientX, e.touches[0].clientY); }, { passive: false });
+        window.addEventListener('touchend',   onEnd);
 
-        // --- ZOOM FLUIDE CORRIGÉ (CALCUL PIXEL PERFECTION) ---
+        // ── ZOOM MEDIA ───────────────────────────────────────────────
         let expandedOverlay = null;
 
         function zoomMedia(itemDiv, src) {
-            // 1. Position de départ
             const rect = itemDiv.getBoundingClientRect();
-            
-            const youtubeID = getYoutubeID(src);
+            const youtubeID  = getYoutubeID(src);
             const isLocalVid = isVideoLocal(src);
-            
+
             expandedOverlay = document.createElement("div");
-            // On retire flexbox ici, on gère tout en absolute pour éviter les conflits
             expandedOverlay.style.cssText = `
                 position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-                background: rgba(0,0,0,0.95); z-index: 9999; cursor: zoom-out;
-                opacity: 0;
+                background: rgba(0,0,0,0.95); z-index: 9999; cursor: zoom-out; opacity: 0;
             `;
-            
+
             let content;
             if (youtubeID) {
                 content = document.createElement("img");
-                const id = getYoutubeID(src);
-                content.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
-                content.onerror = function() { this.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; };
+                content.src = `https://img.youtube.com/vi/${youtubeID}/maxresdefault.jpg`;
+                content.onerror = function() { this.src = `https://img.youtube.com/vi/${youtubeID}/hqdefault.jpg`; };
             } else if (isLocalVid) {
                 content = document.createElement("video");
                 content.src = src;
@@ -401,24 +429,18 @@
                 content = document.createElement("img");
                 content.src = src;
             }
-            
-            // Position initiale (identique à la miniature)
+
             content.style.cssText = `
-                position: absolute; 
-                top: ${rect.top}px; 
-                left: ${rect.left}px;
-                width: ${rect.width}px; 
-                height: ${rect.height}px;
-                object-fit: cover; 
-                box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+                position: absolute;
+                top: ${rect.top}px; left: ${rect.left}px;
+                width: ${rect.width}px; height: ${rect.height}px;
+                object-fit: cover; box-shadow: 0 20px 50px rgba(0,0,0,0.5);
             `;
-            
+
             expandedOverlay.appendChild(content);
             document.body.appendChild(expandedOverlay);
-
             gsap.to(expandedOverlay, { opacity: 1, duration: 0.4 });
 
-            // 2. Calcul des dimensions cibles (Ratio)
             let naturalW = 16, naturalH = 9;
             if (youtubeID) {
                 if (isShorts(src)) { naturalW = 9; naturalH = 16; }
@@ -428,44 +450,28 @@
                 naturalW = content.naturalWidth || 1000; naturalH = content.naturalHeight || 1000;
             }
 
-            // Calcul taille max (90% de l'écran)
             const screenW = window.innerWidth;
             const screenH = window.innerHeight;
-            const ratioImg = naturalW / naturalH;
+            const ratioImg    = naturalW / naturalH;
             const ratioScreen = screenW / screenH;
-            
             let targetW, targetH;
+            if (ratioScreen > ratioImg) { targetH = screenH * 0.9; targetW = targetH * ratioImg; }
+            else                        { targetW = screenW * 0.9; targetH = targetW / ratioImg; }
 
-            if (ratioScreen > ratioImg) { 
-                targetH = screenH * 0.9;
-                targetW = targetH * ratioImg;
-            } else { 
-                targetW = screenW * 0.9;
-                targetH = targetW / ratioImg;
-            }
-
-            // 3. CALCUL DE LA POSITION CENTRALE EN PIXELS (La correction est ici)
-            // On centre mathématiquement au lieu d'utiliser css translate -50%
-            const targetTop = (screenH - targetH) / 2;
+            const targetTop  = (screenH - targetH) / 2;
             const targetLeft = (screenW - targetW) / 2;
 
-            // 4. Animation
             gsap.to(content, {
-                top: targetTop,
-                left: targetLeft,
-                width: targetW, 
-                height: targetH,
-                // On n'utilise PLUS x/y percent, c'est plus stable
-                duration: 0.6, 
-                ease: "power3.inOut",
+                top: targetTop, left: targetLeft, width: targetW, height: targetH,
+                duration: 0.6, ease: "power3.inOut",
                 onComplete: () => {
-                    if(youtubeID) {
+                    if (youtubeID) {
                         const iframe = document.createElement("iframe");
                         iframe.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0`;
                         iframe.style.cssText = `
-                            position: absolute; 
-                            top: ${targetTop}px; left: ${targetLeft}px; 
-                            width: ${targetW}px; height: ${targetH}px; 
+                            position: absolute;
+                            top: ${targetTop}px; left: ${targetLeft}px;
+                            width: ${targetW}px; height: ${targetH}px;
                             border: none; box-shadow: 0 0 50px rgba(0,0,0,0.8);
                         `;
                         iframe.allow = "autoplay; encrypted-media";
@@ -475,43 +481,46 @@
                 }
             });
 
-            // Fermeture
             expandedOverlay.onclick = (e) => {
-                if(e.target === expandedOverlay) {
-                    if(content.tagName === 'IFRAME') {
-                        const id = getYoutubeID(src);
-                        const imgBack = document.createElement("img");
-                        imgBack.src = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`; 
-                        imgBack.onerror = function() { this.src = `https://img.youtube.com/vi/${id}/hqdefault.jpg`; };
-                        
-                        // On remet les dimensions actuelles pour la transition
-                        imgBack.style.cssText = content.style.cssText;
-                        imgBack.style.objectFit = "cover"; // Retour en cover pour l'anim de fin
-                        
-                        expandedOverlay.replaceChild(imgBack, content);
-                        content = imgBack;
-                    }
-                    
-                    // Recalcul position actuelle de la miniature
-                    const newRect = itemDiv.getBoundingClientRect();
-
-                    gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
-                    
-                    gsap.to(content, {
-                        top: newRect.top, 
-                        left: newRect.left, 
-                        width: newRect.width, 
-                        height: newRect.height,
-                        duration: 0.5, 
-                        ease: "power3.inOut",
-                        onComplete: () => { expandedOverlay.remove(); }
-                    });
+                if (e.target !== expandedOverlay) return;
+                if (content.tagName === 'IFRAME') {
+                    const imgBack = document.createElement("img");
+                    imgBack.src = `https://img.youtube.com/vi/${youtubeID}/maxresdefault.jpg`;
+                    imgBack.onerror = function() { this.src = `https://img.youtube.com/vi/${youtubeID}/hqdefault.jpg`; };
+                    imgBack.style.cssText = content.style.cssText;
+                    imgBack.style.objectFit = "cover";
+                    expandedOverlay.replaceChild(imgBack, content);
+                    content = imgBack;
                 }
+                const newRect = itemDiv.getBoundingClientRect();
+                gsap.to(expandedOverlay, { opacity: 0, duration: 0.4 });
+                gsap.to(content, {
+                    top: newRect.top, left: newRect.left,
+                    width: newRect.width, height: newRect.height,
+                    duration: 0.5, ease: "power3.inOut",
+                    onComplete: () => { expandedOverlay.remove(); }
+                });
             };
         }
 
-        preloadMedia();
+        // ── THEME TOGGLE ─────────────────────────────────────────────
+        document.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('theme-btn');
+            if (!btn) return;
 
+            // Icône selon thème déjà appliqué
+            const isLight = document.body.classList.contains('light-mode');
+            btn.innerHTML = isLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+
+            btn.addEventListener('click', () => {
+                const nowLight = document.body.classList.toggle('light-mode');
+                localStorage.setItem('theme', nowLight ? 'light' : 'dark');
+                btn.innerHTML = nowLight ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+                document.body.style.backgroundColor = nowLight ? '#f0f0f0' : '#222222';
+            });
+        });
+
+        preloadMedia();
     </script>
 </body>
 </html>
