@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const glowContainer = document.querySelector('.mouse-glow');
     const videoBg = document.querySelector('.video-background');
 
-    // ── THEME TOGGLE (handles multiple buttons) ──────────────────────
+    // ── THEME TOGGLE ─────────────────────────────────────────────────
     const savedTheme = localStorage.getItem('theme') || 'dark';
     if (savedTheme === 'light') body.classList.add('light-mode');
     updateAllThemeIcons();
@@ -23,6 +23,69 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // ── CUSTOM CURSOR ────────────────────────────────────────────────
+    const cursor     = document.createElement('div');
+    const cursorDot  = document.createElement('div');
+    cursor.className    = 'custom-cursor';
+    cursorDot.className = 'custom-cursor-dot';
+    document.body.appendChild(cursor);
+    document.body.appendChild(cursorDot);
+
+    let mouseX = window.innerWidth / 2;
+    let mouseY = window.innerHeight / 2;
+    let curX   = mouseX;
+    let curY   = mouseY;
+
+    document.addEventListener('mousemove', (e) => {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        // Le point suit instantanément
+        cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+    });
+
+    // Anneau suit avec lag fluide
+    function animateCursor() {
+        curX += (mouseX - curX) * 0.12;
+        curY += (mouseY - curY) * 0.12;
+        cursor.style.transform = `translate(${curX}px, ${curY}px) translate(-50%, -50%)`;
+        requestAnimationFrame(animateCursor);
+    }
+    animateCursor();
+
+    // États hover & click
+    const hoverTargets = 'a, button, .project-card, .filter-btn, .gear-item, .software-item, .quiz-answer-btn, .file-item, .folder-header, .submit-btn, .carousel-btn, .modal-close, .gallery-item, label, input, textarea, [onclick]';
+
+    document.addEventListener('mouseover', (e) => {
+        if (e.target.closest(hoverTargets)) {
+            cursor.classList.add('cursor-hover');
+            cursorDot.classList.add('cursor-hover');
+        }
+    });
+    document.addEventListener('mouseout', (e) => {
+        if (e.target.closest(hoverTargets)) {
+            cursor.classList.remove('cursor-hover');
+            cursorDot.classList.remove('cursor-hover');
+        }
+    });
+    document.addEventListener('mousedown', () => {
+        cursor.classList.add('cursor-click');
+        cursorDot.classList.add('cursor-click');
+    });
+    document.addEventListener('mouseup', () => {
+        cursor.classList.remove('cursor-click');
+        cursorDot.classList.remove('cursor-click');
+    });
+
+    // Cache le curseur quand il quitte la fenêtre
+    document.addEventListener('mouseleave', () => {
+        cursor.style.opacity    = '0';
+        cursorDot.style.opacity = '0';
+    });
+    document.addEventListener('mouseenter', () => {
+        cursor.style.opacity    = '1';
+        cursorDot.style.opacity = '1';
+    });
+
     // ── MOUSE GLOW ───────────────────────────────────────────────────
     if (glowContainer) {
         document.addEventListener('mousemove', (e) => {
@@ -37,7 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── BURGER MENU ──────────────────────────────────────────────────
-    const burger = document.querySelector('.burger-menu');
+    const burger     = document.querySelector('.burger-menu');
     const navOverlay = document.querySelector('.nav-overlay');
 
     if (burger && navOverlay) {
@@ -45,25 +108,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const isOpen = navOverlay.classList.toggle('open');
             burger.classList.toggle('active', isOpen);
         });
-
         navOverlay.querySelectorAll('a, .nav-link-btn').forEach(link => {
             link.addEventListener('click', closeNav);
         });
-
         navOverlay.addEventListener('click', (e) => {
             if (e.target === navOverlay) closeNav();
         });
-
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && navOverlay.classList.contains('open')) closeNav();
         });
     }
 
     function closeNav() {
-        const burger = document.querySelector('.burger-menu');
-        const navOverlay = document.querySelector('.nav-overlay');
-        if (burger) burger.classList.remove('active');
-        if (navOverlay) navOverlay.classList.remove('open');
+        const b = document.querySelector('.burger-menu');
+        const o = document.querySelector('.nav-overlay');
+        if (b) b.classList.remove('active');
+        if (o) o.classList.remove('open');
     }
 
     // ── SCROLL REVEAL ────────────────────────────────────────────────
@@ -91,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }, { threshold: 0.05 });
     document.querySelectorAll('.gear-items, .software-grid').forEach(el => gearObserver.observe(el));
 
-    // ── HEADER SHRINK ON SCROLL ──────────────────────────────────────
+    // ── HEADER SHRINK ────────────────────────────────────────────────
     const header = document.querySelector('header');
     if (header) {
         window.addEventListener('scroll', () => {
@@ -103,31 +163,23 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', spawnClickBurst);
 
     function spawnClickBurst(e) {
-        // Ne pas déclencher sur les boutons interactifs importants
-        if (e.target.closest('.modal-overlay, #cinema-quiz-overlay, .quiz-answer-btn, .submit-btn')) return;
-
+        if (e.target.closest('.modal-overlay, #cinema-quiz-overlay')) return;
         const burst = document.createElement('div');
         burst.className = 'click-burst';
         burst.style.left = e.clientX + 'px';
         burst.style.top  = e.clientY + 'px';
         document.body.appendChild(burst);
-
-        // Génère 6 particules
         for (let i = 0; i < 6; i++) {
-            const dot = document.createElement('div');
+            const dot   = document.createElement('div');
             dot.className = 'burst-dot';
-            const angle  = (i / 6) * 360;
-            const dist   = 28 + Math.random() * 18;
-            const rad    = (angle * Math.PI) / 180;
-            const tx     = Math.cos(rad) * dist;
-            const ty     = Math.sin(rad) * dist;
-            dot.style.setProperty('--tx', tx + 'px');
-            dot.style.setProperty('--ty', ty + 'px');
-            dot.style.animationDelay = (i * 18) + 'ms';
+            const angle = (i / 6) * 360;
+            const dist  = 26 + Math.random() * 16;
+            const rad   = (angle * Math.PI) / 180;
+            dot.style.setProperty('--tx', Math.cos(rad) * dist + 'px');
+            dot.style.setProperty('--ty', Math.sin(rad) * dist + 'px');
+            dot.style.animationDelay = (i * 16) + 'ms';
             burst.appendChild(dot);
         }
-
-        // Nettoyage après animation
         setTimeout(() => burst.remove(), 700);
     }
 });
@@ -135,12 +187,20 @@ document.addEventListener('DOMContentLoaded', () => {
 // ── MODAL KEYBOARD & TOUCH ───────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('modal');
+
     document.addEventListener('keydown', (e) => {
         if (!modal || !modal.classList.contains('open')) return;
-        if (e.key === 'ArrowLeft')  { e.preventDefault(); moveSlide(-1); }
+        if (e.key === 'ArrowLeft')       { e.preventDefault(); moveSlide(-1); }
         else if (e.key === 'ArrowRight') { e.preventDefault(); moveSlide(1); }
         else if (e.key === 'Escape')     { e.preventDefault(); closeModal(); }
     });
+
+    // Fermeture modale en cliquant sur le fond
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+    }
 
     let touchStart = 0;
     const modalViewer = document.querySelector('.modal-viewer');
@@ -156,60 +216,59 @@ document.addEventListener('DOMContentLoaded', () => {
 // =====================================================================
 // QUIZ PERSO — CV gate
 // =====================================================================
-
 const cinemaQuizDataRaw = [
     {
-        question: "🎾 Quel joueur de tennis a remporté le plus de titres du Grand Chelem de l'histoire ?",
+        question: "🎾 Quel joueur détient le record de titres du Grand Chelem en tennis ?",
         answers: ["Novak Djokovic", "Rafael Nadal", "Roger Federer", "Pete Sampras"],
         correct: 0,
         fact: "Novak Djokovic détient le record avec 24 titres du Grand Chelem. Nadal est 2ème avec 22, Federer 3ème avec 20."
     },
     {
-        question: "🎾 Sur quelle surface Roland-Garros est-il joué ?",
+        question: "🎾 Sur quelle surface se joue Roland-Garros ?",
         answers: ["Terre battue", "Gazon", "Dur", "Moquette"],
         correct: 0,
-        fact: "Roland-Garros se joue sur terre battue — la surface préférée de Rafael Nadal, surnommé 'le Roi de la terre battue' avec 14 titres !"
+        fact: "Roland-Garros se joue sur terre battue — la surface préférée de Nadal, surnommé 'le Roi de la terre battue' avec 14 titres !"
     },
     {
-        question: "🎬 Dans quel film Christopher Nolan raconte-t-il une histoire à l'envers ?",
+        question: "🎬 Dans quel film Nolan raconte-t-il une histoire à rebours ?",
         answers: ["Memento", "Inception", "Interstellar", "The Prestige"],
         correct: 0,
-        fact: "Memento (2000) suit Leonard Shelby, un homme sans mémoire à court terme — la narration remonte le temps scène après scène. Un chef-d'œuvre de montage !"
+        fact: "Memento (2000) suit un homme sans mémoire à court terme — la narration remonte le temps scène après scène. Un chef-d'œuvre de montage !"
     },
     {
-        question: "🎬 Quelle est la durée approximative du film 'Il faut sauver le soldat Ryan' de Spielberg ?",
-        answers: ["2h49", "1h45", "3h20", "2h10"],
+        question: "🎬 Quel réalisateur a signé Jurassic Park, Les Dents de la Mer et E.T. ?",
+        answers: ["Steven Spielberg", "James Cameron", "Ridley Scott", "George Lucas"],
         correct: 0,
-        fact: "Le film dure 2h49. Les 27 premières minutes consacrées au débarquement de Normandie sont considérées comme l'une des séquences d'action les plus intenses de l'histoire du cinéma."
+        fact: "Steven Spielberg, l'un des plus grands réalisateurs de tous les temps. Il a aussi produit des dizaines de films qui ont marqué des générations entières."
     },
     {
         question: "🎓 Dans quelle ville Dylan a-t-il fait son BUT MMI ?",
         answers: ["Lannion", "Rennes", "Brest", "Saint-Brieuc"],
         correct: 0,
-        fact: "C'est à Lannion, en Bretagne, que Dylan a étudié le BUT MMI à l'IUT — une ville connue pour ses télécommunications et son dynamisme numérique !"
+        fact: "C'est à Lannion, en Bretagne, à l'IUT — une ville connue pour ses télécommunications et son dynamisme numérique !"
     },
     {
-        question: "🎓 MMI, c'est quoi comme formation ?",
+        question: "🎓 Que signifie MMI ?",
         answers: ["Métiers du Multimédia et de l'Internet", "Master en Marketing International", "Management des Médias et de l'Image", "Montage et Mise en Image"],
         correct: 0,
-        fact: "MMI = Métiers du Multimédia et de l'Internet. Un BUT polyvalent qui mêle vidéo, webdesign, communication et développement — le terrain de jeu idéal pour Dylan !"
+        fact: "MMI = Métiers du Multimédia et de l'Internet. Un BUT polyvalent qui mêle vidéo, webdesign, communication et développement !"
     },
     {
         question: "💇 Quelle est la couleur des cheveux de Dylan ?",
         answers: ["Bruns", "Blonds", "Roux", "Noirs"],
         correct: 0,
-        fact: "Dylan a les cheveux bruns. Maintenant tu peux le reconnaître si tu le croises dans un couloir d'entreprise 😄"
+        fact: "Dylan a les cheveux bruns. Maintenant tu peux le reconnaître si tu le croises dans un couloir 😄"
     },
     {
-        question: "📄 Bon, soyons directs… tu veux vraiment son CV ?",
-        answers: ["OUI, évidemment !", "Non, je suis juste curieux"],
+        question: "📄 Soyons directs… tu veux vraiment son CV ?",
+        answers: ["OUI, évidemment ! 🚀", "Non, je suis juste curieux 👀"],
         correct: 0,
-        fact: "Bonne décision ! Un profil créatif, polyvalent, motivé — tu ne vas pas le regretter 🎯"
+        fact: "Excellente décision ! Un profil créatif, polyvalent et motivé — tu ne vas pas le regretter 🎯"
     }
 ];
 
 function buildShuffledQuiz(rawData) {
-    // Toutes les questions sauf la dernière (OUI/NON) sont mélangées
+    // La dernière question (OUI/NON) reste toujours en dernière
     const fixedLast = rawData[rawData.length - 1];
     const toShuffle = rawData.slice(0, rawData.length - 1).map(q => {
         const correctAnswer = q.answers[q.correct];
@@ -220,14 +279,12 @@ function buildShuffledQuiz(rawData) {
         }
         return { question: q.question, answers: shuffled, correct: shuffled.indexOf(correctAnswer), fact: q.fact };
     });
-
-    // La dernière question reste toujours en dernière position, réponses fixes
     return [...toShuffle, fixedLast];
 }
 
 let cinemaQuizData = [];
-let quizOverlay = null;
-let quizState = { current: 0, score: 0, answered: false, cvMode: false };
+let quizOverlay    = null;
+let quizState      = { current: 0, score: 0, answered: false, cvMode: false, forcedNoCV: false };
 
 function openCinemaQuizForCV() { _openQuiz(true); }
 function openCinemaQuiz()      { _openQuiz(false); }
@@ -235,18 +292,15 @@ function openCinemaQuiz()      { _openQuiz(false); }
 function _openQuiz(cvMode) {
     if (quizOverlay) return;
     cinemaQuizData = buildShuffledQuiz(cinemaQuizDataRaw);
-    quizState = { current: 0, score: 0, answered: false, cvMode };
+    quizState      = { current: 0, score: 0, answered: false, cvMode, forcedNoCV: false };
 
     quizOverlay = document.createElement('div');
     quizOverlay.id = 'cinema-quiz-overlay';
 
-    const intro = cvMode
+    const intro    = cvMode
         ? `<p>Mon CV ? Il se mérite ! 😏<br>8 questions pour voir si on est sur la même longueur d'onde.</p>`
         : `<p>Tu as trouvé l'easter egg ! 8 questions pour mieux me connaître.</p>`;
-
-    const titleTag = cvMode
-        ? `MON CV ? IL FAUT LE MÉRITER ! 🏆`
-        : `QUIZ SECRET 🎬`;
+    const titleTag = cvMode ? `MON CV ? IL FAUT LE MÉRITER !` : `QUIZ SECRET 🎬`;
 
     quizOverlay.innerHTML = `
         <div class="quiz-container">
@@ -265,19 +319,21 @@ function _openQuiz(cvMode) {
 }
 
 function renderQuizQuestion() {
-    const body  = document.getElementById('quiz-body');
-    const q     = cinemaQuizData[quizState.current];
-    const total = cinemaQuizData.length;
-    const isLastQuestion = quizState.current === total - 1;
+    const body        = document.getElementById('quiz-body');
+    const q           = cinemaQuizData[quizState.current];
+    const total       = cinemaQuizData.length;
+    const isLastQ     = quizState.current === total - 1;
 
     body.innerHTML = `
-        <div class="quiz-progress-bar"><div class="quiz-progress-fill" style="width:${(quizState.current / total) * 100}%"></div></div>
+        <div class="quiz-progress-bar">
+            <div class="quiz-progress-fill" style="width:${(quizState.current / total) * 100}%"></div>
+        </div>
         <div class="quiz-counter">${quizState.current + 1} / ${total}</div>
         <div class="quiz-question">${q.question}</div>
-        <div class="quiz-answers ${isLastQuestion ? 'quiz-answers--yesno' : ''}">
+        <div class="quiz-answers${isLastQ ? ' quiz-answers--yesno' : ''}">
             ${q.answers.map((a, i) => `
-                <button class="quiz-answer-btn ${isLastQuestion ? (i === 0 ? 'quiz-btn--yes' : 'quiz-btn--no') : ''}" onclick="answerQuiz(${i})">
-                    <span class="quiz-letter">${isLastQuestion ? '' : ['A','B','C','D'][i]}</span>${a}
+                <button class="quiz-answer-btn${isLastQ ? (i === 0 ? ' quiz-btn--yes' : ' quiz-btn--no') : ''}" onclick="answerQuiz(${i})">
+                    ${!isLastQ ? `<span class="quiz-letter">${['A','B','C','D'][i]}</span>` : ''}${a}
                 </button>`).join('')}
         </div>
         <div class="quiz-fact" id="quiz-fact"></div>
@@ -291,74 +347,56 @@ function answerQuiz(index) {
     if (quizState.answered) return;
     quizState.answered = true;
 
-    const q            = cinemaQuizData[quizState.current];
-    const total        = cinemaQuizData.length;
-    const isLastQ      = quizState.current === total - 1;
+    const q        = cinemaQuizData[quizState.current];
+    const total    = cinemaQuizData.length;
+    const isLastQ  = quizState.current === total - 1;
+    const isCorrect = index === q.correct;
 
-    // Sur la dernière question OUI/NON, seul "OUI" (index 0) donne le CV
-    // mais les deux réponses sont "correctes" pour le score (on compte juste OUI)
-    const isCorrect = (index === q.correct);
     if (isCorrect) quizState.score++;
+    if (isLastQ && !isCorrect) quizState.forcedNoCV = true;
 
-    // Animation juicy sur le bouton cliqué
-    const btns = document.querySelectorAll('.quiz-answer-btn');
-    btns.forEach((btn, i) => {
+    document.querySelectorAll('.quiz-answer-btn').forEach((btn, i) => {
         btn.disabled = true;
         if (i === q.correct) {
-            btn.classList.add('correct');
-            btn.classList.add('quiz-pop');
+            btn.classList.add('correct', 'quiz-pop');
         } else if (i === index && !isCorrect) {
-            btn.classList.add('wrong');
-            btn.classList.add('quiz-shake');
+            btn.classList.add('wrong', 'quiz-shake');
         }
     });
 
     const fact = document.getElementById('quiz-fact');
-    if (isLastQ && !isCorrect) {
-        fact.textContent = '😅 Dommage ! Reviens quand tu seras convaincu.';
-    } else {
-        fact.textContent = '💡 ' + q.fact;
-    }
+    fact.textContent = (isLastQ && !isCorrect)
+        ? '😅 Dommage ! Reviens quand tu seras convaincu.'
+        : '💡 ' + q.fact;
     fact.classList.add('visible');
     document.getElementById('quiz-next').style.display = 'block';
-
-    // Si "NON" sur la dernière question → résultat direct sans CV
-    if (isLastQ && !isCorrect) {
-        quizState.forcedNoCV = true;
-    }
 }
 
 function nextQuizQuestion() {
     quizState.current++;
-    if (quizState.current >= cinemaQuizData.length) {
-        renderQuizResults();
-    } else {
-        renderQuizQuestion();
-    }
+    quizState.current >= cinemaQuizData.length ? renderQuizResults() : renderQuizQuestion();
 }
 
 function renderQuizResults() {
-    const score   = quizState.score;
-    const total   = cinemaQuizData.length;
-    const pct     = Math.round((score / total) * 100);
-    const cvMode  = quizState.cvMode;
-    const saidNo  = quizState.forcedNoCV;
+    const score    = quizState.score;
+    const total    = cinemaQuizData.length;
+    const pct      = Math.round((score / total) * 100);
+    const saidNo   = quizState.forcedNoCV;
+    const cvMode   = quizState.cvMode;
 
     const grades = [
-        { min: 87, grade: "Tu me connais déjà presque mieux que moi 👀", emoji: "🏆" },
-        { min: 62, grade: "Bon feeling — on va bien s'entendre !",        emoji: "🎯" },
-        { min: 37, grade: "Pas mal, mais il reste des mystères…",         emoji: "🎞️" },
-        { min: 0,  grade: "On part de loin, mais c'est pas grave !",      emoji: "🍿" }
+        { min: 87, grade: "Tu me connais presque mieux que moi 👀", emoji: "🏆" },
+        { min: 62, grade: "Bon feeling — on va bien s'entendre !",   emoji: "🎯" },
+        { min: 37, grade: "Pas mal, mais il reste des mystères…",    emoji: "🎞️" },
+        { min: 0,  grade: "On part de loin, mais c'est pas grave !", emoji: "🍿" }
     ];
     const { grade, emoji } = grades.find(g => pct >= g.min);
-
-    // Cas spécial : a dit NON à la dernière question
     const cvUnlocked = !saidNo && score >= 5;
 
     const rewardBlock = saidNo
         ? `<div class="quiz-reward quiz-reward--locked">
                <div class="quiz-reward-title">🚫 TU AS DIT NON…</div>
-               <p>Respect de ta décision. Si tu changes d'avis, le bouton sera toujours là 😏</p>
+               <p>Respect. Si tu changes d'avis, le bouton sera toujours là 😏</p>
            </div>`
         : cvUnlocked
             ? `<div class="quiz-reward">
