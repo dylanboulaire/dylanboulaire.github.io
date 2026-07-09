@@ -24,67 +24,73 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // ── CUSTOM CURSOR ────────────────────────────────────────────────
-    const cursor     = document.createElement('div');
-    const cursorDot  = document.createElement('div');
-    cursor.className    = 'custom-cursor';
-    cursorDot.className = 'custom-cursor-dot';
-    document.body.appendChild(cursor);
-    document.body.appendChild(cursorDot);
+    // On ne crée le curseur que sur desktop (pas tactile)
+    const isTouchDevice = () => window.matchMedia('(hover: none)').matches;
 
-    let mouseX = window.innerWidth / 2;
-    let mouseY = window.innerHeight / 2;
-    let curX   = mouseX;
-    let curY   = mouseY;
+    if (!isTouchDevice()) {
+        const cursor    = document.createElement('div');
+        const cursorDot = document.createElement('div');
+        cursor.className    = 'custom-cursor';
+        cursorDot.className = 'custom-cursor-dot';
+        document.body.appendChild(cursor);
+        document.body.appendChild(cursorDot);
 
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        // Le point suit instantanément
-        cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
-    });
+        // Position réelle de la souris
+        let mouseX = -200, mouseY = -200;
+        // Position interpolée de l'anneau
+        let ringX  = -200, ringY  = -200;
+        let rafId  = null;
 
-    // Anneau suit avec lag fluide
-    function animateCursor() {
-        curX += (mouseX - curX) * 0.12;
-        curY += (mouseY - curY) * 0.12;
-        cursor.style.transform = `translate(${curX}px, ${curY}px) translate(-50%, -50%)`;
-        requestAnimationFrame(animateCursor);
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            // Le point suit immédiatement, via CSS transform direct
+            cursorDot.style.transform = `translate(${mouseX}px, ${mouseY}px) translate(-50%, -50%)`;
+        });
+
+        // Anneau avec lag (lerp)
+        function animateCursor() {
+            ringX += (mouseX - ringX) * 0.12;
+            ringY += (mouseY - ringY) * 0.12;
+            cursor.style.transform = `translate(${ringX}px, ${ringY}px) translate(-50%, -50%)`;
+            rafId = requestAnimationFrame(animateCursor);
+        }
+        animateCursor();
+
+        // Cible hover
+        const hoverSel = 'a, button, .project-card, .filter-btn, .gear-item, .software-item, .quiz-answer-btn, .file-item, .folder-header, .submit-btn, .carousel-btn, .modal-close, .gallery-item, input, textarea, [onclick]';
+
+        document.addEventListener('mouseover', (e) => {
+            if (e.target.closest(hoverSel)) {
+                cursor.classList.add('cursor-hover');
+                cursorDot.classList.add('cursor-hover');
+            }
+        });
+        document.addEventListener('mouseout', (e) => {
+            if (e.target.closest(hoverSel)) {
+                cursor.classList.remove('cursor-hover');
+                cursorDot.classList.remove('cursor-hover');
+            }
+        });
+        document.addEventListener('mousedown', () => {
+            cursor.classList.add('cursor-click');
+            cursorDot.classList.add('cursor-click');
+        });
+        document.addEventListener('mouseup', () => {
+            cursor.classList.remove('cursor-click');
+            cursorDot.classList.remove('cursor-click');
+        });
+
+        // Masquer quand hors fenêtre
+        document.addEventListener('mouseleave', () => {
+            cursor.style.opacity    = '0';
+            cursorDot.style.opacity = '0';
+        });
+        document.addEventListener('mouseenter', () => {
+            cursor.style.opacity    = '1';
+            cursorDot.style.opacity = '1';
+        });
     }
-    animateCursor();
-
-    // États hover & click
-    const hoverTargets = 'a, button, .project-card, .filter-btn, .gear-item, .software-item, .quiz-answer-btn, .file-item, .folder-header, .submit-btn, .carousel-btn, .modal-close, .gallery-item, label, input, textarea, [onclick]';
-
-    document.addEventListener('mouseover', (e) => {
-        if (e.target.closest(hoverTargets)) {
-            cursor.classList.add('cursor-hover');
-            cursorDot.classList.add('cursor-hover');
-        }
-    });
-    document.addEventListener('mouseout', (e) => {
-        if (e.target.closest(hoverTargets)) {
-            cursor.classList.remove('cursor-hover');
-            cursorDot.classList.remove('cursor-hover');
-        }
-    });
-    document.addEventListener('mousedown', () => {
-        cursor.classList.add('cursor-click');
-        cursorDot.classList.add('cursor-click');
-    });
-    document.addEventListener('mouseup', () => {
-        cursor.classList.remove('cursor-click');
-        cursorDot.classList.remove('cursor-click');
-    });
-
-    // Cache le curseur quand il quitte la fenêtre
-    document.addEventListener('mouseleave', () => {
-        cursor.style.opacity    = '0';
-        cursorDot.style.opacity = '0';
-    });
-    document.addEventListener('mouseenter', () => {
-        cursor.style.opacity    = '1';
-        cursorDot.style.opacity = '1';
-    });
 
     // ── MOUSE GLOW ───────────────────────────────────────────────────
     if (glowContainer) {
@@ -163,12 +169,16 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('click', spawnClickBurst);
 
     function spawnClickBurst(e) {
+        // Pas de burst sur les zones de quiz ou modal pour eviter le bruit visuel
         if (e.target.closest('.modal-overlay, #cinema-quiz-overlay')) return;
+
         const burst = document.createElement('div');
         burst.className = 'click-burst';
+        // Position absolue par rapport au viewport, sans offset
         burst.style.left = e.clientX + 'px';
         burst.style.top  = e.clientY + 'px';
         document.body.appendChild(burst);
+
         for (let i = 0; i < 6; i++) {
             const dot   = document.createElement('div');
             dot.className = 'burst-dot';
@@ -195,7 +205,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (e.key === 'Escape')     { e.preventDefault(); closeModal(); }
     });
 
-    // Fermeture modale en cliquant sur le fond
+    // Fermeture en cliquant sur le fond
     if (modal) {
         modal.addEventListener('click', (e) => {
             if (e.target === modal) closeModal();
@@ -227,7 +237,7 @@ const cinemaQuizDataRaw = [
         question: "🎾 Sur quelle surface se joue Roland-Garros ?",
         answers: ["Terre battue", "Gazon", "Dur", "Moquette"],
         correct: 0,
-        fact: "Roland-Garros se joue sur terre battue — la surface préférée de Nadal, surnommé 'le Roi de la terre battue' avec 14 titres !"
+        fact: "Roland-Garros se joue sur terre battue — la surface de prédilection de Nadal, surnommé 'le Roi de la terre battue' avec 14 titres !"
     },
     {
         question: "🎬 Dans quel film Nolan raconte-t-il une histoire à rebours ?",
@@ -239,7 +249,7 @@ const cinemaQuizDataRaw = [
         question: "🎬 Quel réalisateur a signé Jurassic Park, Les Dents de la Mer et E.T. ?",
         answers: ["Steven Spielberg", "James Cameron", "Ridley Scott", "George Lucas"],
         correct: 0,
-        fact: "Steven Spielberg, l'un des plus grands réalisateurs de tous les temps. Il a aussi produit des dizaines de films qui ont marqué des générations entières."
+        fact: "Steven Spielberg, l'un des plus grands réalisateurs de tous les temps, auteur de films qui ont marqué des générations entières."
     },
     {
         question: "🎓 Dans quelle ville Dylan a-t-il fait son BUT MMI ?",
@@ -268,7 +278,6 @@ const cinemaQuizDataRaw = [
 ];
 
 function buildShuffledQuiz(rawData) {
-    // La dernière question (OUI/NON) reste toujours en dernière
     const fixedLast = rawData[rawData.length - 1];
     const toShuffle = rawData.slice(0, rawData.length - 1).map(q => {
         const correctAnswer = q.answers[q.correct];
@@ -319,10 +328,10 @@ function _openQuiz(cvMode) {
 }
 
 function renderQuizQuestion() {
-    const body        = document.getElementById('quiz-body');
-    const q           = cinemaQuizData[quizState.current];
-    const total       = cinemaQuizData.length;
-    const isLastQ     = quizState.current === total - 1;
+    const body    = document.getElementById('quiz-body');
+    const q       = cinemaQuizData[quizState.current];
+    const total   = cinemaQuizData.length;
+    const isLastQ = quizState.current === total - 1;
 
     body.innerHTML = `
         <div class="quiz-progress-bar">
@@ -357,11 +366,8 @@ function answerQuiz(index) {
 
     document.querySelectorAll('.quiz-answer-btn').forEach((btn, i) => {
         btn.disabled = true;
-        if (i === q.correct) {
-            btn.classList.add('correct', 'quiz-pop');
-        } else if (i === index && !isCorrect) {
-            btn.classList.add('wrong', 'quiz-shake');
-        }
+        if (i === q.correct)             btn.classList.add('correct', 'quiz-pop');
+        else if (i === index && !isCorrect) btn.classList.add('wrong', 'quiz-shake');
     });
 
     const fact = document.getElementById('quiz-fact');
@@ -378,11 +384,11 @@ function nextQuizQuestion() {
 }
 
 function renderQuizResults() {
-    const score    = quizState.score;
-    const total    = cinemaQuizData.length;
-    const pct      = Math.round((score / total) * 100);
-    const saidNo   = quizState.forcedNoCV;
-    const cvMode   = quizState.cvMode;
+    const score   = quizState.score;
+    const total   = cinemaQuizData.length;
+    const pct     = Math.round((score / total) * 100);
+    const saidNo  = quizState.forcedNoCV;
+    const cvMode  = quizState.cvMode;
 
     const grades = [
         { min: 87, grade: "Tu me connais presque mieux que moi 👀", emoji: "🏆" },
