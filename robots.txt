@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://dylanboulaire.github.io/sitemap.xml
